@@ -38,6 +38,9 @@ function parseColor(hexString: string) {
   // 获取系统时间，从0点开始计数，以分钟为单位
   function getCurrMinute(): number {
     const now = new Date()
+    console.log(now,'now')
+    console.log(now.getHours() * 60 + now.getMinutes())
+    //return 0
     return now.getHours() * 60 + now.getMinutes()
   }
 
