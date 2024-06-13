@@ -1,5 +1,5 @@
 <template>
-  <div class="contonter bg-[rgba(255,255,255,0.4)] text-center dark:bg-[rgba(51,51,51,0.7)]">
+  <div class="contonter">
     <div  style="height: 100vh;" ref="vantaRef">
       <h1 class="text-3xl font-bold underline">
         我是首页我是首页
@@ -13,7 +13,7 @@
         </n-button>
       </h1>
     </div>
-    <div  style="height: 100px;" class="bg-[rgba(255,255,255,0.4)] text-center dark:bg-[rgba(51,51,51,0.7)]">
+    <div  style="height: 100px;" >
       <h1 class="">
         123123123
         </h1>
