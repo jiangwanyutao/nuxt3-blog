@@ -17,7 +17,12 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     '@nuxtjs/tailwindcss',
     '@vueuse/nuxt',
+    'nuxt-icon',
+    '@nuxtjs/color-mode'
   ],
+  colorMode: {
+    classSuffix: '', // 用于添加到 HTML 或组件的类名后缀
+  },
   imports: {
     // 自动导入 store 模块
     dirs: ['stores','api']
@@ -26,6 +31,8 @@ export default defineNuxtConfig({
     autoImports: ['defineStore', 'acceptHMRUpdate']
   },
   css: ['~/assets/css/main.css','~/assets/css/animation.css'],
+  script:[],
+  plugins: [],
   postcss: {
     plugins: {
       tailwindcss: {},

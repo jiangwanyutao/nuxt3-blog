@@ -14,6 +14,12 @@ dependencies:
   pinia:
     specifier: 2.1.7
     version: 2.1.7(vue@3.4.27)
+  three:
+    specifier: 0.121.0
+    version: 0.121.0
+  vanta:
+    specifier: 0.5.24
+    version: 0.5.24
   vue:
     specifier: 3.4.27
     version: 3.4.27
@@ -25,35 +31,41 @@ devDependencies:
   '@css-render/vue3-ssr':
     specifier: 0.15.14
     version: 0.15.14(vue@3.4.27)
+  '@nuxtjs/color-mode':
+    specifier: ^3.4.1
+    version: 3.4.1
   '@nuxtjs/tailwindcss':
-    specifier: ^6.12.0
+    specifier: 6.12.0
     version: 6.12.0
   '@vicons/ionicons5':
     specifier: 0.12.0
     version: 0.12.0
   '@vueuse/core':
-    specifier: ^10.10.1
+    specifier: 10.10.1
     version: 10.10.1(vue@3.4.27)
   '@vueuse/nuxt':
-    specifier: ^10.10.1
+    specifier: 10.10.1
     version: 10.10.1(nuxt@3.12.1)(vue@3.4.27)
   autoprefixer:
-    specifier: ^10.4.19
+    specifier: 10.4.19
     version: 10.4.19(postcss@8.4.38)
   naive-ui:
     specifier: 2.38.2
     version: 2.38.2(vue@3.4.27)
+  nuxt-icon:
+    specifier: ^0.6.10
+    version: 0.6.10(nuxt@3.12.1)(vite@5.2.13)(vue@3.4.27)
   postcss:
-    specifier: ^8.4.38
+    specifier: 8.4.38
     version: 8.4.38
   sass:
     specifier: 1.77.5
     version: 1.77.5
   tailwindcss:
-    specifier: ^3.4.4
+    specifier: 3.4.4
     version: 3.4.4
   unplugin-vue-components:
-    specifier: ^0.27.0
+    specifier: 0.27.0
     version: 0.27.0(vue@3.4.27)
 
 packages:
@@ -868,6 +880,12 @@ packages:
   /@floating-ui/utils@0.2.2:
     resolution: {integrity: sha512-J4yDIIthosAsRZ5CPYP/jQvUAQtlZTTD/4suA08/FEnlxqW3sKS9iAhgsa9VYLZ6vDHn/ixJgIqRQPotoBjxIw==}
 
+  /@iconify/collections@1.0.430:
+    resolution: {integrity: sha512-8yA2M1jKf+XCXclxsBAjI8FtnxpX6gkLhmLy00xRft1Sn0Tr7ht9exFhM86A6dfM+9517sMuFN91kdmZxLs7tg==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
   /@iconify/types@2.0.0:
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
 
@@ -883,6 +901,15 @@ packages:
       mlly: 1.7.1
     transitivePeerDependencies:
       - supports-color
+
+  /@iconify/vue@4.1.2(vue@3.4.27):
+    resolution: {integrity: sha512-CQnYqLiQD5LOAaXhBrmj1mdL2/NCJvwcC4jtW2Z8ukhThiFkLDkutarTOV2trfc9EXqUqRs0KqXOL9pZ/IyysA==}
+    peerDependencies:
+      vue: '>=3'
+    dependencies:
+      '@iconify/types': 2.0.0
+      vue: 3.4.27
+    dev: true
 
   /@ioredis/commands@1.2.0:
     resolution: {integrity: sha512-Sx1pU8EM64o2BrqNpEO1CNLtKQwyhuXuqyfH7oGKCk+1a33d2r5saW8zNwm3j6BTExtjrv2BxTgzzkMwts6vGg==}
@@ -1336,6 +1363,18 @@ packages:
       - vls
       - vti
       - vue-tsc
+
+  /@nuxtjs/color-mode@3.4.1:
+    resolution: {integrity: sha512-vZgJqDstxInGw3RGSWbLoCLXtU1mvh1LLeuEA/X3a++DYA4ifwSbNoiSiOyb9qZHFEwz1Xr99H71sXV4IhOaEg==}
+    dependencies:
+      '@nuxt/kit': 3.12.1
+      pathe: 1.1.2
+      pkg-types: 1.1.1
+      semver: 7.6.2
+    transitivePeerDependencies:
+      - rollup
+      - supports-color
+    dev: true
 
   /@nuxtjs/tailwindcss@6.12.0:
     resolution: {integrity: sha512-vXvEq8z177TQcx0tc10mw3O6T9WeN0iTL8hIKGDfidmr+HKReexJU01aPgHefFrCu4LJB70egYFYnywzB9lMyQ==}
@@ -5027,6 +5066,21 @@ packages:
     optionalDependencies:
       fsevents: 2.3.3
 
+  /nuxt-icon@0.6.10(nuxt@3.12.1)(vite@5.2.13)(vue@3.4.27):
+    resolution: {integrity: sha512-S9zHVA66ox4ZSpMWvCjqKZC4ZogC0s2z3vZs+M4D95YXGPEXwxDZu+insMKvkbe8+k7gvEmtTk0eq3KusKlxiw==}
+    dependencies:
+      '@iconify/collections': 1.0.430
+      '@iconify/vue': 4.1.2(vue@3.4.27)
+      '@nuxt/devtools-kit': 1.3.3(nuxt@3.12.1)(vite@5.2.13)
+      '@nuxt/kit': 3.12.1
+    transitivePeerDependencies:
+      - nuxt
+      - rollup
+      - supports-color
+      - vite
+      - vue
+    dev: true
+
   /nuxt@3.12.1(@opentelemetry/api@1.8.0)(@unocss/reset@0.61.0)(floating-vue@5.2.2)(sass@1.77.5)(unocss@0.61.0)(vite@5.2.13):
     resolution: {integrity: sha512-J9TO/b0KSTpKn4yzknIPYRhcJ+UwR/uFM2j0G2FPHAWKxo513ty7Y2unHejWfkuQBL6Ergw6o0E7XsIT059VQw==}
     engines: {node: ^14.18.0 || >=16.10.0}
@@ -6439,6 +6493,10 @@ packages:
       any-promise: 1.3.0
     dev: true
 
+  /three@0.121.0:
+    resolution: {integrity: sha512-12bkOFsSCsfHViuqDuxDccMBT8eJ/UH829P1J50f4mvI9pWNX4iurZq8Vbo+rs9rKkgrSBRq7ubE77dQ1Y1hzA==}
+    dev: false
+
   /tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
 
@@ -6811,6 +6869,10 @@ packages:
   /validate-npm-package-name@5.0.1:
     resolution: {integrity: sha512-OljLrQ9SQdOUqTaQxqL5dEfZWrXExyyWsozYlAWFawPVNuD83igl7uJD2RTkNMbniIYgt8l81eCJGIdQF7avLQ==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
+
+  /vanta@0.5.24:
+    resolution: {integrity: sha512-fvieEbHy1ZS23zrcX+topzqAgA4Uct1enngOEWLFBgs9TtOf6RDFOYatH7KSVdrABzQDMCQ5myQy+nTSZZwLzg==}
+    dev: false
 
   /vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}

@@ -16,7 +16,7 @@ const year = new Date().getFullYear()
 
 <template>
   <footer>
-    <div class="pt-20 pb-12 text-center text-xs">
+    <div class="pt-20 pb-12 text-center text-xs bg-[rgba(255,255,255,0.4)] dark:bg-[rgba(51,51,51,0.7)]">
       <img class="rotate360 m-auto h-8 w-8" src="~/assets/img/svg/sakura.svg" alt="" />
       <p class="mt-2 text-slate-600">Crafted with by Jiangwan</p>
       <p class="my-3 text-neutral-400">
