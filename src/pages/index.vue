@@ -1,10 +1,9 @@
 <template>
   <div class="contonter">
     <div  style="height: 100vh;" ref="vantaRef">
-      <h1 class="text-3xl font-bold underline">
+      <h1 class="text-3xl font-bold underline" style="padding-top: 96px;">
         我是首页我是首页
         hello world
-
         <n-button>
           深色
         </n-button>
@@ -22,7 +21,7 @@
 
 </template>
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref } from 'vue'
+// import { onMounted, onBeforeUnmount, ref,watch } from 'vue'
 import * as THREE from 'three'
 import CLOUDS from "vanta/dist/vanta.clouds.min"
 
@@ -30,8 +29,22 @@ import * as DynamicColor from '~/utils/color';		// 上面的代码形成的color
 
 const vantaRef = ref(null)
 let vantaEffect: any = null
+const colorMode = useColorMode()
 
-onMounted(() => {
+// watch 监听深色模式变化
+watch(
+  colorMode,
+  (newVal) => {
+    if (vantaEffect) {
+      vantaEffect.destroy()
+    }
+    init()
+  }
+)
+
+// 初始化
+function init(){
+  //监听深色模式变化 改变当前颜色
   const currSkyColor = DynamicColor.getSkyColor()
   const currCloudColor = DynamicColor.getCloudColor()
   const currSunColor = DynamicColor.getSunColor()
@@ -53,6 +66,11 @@ onMounted(() => {
     minHeight: 200.00,
     minWidth: 200.00
   })
+
+}
+
+onMounted(() => {
+init();
 })
 
 onBeforeUnmount(() => {
