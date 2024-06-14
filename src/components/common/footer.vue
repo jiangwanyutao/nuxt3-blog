@@ -32,4 +32,5 @@ const year = new Date().getFullYear()
       </p>
     </div>
   </footer>
+  <CommonBilibiliFooter></CommonBilibiliFooter>
 </template>

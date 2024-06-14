@@ -2,38 +2,34 @@
   <header
     class="fixed top-0 left-0 right-0 css-animation bg-[rgba(255,255,255,0.7)] px-4 transition-colors duration-700 dark:bg-[rgba(38,38,38,0.7)] "
     style="z-index: 9999;" :class="{ 'frosted-glass': !showMenu, 'bg-transparent': showMenu, }">
-    <div class="container mx-auto h-24" ref="el">
+    <div class="container flex justify-center items-center content-center mx-auto h-24" ref="el">
+      <CommonLogo></CommonLogo>
       <nav style="height: 90px; overflow: hidden;">
         <ul class="AppHeader flex h-24 justify-center items-center content-center"
           :class="{ 'is-showUp': isScrollUp, 'is-showdown': !isScrollUp }">
-          <span class="py-1.5">
-            logo
-          </span>
           <li v-for="( item, index ) in  blogStore.menuList " :key="index" :class="item.class">
             <NuxtLink :to="`${item.path}`" class="flex items-center">
               <Icon size="20" :name="item.icon" />
-              <span class="pl-1">{{ item.text }}</span>
+              <span class="pl-1" style="margin-right: 20px">{{ item.text }}</span>
             </NuxtLink>
           </li>
-          <span class="m-2">
-            <BaseDarkToggle />
-          </span>
-          <span class="m-2">登录</span>
         </ul>
         <ul class="h-24 flex justify-center items-center content-center"
           :class="{ 'is-showUp': isScrollUp, 'is-showdown': !isScrollUp, 'invisible': !isScrollUp }">
           <span class="py-1.5">
-            logo
+<!--            <CommonLogo></CommonLogo>-->
           </span>
           <li class="flex items-center">
             <span class="pl-1">当前文章标题</span>
           </li>
-          <span class="m-2">
-            <BaseDarkToggle />
-          </span>
-          <span class="m-2">登录</span>
         </ul>
       </nav>
+      <div class="flex justify-center items-center content-center" style="flex: 1">
+         <span class="m-2">
+            <BaseDarkToggle />
+          </span>
+        <span class="m-2">登录</span>
+      </div>
     </div>
   </header>
   <!-- <div class="h-24"></div> -->

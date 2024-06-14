@@ -38,9 +38,16 @@
 }
 
 @font-face {
-  font-family: LXGW;
-  /* src: url(https://sourcebucket.s3.bitiful.net/fonts/霞鹜文楷.woff2); */
-  src: url('~/assets/fonts/霞鹜文楷.woff2');
+  font-family: misans;
+   src: url(https://sourcebucket.s3.bitiful.net/fonts/霞鹜文楷.woff2);
+  /*src: url('~/assets/fonts/miSans-Normal.woff2');*/
+  font-display: swap;
+}
+
+@font-face {
+  font-family: kitty;
+  src: url('~/assets/fonts/kitty.ttf');
+  font-weight: bold;
   font-display: swap;
 }
 
@@ -48,7 +55,7 @@ body,
 html {
   cursor: url('~/assets/common/x1.cur'), auto;
   /* @apply font-mono; */
-  font-family: LXGW, 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Hiragino Sans GB',
+  font-family: misans, 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Hiragino Sans GB',
     'Heiti SC', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
 }
 
