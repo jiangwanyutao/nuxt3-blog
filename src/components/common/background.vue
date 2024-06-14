@@ -68,7 +68,7 @@ watch(
       if (vantaEffect) {
         vantaEffect.destroy()
       }
-      // init()
+      init()
     }
 )
 const birds = ref([])
