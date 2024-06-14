@@ -81,15 +81,15 @@ function init(){
     mouseControls: true,	// 是否允许动画和鼠标手势交互，想启用的话改成true
     touchControls: false,	// 触摸屏交互
     gyroControls: false,	// 加速度交互，应该是晃动手机的效果
-    speed: 0.5,		// 动画速度，不喜欢太快的动画，所以设得小一些
     minHeight: 200.00,
     minWidth: 200.00,
     scale: 2.00,
     scaleMobile: 1.00,
     backgroundAlpha: 0.00,
-    birdSize: 1.50,
-    wingSpan: 20.00,
-    quantity: 3.00,
+    birdSize: 1.50, // 鸟的大小
+    wingSpan: 20.00, // 翅膀展开的角度
+    quantity: 3.00, // 鸟的数量
+    speedLimit: 4.00, // 速度限制
   })
 }
 
