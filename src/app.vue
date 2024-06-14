@@ -6,14 +6,24 @@ import {
   darkTheme,
 } from 'naive-ui'
 import type { GlobalThemeOverrides } from 'naive-ui'
+// const loadings = ref(false);
+onMounted(() => {
+  if(process.client) {
+    setTimeout(() => {
+      show.value = false;
+    }, 1000)
+  }
+});
 /**
  * 挂载之前
  */
- onBeforeMount(() => {
+const show = ref(true);
+onBeforeMount(() => {
   // 解决 tailwind 覆盖问题, 在挂载之前设置 meta
   // const meta = document.createElement('meta')
   // meta.name = 'naive-ui-style'
   // document.head.appendChild(meta)
+
 })
 
 const color = useColorMode()
@@ -34,13 +44,12 @@ const lightThemeOverrides: GlobalThemeOverrides = {
 </script>
 
 <template>
-  <n-config-provider
-  ref="el"
-  inline-theme-disabled
-  preflight-style-disabled
-  :theme="color.value === 'dark' ? darkTheme : null"
-  :theme-overrides="color.value === 'dark' ? darkThemeOverrides : lightThemeOverrides">
-    <NuxtLayout>
+  <n-config-provider ref="el" inline-theme-disabled preflight-style-disabled
+    :theme="color.value === 'dark' ? darkTheme : null"
+    :theme-overrides="color.value === 'dark' ? darkThemeOverrides : lightThemeOverrides">
+  <Loading :hidden="!show">
+  </Loading>
+    <NuxtLayout :hidden="show">
       <NuxtPage />
     </NuxtLayout>
     <!-- 回到顶部 -->

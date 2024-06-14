@@ -70,7 +70,12 @@ function init(){
 }
 
 onMounted(() => {
-init();
+  if(process.client){
+    setTimeout(() => {
+      console.log('?????')
+    init()
+    }, 1000);
+  }
 })
 
 onBeforeUnmount(() => {
