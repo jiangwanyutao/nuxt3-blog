@@ -1,5 +1,15 @@
 # Nuxt 3 Minimal Starter
 
+```
+1.头部毛玻璃效果
+2.仿知乎状态栏滑动
+3.首页随时间切换云彩
+4.深色模式
+5.首屏加载loading
+
+
+```
+
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
 ## Setup
