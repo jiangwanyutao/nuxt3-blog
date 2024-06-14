@@ -1,7 +1,7 @@
 <template>
-  <div class="bg">
-  <div  style="height: 100vh;" ref="vantaRef" class="bg">
-    <div  >
+  <div  style="height: 100vh;" ref="vantaRef" class="bg"></div>
+  <div  style="height: 100vh;" class="bg">
+    <div  class="bg birds" ref="birds">
       <div id="headertop" class="relative h-screen">
         <figure
             class="headertop-bg relative h-full w-full animate-[home-bg_1.5s] bg-cover bg-center bg-no-repeat dark:bg-neutral-800 md:bg-fixed"
@@ -51,12 +51,12 @@
     </div>
     </div>
   </div>
-  </div>
 </template>
 <script setup lang="ts">
 import * as THREE from 'three'
 import BIRDS from "vanta/dist/vanta.birds.min"
 import * as DynamicColor from '~/utils/color';
+import {ref} from "vue";
 const vantaRef = ref(null)
 let vantaEffect: any = null
 const colorMode = useColorMode()
@@ -71,10 +71,9 @@ watch(
       // init()
     }
 )
-
+const birds = ref([])
 // 初始化
 function init(){
-  const color = new THREE.Vector4(0, 0, 0, 0);
   vantaEffect = BIRDS({
     el: vantaRef.value,
     THREE: THREE,	// 也可以换成 p5，但我没试过
@@ -84,17 +83,29 @@ function init(){
     speed: 0.5,		// 动画速度，不喜欢太快的动画，所以设得小一些
     minHeight: 200.00,
     minWidth: 200.00,
-    scale: 1.00,
+    scale: 2.00,
     scaleMobile: 1.00,
-    backgroundColor: 0xffffff,
+    backgroundAlpha: 0.00,
+    birdSize: 1.50,
+    wingSpan: 20.00,
+    quantity: 3.00,
   })
+  //ref获取birds dom 设置200毫秒后设置样式
+  setTimeout(() => {
+    birds.value = document.querySelectorAll('.birds')
+    birds.value.forEach((item: any) => {
+      item.style.setProperty('opacity', `1`)
+      item.style.setProperty('filter', `0px`)
+    })
+  }, 200);
+
 
 }
 
 onMounted(() => {
   if(process.client){
     setTimeout(() => {
-      // init()
+      init()
     }, 1000);
   }
 })
@@ -107,7 +118,7 @@ onBeforeUnmount(() => {
 </script>
 <style scoped lang="scss">
 .bg{
-  background-image: url("https://cdn.qiniu.jwyt.cloud/common/298f491fc98a464b9b434564c42bf4aa.jpg");
+  background: url("https://cdn.qiniu.jwyt.cloud/common/298f491fc98a464b9b434564c42bf4aa.jpg") no-repeat center center fixed;
 }
 
 </style>
