@@ -27,7 +27,7 @@ const year = new Date().getFullYear()
       <p class="beian text-neutral-400">
         <span class="mr-1">© {{ year }} Jiangwan</span>
         <NuxtLink to="https://beian.miit.gov.cn" target="_blank">
-          {{ 12312321312 }}
+          豫ICP备123456号-1
         </NuxtLink>
       </p>
     </div>

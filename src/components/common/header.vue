@@ -2,10 +2,10 @@
   <header
     class="fixed top-0 left-0 right-0 css-animation bg-[rgba(255,255,255,0.7)] px-4 transition-colors duration-700 dark:bg-[rgba(38,38,38,0.7)] "
     style="z-index: 9999;" :class="{ 'frosted-glass': !showMenu, 'bg-transparent': showMenu, }">
-    <div class="container flex justify-center items-center content-center mx-auto h-24" ref="el">
+    <div class="container flex justify-center items-center content-center mx-auto h-20" ref="el">
       <CommonLogo></CommonLogo>
       <nav style="height: 90px; overflow: hidden;">
-        <ul class="AppHeader flex h-24 justify-center items-center content-center"
+        <ul class="AppHeader flex h-20 justify-center items-center content-center"
           :class="{ 'is-showUp': isScrollUp, 'is-showdown': !isScrollUp }">
           <li v-for="( item, index ) in  blogStore.menuList " :key="index" :class="item.class">
             <NuxtLink :to="`${item.path}`" class="flex items-center">
@@ -14,13 +14,13 @@
             </NuxtLink>
           </li>
         </ul>
-        <ul class="h-24 flex justify-center items-center content-center"
+        <ul class="h-20 flex justify-center items-center content-center"
           :class="{ 'is-showUp': isScrollUp, 'is-showdown': !isScrollUp, 'invisible': !isScrollUp }">
           <span class="py-1.5">
 <!--            <CommonLogo></CommonLogo>-->
           </span>
           <li class="flex items-center">
-            <span class="pl-1">当前文章标题</span>
+            <span class="pl-1">江晚正愁余 旅途总有一天会迎来终点,不必匆忙</span>
           </li>
         </ul>
       </nav>
@@ -32,7 +32,7 @@
       </div>
     </div>
   </header>
-  <!-- <div class="h-24"></div> -->
+  <!-- <div class="h-20"></div> -->
 </template>
 
 <script setup lang="ts">

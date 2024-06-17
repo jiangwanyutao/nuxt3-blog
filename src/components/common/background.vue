@@ -1,7 +1,7 @@
 <template>
   <div class="containers relative">
 <!--    首屏100动画-->
-  <div  style="height: 100vh;" ref="vantaRef" class="bg">
+  <div  style="height: 100vh;" ref="vantaRef" class="bg saturate-100">
         <div id="headertop" class="relative h-screen">
           <figure
               class="headertop-bg relative h-full w-full animate-[home-bg_1.5s] bg-cover bg-center bg-no-repeat dark:bg-neutral-800 md:bg-fixed"
@@ -10,9 +10,10 @@
                 class="absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-center transition-[top] duration-700"
             >
               <h1
-                  class="mb-5  cursor-pointer   text-7xl font-bold"
+                  class="mb-5  cursor-pointer text-7xl font-bold glitch"
+                  data-text="Hi, 江晚"
               >
-                江晚
+                  Hi, 江晚
               </h1>
               <div
                   class="centerbg-info rounded-lg bg-[rgba(0,0,0,.5)] p-3.5 max-md:w-[350px] md:min-w-[500px]"
@@ -49,6 +50,23 @@
             </div>
           </figure>
         </div>
+    <div  class="down-arrow animate-bounce" @click="headertopdown">
+      <svg id="more-arrows">
+        <polygon
+            class="arrow-top"
+            points="37.6,27.9 1.8,1.3 3.3,0 37.6,25.3 71.9,0 73.7,1.3"
+        />
+        <polygon
+            class="arrow-middle"
+            points="37.6,45.8 0.8,18.7 4.4,16.4 37.6,41.2 71.2,16.4 74.5,18.7"
+        />
+        <polygon
+            class="arrow-bottom"
+            points="37.6,64 0,36.1 5.1,32.8 37.6,56.8 70.4,32.8 75.5,36.1"
+        />
+      </svg>
+    </div>
+    <CommonWave></CommonWave>
   </div>
 
   </div>
@@ -101,6 +119,15 @@ onMounted(() => {
   }
 })
 
+const headertopdown = () => {
+  console.log('点击了')
+  //向下移动100vh
+  window.scrollTo({
+    top: window.innerHeight,
+    behavior: "smooth",
+  });
+}
+
 onBeforeUnmount(() => {
   if (vantaEffect) {
     vantaEffect.destroy()
@@ -110,6 +137,199 @@ onBeforeUnmount(() => {
 <style scoped lang="scss">
 .bg{
   background: url("https://cdn.qiniu.jwyt.cloud/common/298f491fc98a464b9b434564c42bf4aa.jpg") no-repeat center center fixed;
+}
+
+.down-arrow {
+  position: absolute;
+  top: 90%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 99;
+
+  /* Arrow & Hover Animation */
+  #more-arrows {
+    width: 80px;
+    height: 65px;
+    transform: scale(0.5);
+  }
+
+  @keyframes arrow-animation {
+    0% {
+      fill: #d9dadb;
+      opacity: 0.5;
+    }
+
+    33.33% {
+      fill: #d9dadb;
+      opacity: 0.75;
+    }
+
+    66.66% {
+      fill: #d9dadb;
+      opacity: 1;
+    }
+
+    100% {
+      fill: #d9dadb;
+      opacity: 0.75;
+    }
+  }
+
+  polygon.arrow-top {
+    animation: arrow-animation 1s linear infinite;
+  }
+
+  polygon.arrow-middle {
+    animation: arrow-animation 1s linear infinite 1.3s;
+  }
+
+  polygon.arrow-bottom {
+    animation: arrow-animation 1s linear infinite 2.5s;
+  }
+}
+
+.glitch {
+  position: relative;
+  color: #fff;
+  mix-blend-mode: lighten
+}
+
+.glitch:before,.glitch:after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background: rgba(0,0,0,0);
+  clip: rect(0,0,0,0)
+}
+
+.glitch:before {
+  left: -1px;
+  text-shadow: 1px 0 #ff3f1a
+}
+
+.glitch:after {
+  left: 1px;
+  text-shadow: -1px 0 #00a7e0
+}
+
+.glitch:hover:before {
+  text-shadow: 5px 0 #ff3f1a;
+  animation: glitch-loop-1 .8s infinite ease-in-out alternate-reverse;
+}
+
+.glitch:hover:after {
+  text-shadow: -5px 0 #00a7e0;
+  animation: glitch-loop-2 .8s infinite ease-in-out alternate-reverse
+}
+
+@-webkit-keyframes glitch-loop-1 {
+  0% {
+    clip: rect(36px,9999px,9px,0)
+  }
+
+  25% {
+    clip: rect(25px,9999px,99px,0)
+  }
+
+  50% {
+    clip: rect(50px,9999px,102px,0)
+  }
+
+  75% {
+    clip: rect(30px,9999px,92px,0)
+  }
+
+  100% {
+    clip: rect(91px,9999px,98px,0)
+  }
+}
+
+@keyframes glitch-loop-1 {
+  0% {
+    clip: rect(36px,9999px,9px,0)
+  }
+
+  25% {
+    clip: rect(25px,9999px,99px,0)
+  }
+
+  50% {
+    clip: rect(50px,9999px,102px,0)
+  }
+
+  75% {
+    clip: rect(30px,9999px,92px,0)
+  }
+
+  100% {
+    clip: rect(91px,9999px,98px,0)
+  }
+}
+
+@-webkit-keyframes glitch-loop-2 {
+  0% {
+    top: -1px;
+    left: 1px;
+    clip: rect(65px,9999px,119px,0)
+  }
+
+  25% {
+    top: -6px;
+    left: 4px;
+    clip: rect(79px,9999px,19px,0)
+  }
+
+  50% {
+    top: -3px;
+    left: 2px;
+    clip: rect(68px,9999px,11px,0)
+  }
+
+  75% {
+    top: 0;
+    left: -4px;
+    clip: rect(95px,9999px,53px,0)
+  }
+
+  100% {
+    top: -1px;
+    left: -1px;
+    clip: rect(31px,9999px,149px,0)
+  }
+}
+
+@keyframes glitch-loop-2 {
+  0% {
+    top: -1px;
+    left: 1px;
+    clip: rect(65px,9999px,119px,0)
+  }
+
+  25% {
+    top: -6px;
+    left: 4px;
+    clip: rect(79px,9999px,19px,0)
+  }
+
+  50% {
+    top: -3px;
+    left: 2px;
+    clip: rect(68px,9999px,11px,0)
+  }
+
+  75% {
+    top: 0;
+    left: -4px;
+    clip: rect(95px,9999px,53px,0)
+  }
+
+  100% {
+    top: -1px;
+    left: -1px;
+    clip: rect(31px,9999px,149px,0)
+  }
 }
 
 </style>

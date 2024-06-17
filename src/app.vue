@@ -51,6 +51,7 @@ const lightThemeOverrides: GlobalThemeOverrides = {
   </Loading>
     <NuxtLayout :hidden="show">
       <NuxtPage />
+      <CommonSideEdge></CommonSideEdge>
     </NuxtLayout>
     <!-- 回到顶部 -->
   </n-config-provider>
