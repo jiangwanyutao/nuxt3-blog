@@ -20,7 +20,7 @@ const year = new Date().getFullYear()
       <img class="rotate360 m-auto h-8 w-8" src="~/assets/img/svg/sakura.svg" alt="" />
       <p class="mt-2 text-slate-600">Crafted with by Jiangwan</p>
       <p class="my-3 text-neutral-400">
-        <span> 小破站居然运行了 {{ day }} 天</span>
+        <span> 小破站居然运行了 9999 天</span>
         <Icon class="heart mx-1 pb-1" name="fxemoji:beating-heart" size="22" />
         <span>访问量 {{ blogStore.viewsCount || '--' }}</span>
       </p>

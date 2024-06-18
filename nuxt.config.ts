@@ -18,7 +18,8 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@vueuse/nuxt',
     'nuxt-icon',
-    '@nuxtjs/color-mode'
+    '@nuxtjs/color-mode',
+    "@nuxt/image"
   ],
   colorMode: {
     classSuffix: '', // 用于添加到 HTML 或组件的类名后缀
@@ -33,6 +34,16 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css','~/assets/css/animation.css'],
   script:[],
   plugins: [],
+  image: {
+    presets: {
+      cover: {
+        modifiers: {
+          fit: 'cover',
+          format: 'jpg,png,webp,avif',
+        },
+      },
+    },
+  },
   postcss: {
     plugins: {
       tailwindcss: {},
@@ -54,7 +65,6 @@ export default defineNuxtConfig({
   vite: {
     build:{
       plugins: process.env.NODE_ENV === 'production'
-
     },
     plugins: [
       Components({

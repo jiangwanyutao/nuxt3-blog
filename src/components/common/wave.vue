@@ -1,5 +1,8 @@
 <template>
-  <div id="banner_wave_1"></div><div id="banner_wave_2"></div>
+  <div class="wave">
+  <div id="banner_wave_1"></div>
+  <div id="banner_wave_2"></div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -7,6 +10,10 @@
 </script>
 
 <style scoped>
+.wave{
+  width: 100%;
+  //overflow: hidden;
+}
 #banner_wave_1 {
   width: auto;
   height: 55px;
@@ -14,13 +21,13 @@
   _filter: alpha(opacity=80);
   position: absolute;
   bottom: 0;
-  width: 400%;
-  left: -236px;
+  width: 100%;
+  left: 0px;
   z-index: 5;
   opacity: 1;
   transiton-property: opacity, bottom;
   transition-duration: .4s, .4s;
-  animation-name: move2;
+  animation-name: move1;
   animation-duration: 240s;
   animation-fill-mode: backwards;
   animation-timing-function: linear;
@@ -34,13 +41,13 @@
   _filter: alpha(opacity=80);
   position: absolute;
   bottom: 0;
-  width: 400%;
+  width: 100%;
   left: 0;
   z-index: 4;
   opacity: 1;
   transiton-property: opacity, bottom;
   transition-duration: .4s, .4s;
-  animation-name: move2;
+  animation-name: move1;
   animation-duration: 160s;
   animation-fill-mode: backwards;
   animation-timing-function: linear;
@@ -52,7 +59,7 @@
 
 @keyframes move1 {
   100% {
-    background-position: 100% 0;
+    background-position: -2000% 0;
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
   <div class="containers relative">
 <!--    首屏100动画-->
-  <div  style="height: 100vh;" ref="vantaRef" class="bg saturate-100">
+  <div  style="width:100%;height: 100vh;" ref="vantaRef" class="bg saturate-100">
         <div id="headertop" class="relative h-screen">
           <figure
               class="headertop-bg relative h-full w-full animate-[home-bg_1.5s] bg-cover bg-center bg-no-repeat dark:bg-neutral-800 md:bg-fixed"
@@ -31,7 +31,7 @@
                       @click="handleLeft"
                   />
                   <nuxt-link  target="_blank" :to="gitHub">
-                    <Icon name="grommet-icons:github" class="mx-1.5 cursor-pointer" />
+                    <Icon name="tdesign:logo-github-filled" class="mx-1.5 cursor-pointer" />
                   </nuxt-link>
                   <nuxt-link  target="_blank" :to="gitee">
                     <Icon name="simple-icons:gitee" class="mx-1.5 cursor-pointer" color="#be3020" />
@@ -50,22 +50,9 @@
             </div>
           </figure>
         </div>
-    <div  class="down-arrow animate-bounce" @click="headertopdown">
-      <svg id="more-arrows">
-        <polygon
-            class="arrow-top"
-            points="37.6,27.9 1.8,1.3 3.3,0 37.6,25.3 71.9,0 73.7,1.3"
-        />
-        <polygon
-            class="arrow-middle"
-            points="37.6,45.8 0.8,18.7 4.4,16.4 37.6,41.2 71.2,16.4 74.5,18.7"
-        />
-        <polygon
-            class="arrow-bottom"
-            points="37.6,64 0,36.1 5.1,32.8 37.6,56.8 70.4,32.8 75.5,36.1"
-        />
-      </svg>
-    </div>
+<!--向下箭头-->
+    <CommonDown></CommonDown>
+<!--海浪-->
     <CommonWave></CommonWave>
   </div>
 
@@ -119,14 +106,7 @@ onMounted(() => {
   }
 })
 
-const headertopdown = () => {
-  console.log('点击了')
-  //向下移动100vh
-  window.scrollTo({
-    top: window.innerHeight,
-    behavior: "smooth",
-  });
-}
+
 
 onBeforeUnmount(() => {
   if (vantaEffect) {
@@ -136,58 +116,11 @@ onBeforeUnmount(() => {
 </script>
 <style scoped lang="scss">
 .bg{
-  background: url("https://cdn.qiniu.jwyt.cloud/common/298f491fc98a464b9b434564c42bf4aa.jpg") no-repeat center center fixed;
+  background: url("https://cdn.qiniu.jwyt.cloud/common/298f491fc98a464b9b434564c42bf4aa.jpg") no-repeat center center;
+  background-size: cover;
 }
 
-.down-arrow {
-  position: absolute;
-  top: 90%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  z-index: 99;
 
-  /* Arrow & Hover Animation */
-  #more-arrows {
-    width: 80px;
-    height: 65px;
-    transform: scale(0.5);
-  }
-
-  @keyframes arrow-animation {
-    0% {
-      fill: #d9dadb;
-      opacity: 0.5;
-    }
-
-    33.33% {
-      fill: #d9dadb;
-      opacity: 0.75;
-    }
-
-    66.66% {
-      fill: #d9dadb;
-      opacity: 1;
-    }
-
-    100% {
-      fill: #d9dadb;
-      opacity: 0.75;
-    }
-  }
-
-  polygon.arrow-top {
-    animation: arrow-animation 1s linear infinite;
-  }
-
-  polygon.arrow-middle {
-    animation: arrow-animation 1s linear infinite 1.3s;
-  }
-
-  polygon.arrow-bottom {
-    animation: arrow-animation 1s linear infinite 2.5s;
-  }
-}
 
 .glitch {
   position: relative;
