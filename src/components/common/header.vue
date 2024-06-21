@@ -4,7 +4,7 @@
     style="z-index: 9999;" :class="{ 'frosted-glass': !showMenu, 'bg-transparent': showMenu, }">
     <div class="container flex justify-center items-center content-center mx-auto h-20" ref="el">
       <CommonLogo></CommonLogo>
-      <nav style="height: 90px; overflow: hidden;">
+      <nav style="height: 90px; overflow: hidden;" >
         <ul class="AppHeader flex h-20 justify-center items-center content-center"
           :class="{ 'is-showUp': isScrollUp, 'is-showdown': !isScrollUp }">
           <li v-for="( item, index ) in  blogStore.menuList " :key="index" :class="item.class">

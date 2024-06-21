@@ -4,6 +4,9 @@ import {NaiveUiResolver} from 'unplugin-vue-components/resolvers';
 export default defineNuxtConfig({
   //资源放入src目录
   srcDir: 'src/',
+  app: {
+    pageTransition: { name: 'page', mode: 'out-in' }
+  },
   runtimeConfig: {
     // apiSecret 只能在服务器端上访问
     apiSecret: '',
