@@ -18,44 +18,105 @@ export const useBlogStore = defineStore('blog', () => {
       icon: 'noto:house-with-garden',
       text: '首页',
       path: '/',
-      class: 'menu-item-home'
+      class: 'menu-item-home',
+      children: []
     },
     {
       icon: 'flat-color-icons:calendar',
       text: '归档',
       path: '/archives',
-      class: 'menu-item-archives'
+      class: 'menu-item-archives',
+      children: [
+        {
+          icon: 'flat-color-icons:calendar',
+          text: '树洞1',
+          path: '/archives',
+          class: 'menu-item-archives',
+        },
+        {
+          icon: 'flat-color-icons:calendar',
+          text: '树洞1',
+          path: '/archives',
+          class: 'menu-item-archives',
+        },
+        {
+          icon: 'flat-color-icons:calendar',
+          text: '树洞1',
+          path: '/archives',
+          class: 'menu-item-archives',
+        },
+      ]
     },
     {
       icon: 'icon-park:category-management',
       text: '分类',
       path: '/category',
-      class: 'menu-item-category'
+      class: 'menu-item-category',
+      children: [
+        {
+          icon: 'flat-color-icons:calendar',
+          text: '树洞2',
+          path: '/archives',
+          class: 'menu-item-archives',
+        },
+        {
+          icon: 'flat-color-icons:calendar',
+          text: '树洞2',
+          path: '/archives',
+          class: 'menu-item-archives',
+        },
+        {
+          icon: 'flat-color-icons:calendar',
+          text: '树洞2',
+          path: '/archives',
+          class: 'menu-item-archives',
+        },
+      ]
     },
     {
       icon: 'icon-park:comments',
       text: '说说',
       path: '/talk',
-      class: 'menu-item-talk'
+      class: 'menu-item-talk',
+      children: [
+        {
+          icon: 'flat-color-icons:calendar',
+          text: '树洞3',
+          path: '/archives',
+          class: 'menu-item-archives',
+        },
+        {
+          icon: 'flat-color-icons:calendar',
+          text: '树洞3',
+          path: '/archives',
+          class: 'menu-item-archives',
+        },
+        {
+          icon: 'flat-color-icons:calendar',
+          text: '树洞3',
+          path: '/archives',
+          class: 'menu-item-archives',
+        },
+      ]
     },
-    {
-      icon: 'icon-park:message',
-      text: '留言',
-      path: '/message',
-      class: 'menu-item-message'
-    },
-    {
-      icon: 'icon-park:friends-circle',
-      text: '友链',
-      path: '/link',
-      class: 'menu-item-friends'
-    },
-    {
-      icon: 'flat-color-icons:gallery',
-      text: '图库',
-      path: '/album',
-      class: 'menu-item-album'
-    }
+    // {
+    //   icon: 'icon-park:message',
+    //   text: '留言',
+    //   path: '/message',
+    //   class: 'menu-item-message'
+    // },
+    // {
+    //   icon: 'icon-park:friends-circle',
+    //   text: '友链',
+    //   path: '/link',
+    //   class: 'menu-item-friends'
+    // },
+    // {
+    //   icon: 'flat-color-icons:gallery',
+    //   text: '图库',
+    //   path: '/album',
+    //   class: 'menu-item-album'
+    // }
   ])
   // banner
   const bannerList = ref([

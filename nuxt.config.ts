@@ -2,6 +2,9 @@
 import Components from 'unplugin-vue-components/vite';
 import {NaiveUiResolver} from 'unplugin-vue-components/resolvers';
 export default defineNuxtConfig({
+  devServer: {
+    port: 3001,
+  },
   //资源放入src目录
   srcDir: 'src/',
   app: {
