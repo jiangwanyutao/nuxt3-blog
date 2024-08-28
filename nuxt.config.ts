@@ -25,7 +25,7 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     'nuxt-icon',
     '@nuxtjs/color-mode',
-    "@nuxt/image"
+    "@nuxt/image",
   ],
   colorMode: {
     classSuffix: '', // 用于添加到 HTML 或组件的类名后缀

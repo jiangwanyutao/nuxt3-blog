@@ -17,7 +17,8 @@
     "three": "0.121.0",
     "vanta": "0.5.24",
     "vue": "3.4.27",
-    "vue-router": "4.3.3"
+    "vue-router": "4.3.3",
+    "typed.js": "2.1.0"
   },
   "devDependencies": {
     "@css-render/vue3-ssr": "0.15.14",

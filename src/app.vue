@@ -1,58 +1,41 @@
 <script setup lang="ts">
-import {
-  NMessageProvider,
-  NBackTop,
-  NConfigProvider,
-  darkTheme,
-} from "naive-ui";
-import type { GlobalThemeOverrides } from "naive-ui";
-// const loadings = ref(false);
-onMounted(() => {
-  // if(process.client) {
-  //   setTimeout(() => {
-  //     show.value = false;
-  //   }, 1000)
-  // }
-});
+import { NMessageProvider, NBackTop, NConfigProvider, darkTheme } from 'naive-ui'
+import type { GlobalThemeOverrides } from 'naive-ui'
+
 /**
  * 挂载之前
  */
-const show = ref(true);
+const show = ref(true)
 onBeforeMount(() => {
   // 解决 tailwind 覆盖问题, 在挂载之前设置 meta
   // const meta = document.createElement('meta')
   // meta.name = 'naive-ui-style'
   // document.head.appendChild(meta)
-});
+})
 
-const color = useColorMode();
+const color = useColorMode()
 const darkThemeOverrides: GlobalThemeOverrides = {
   common: {
     // primaryColor: '#409eff',
     // primaryColorHover: '#79bbff'
-    primaryColor: "#6366f1",
-    primaryColorHover: "#818cf8",
-  },
-};
+    primaryColor: '#6366f1',
+    primaryColorHover: '#818cf8'
+  }
+}
 const lightThemeOverrides: GlobalThemeOverrides = {
   common: {
-    primaryColor: "#f97316",
-    primaryColorHover: "#fdba74",
-  },
-};
-
-const nuxtApp = useNuxtApp();
+    primaryColor: '#f97316',
+    primaryColorHover: '#fdba74'
+  }
+}
 
 // 是否首次加载
-const isFullLoading = ref(true);
-
-nuxtApp.hook("page:start", () => {
-  isFullLoading.value = true;
-});
-
-nuxtApp.hook("page:finish", () => {
-  isFullLoading.value = false;
-});
+const isFullLoading = ref(true)
+onMounted(() => {
+  setTimeout(() => {
+    isFullLoading.value = false
+  }, 1000)
+})
 </script>
 
 <template>
@@ -61,17 +44,16 @@ nuxtApp.hook("page:finish", () => {
     inline-theme-disabled
     preflight-style-disabled
     :theme="color.value === 'dark' ? darkTheme : null"
-    :theme-overrides="
-      color.value === 'dark' ? darkThemeOverrides : lightThemeOverrides
-    "
+    :theme-overrides="color.value === 'dark' ? darkThemeOverrides : lightThemeOverrides"
   >
-    <Loading v-if="isFullLoading"> </Loading>
-    <NuxtLayout>
+    <Loading v-if="isFullLoading"></Loading>
+    <NuxtLayout v-else>
       <!-- 在页面导航之间显示一个进度条 -->
       <NuxtLoadingIndicator />
       <NuxtPage />
       <CommonSideEdge></CommonSideEdge>
     </NuxtLayout>
+
     <!-- 回到顶部 -->
   </n-config-provider>
 </template>
