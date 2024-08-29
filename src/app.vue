@@ -46,14 +46,15 @@ onMounted(() => {
     :theme="color.value === 'dark' ? darkTheme : null"
     :theme-overrides="color.value === 'dark' ? darkThemeOverrides : lightThemeOverrides"
   >
-    <Loading v-if="isFullLoading"></Loading>
-    <NuxtLayout v-else>
-      <!-- 在页面导航之间显示一个进度条 -->
-      <NuxtLoadingIndicator />
-      <NuxtPage />
-      <CommonSideEdge></CommonSideEdge>
-    </NuxtLayout>
-
+    <n-notification-provider :max="3">
+      <Loading v-if="isFullLoading"></Loading>
+      <NuxtLayout v-else>
+        <!-- 在页面导航之间显示一个进度条 -->
+        <NuxtLoadingIndicator />
+        <NuxtPage />
+        <CommonSideEdge></CommonSideEdge>
+      </NuxtLayout>
+    </n-notification-provider>
     <!-- 回到顶部 -->
   </n-config-provider>
 </template>

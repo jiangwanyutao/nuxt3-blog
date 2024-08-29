@@ -1,9 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import Components from 'unplugin-vue-components/vite';
-import {NaiveUiResolver} from 'unplugin-vue-components/resolvers';
+import Components from 'unplugin-vue-components/vite'
+import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 export default defineNuxtConfig({
   devServer: {
-    port: 3001,
+    port: 3001
   },
   //资源放入src目录
   srcDir: 'src/',
@@ -18,70 +18,64 @@ export default defineNuxtConfig({
   },
   devtools: { enabled: true },
   //插件
-  modules:[
+  modules: [
     '@pinia/nuxt',
     '@vueuse/nuxt',
     '@nuxtjs/tailwindcss',
     '@vueuse/nuxt',
     'nuxt-icon',
     '@nuxtjs/color-mode',
-    "@nuxt/image",
+    '@nuxt/image'
   ],
   colorMode: {
-    classSuffix: '', // 用于添加到 HTML 或组件的类名后缀
+    classSuffix: '' // 用于添加到 HTML 或组件的类名后缀
   },
   imports: {
     // 自动导入 store 模块
-    dirs: ['stores','api']
+    dirs: ['stores', 'api']
   },
   pinia: {
     autoImports: ['defineStore', 'acceptHMRUpdate']
   },
-  css: ['~/assets/css/main.css','~/assets/css/animation.css'],
-  script:[],
+  css: ['~/assets/css/main.css', '~/assets/css/animation.css'],
+  script: [],
   plugins: [],
   image: {
     presets: {
       cover: {
         modifiers: {
           fit: 'cover',
-          format: 'jpg,png,webp,avif',
-        },
-      },
-    },
+          format: 'jpg,png,webp,avif'
+        }
+      }
+    }
   },
   postcss: {
     plugins: {
       tailwindcss: {},
-      autoprefixer: {},
-    },
+      autoprefixer: {}
+    }
   },
   build: {
     transpile:
       process.env.NODE_ENV === 'production'
-      ? [
-        'naive-ui',
-        'vueuc',
-        '@css-render/vue3-ssr',
-        '@juggle/resize-observer',
-        'fsevents'
-      ]
-      : ['@juggle/resize-observer']
+        ? ['naive-ui', 'vueuc', '@css-render/vue3-ssr', '@juggle/resize-observer', 'fsevents']
+        : ['@juggle/resize-observer']
   },
   vite: {
-    build:{
+    build: {
       plugins: process.env.NODE_ENV === 'production'
     },
     plugins: [
       Components({
-        resolvers: [NaiveUiResolver()], // Automatically register all components in the `components` directory
-      }),
+        resolvers: [NaiveUiResolver()] // Automatically register all components in the `components` directory
+      })
     ],
     optimizeDeps: {
       include:
         process.env.NODE_ENV === 'development'
-        ? ['naive-ui', 'vueuc', 'date-fns-tz/esm/formatInTimeZone']
-        : []
+          ? ['naive-ui', 'vueuc', 'date-fns-tz/esm/formatInTimeZone']
+          : []
     },
     css: {
       preprocessorOptions: {

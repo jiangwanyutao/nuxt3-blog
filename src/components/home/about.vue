@@ -1,6 +1,6 @@
 <template>
   <div class="blog_main_one_item">
-    <h2 class="blog_main_one_title">心中有光<br>前路无畏</h2>
+    <h2 class="blog_main_one_title">心中有光<br>前路无畏。</h2>
     <div class="tags-group-all">
       <div class="tags-group-container">
         <div class="tags-group-wrapper" v-for="index in 2" :key="index">
@@ -67,7 +67,7 @@ const router = useRouter();
 <style  scoped>
 .blog_main_one_item {
   height: 100%;
-  width: 49%;
+  width: 59%;
   position: relative;
   overflow: hidden;
   background-color: #fff;

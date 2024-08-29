@@ -1,11 +1,17 @@
 import { createDiscreteApi } from 'naive-ui'
 
-const { message, dialog, loadingBar } = createDiscreteApi(['message', 'dialog', 'loadingBar'])
+const { message, dialog, loadingBar, notification } = createDiscreteApi([
+  'message',
+  'dialog',
+  'loadingBar',
+  'notification'
+])
 
 const utilMsg = {
   $message: message,
   $dialog: dialog,
-  $loadingBar: loadingBar
+  $loadingBar: loadingBar,
+  $notification: notification
 }
 
 export default utilMsg

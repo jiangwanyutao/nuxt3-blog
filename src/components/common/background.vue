@@ -122,8 +122,8 @@ function init() {
 }
 
 onMounted(() => {
-  init()
   nextTick(() => {
+    init()
     initTyped()
   })
 })
