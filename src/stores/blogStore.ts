@@ -16,10 +16,47 @@ export const useBlogStore = defineStore('blog', () => {
   const menuList = ref([
     {
       icon: 'noto:house-with-garden',
-      text: '首页',
+      text: '开始浏览',
       path: '/',
       class: 'menu-item-home',
-      children: []
+      children: [
+        {
+          icon: 'noto:house-with-garden',
+          text: '网站',
+          children: [
+            {
+              icon: 'noto:house-with-garden',
+              path: '/about',
+              text: '关于'
+            },
+            {
+              icon: 'noto:house-with-garden',
+              path: '/',
+              text: '博客'
+            },
+            {
+              icon: 'noto:house-with-garden',
+              path: 'https://jwyt.cloud',
+              text: '云盘主页'
+            }
+          ]
+        },
+        {
+          icon: 'noto:house-with-garden',
+          text: '项目',
+          children: [
+            {
+              icon: 'noto:house-with-garden',
+              path: 'https://chat.jwyt.cloud',
+              text: 'ChatGpt'
+            },
+            {
+              icon: 'noto:house-with-garden',
+              text: '网站主题项目'
+            }
+          ]
+        }
+      ]
     },
     {
       icon: 'flat-color-icons:calendar',
@@ -31,20 +68,20 @@ export const useBlogStore = defineStore('blog', () => {
           icon: 'flat-color-icons:calendar',
           text: '树洞1',
           path: '/archives',
-          class: 'menu-item-archives',
+          class: 'menu-item-archives'
         },
         {
           icon: 'flat-color-icons:calendar',
           text: '树洞1',
           path: '/archives',
-          class: 'menu-item-archives',
+          class: 'menu-item-archives'
         },
         {
           icon: 'flat-color-icons:calendar',
           text: '树洞1',
           path: '/archives',
-          class: 'menu-item-archives',
-        },
+          class: 'menu-item-archives'
+        }
       ]
     },
     {
@@ -57,20 +94,20 @@ export const useBlogStore = defineStore('blog', () => {
           icon: 'flat-color-icons:calendar',
           text: '树洞2',
           path: '/archives',
-          class: 'menu-item-archives',
+          class: 'menu-item-archives'
         },
         {
           icon: 'flat-color-icons:calendar',
           text: '树洞2',
           path: '/archives',
-          class: 'menu-item-archives',
+          class: 'menu-item-archives'
         },
         {
           icon: 'flat-color-icons:calendar',
           text: '树洞2',
           path: '/archives',
-          class: 'menu-item-archives',
-        },
+          class: 'menu-item-archives'
+        }
       ]
     },
     {
@@ -83,22 +120,22 @@ export const useBlogStore = defineStore('blog', () => {
           icon: 'flat-color-icons:calendar',
           text: '树洞3',
           path: '/archives',
-          class: 'menu-item-archives',
+          class: 'menu-item-archives'
         },
         {
           icon: 'flat-color-icons:calendar',
           text: '树洞3',
           path: '/archives',
-          class: 'menu-item-archives',
+          class: 'menu-item-archives'
         },
         {
           icon: 'flat-color-icons:calendar',
           text: '树洞3',
           path: '/archives',
-          class: 'menu-item-archives',
-        },
+          class: 'menu-item-archives'
+        }
       ]
-    },
+    }
     // {
     //   icon: 'icon-park:message',
     //   text: '留言',
@@ -141,6 +178,7 @@ export const useBlogStore = defineStore('blog', () => {
   ])
   // 一言
   const yiYan = ref('梦想是一个天真的词，实现梦想是一个残酷的词')
+  // 开始浏览 单独配置信息 包含网站和项目两个分类
 
   // 查看博客信息
   async function blogInfoData() {
@@ -151,7 +189,7 @@ export const useBlogStore = defineStore('blog', () => {
       tagCount.value = data.value.data.tagCount
       articleCount.value = data.value.data.articleCount
       categoryCount.value = data.value.data.categoryCount
-      siteConfig.value = data.value.data.siteConfig ? '100':'0'
+      siteConfig.value = data.value.data.siteConfig ? '100' : '0'
     }
   }
   async function setYiYan() {

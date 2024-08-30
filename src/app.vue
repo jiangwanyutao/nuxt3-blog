@@ -47,6 +47,7 @@ onMounted(() => {
     :theme-overrides="color.value === 'dark' ? darkThemeOverrides : lightThemeOverrides"
   >
     <n-notification-provider :max="3">
+      <n-modal-provider>
       <Loading v-if="isFullLoading"></Loading>
       <NuxtLayout v-else>
         <!-- 在页面导航之间显示一个进度条 -->
@@ -54,6 +55,7 @@ onMounted(() => {
         <NuxtPage />
         <CommonSideEdge></CommonSideEdge>
       </NuxtLayout>
+      </n-modal-provider>
     </n-notification-provider>
     <!-- 回到顶部 -->
   </n-config-provider>

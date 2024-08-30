@@ -86,12 +86,12 @@
       </div>
 
       <div class="wz_yc">
-<!--        <n-affix-->
-<!--            :top="120" :trigger-top="160"-->
-<!--        >-->
-          <!-- 博主面板 -->
-          <HomeUserInfo />
-<!--        </n-affix>-->
+        <!--        <n-affix-->
+        <!--            :top="120" :trigger-top="160"-->
+        <!--        >-->
+        <!-- 博主面板 -->
+        <HomeUserInfo />
+        <!--        </n-affix>-->
       </div>
     </div>
   </div>
@@ -278,6 +278,11 @@ onMounted(() => {
   line-height: 50px;
   border-radius: 10px;
   display: flex;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border: #ffffff 1px solid;
+}
+.articleClassification:hover {
+  border: #0b8bd9 1px solid;
 }
 
 .gd {

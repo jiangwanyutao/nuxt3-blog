@@ -99,7 +99,7 @@
             <p>不错过精彩文章</p>
           </div>
           <img
-            style="width: 30px; height: 30px"
+            style="width: 50px; height: 50px"
             src="https://cdn.qiniu.jwyt.cloud/common/creator-cover-8.png"
             alt="二维码"
           />
@@ -189,6 +189,11 @@ function fetchData() {
   font-size: 20px;
   color: white;
   text-align: left;
+  left: 10px;
+}
+
+.back {
+  left: -10px;
 }
 
 .back {
