@@ -123,7 +123,7 @@ function init() {
 
 onMounted(() => {
   nextTick(() => {
-    // init()
+    init()
     initTyped()
   })
 })
