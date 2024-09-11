@@ -60,7 +60,7 @@
       <div id="wz_main_div1">
         <!-- 文章分类导航 -->
         <div class="articleClassification">
-          <div style="width: 95%">
+          <div style="width: 95%;">
             <span
               class="articleClassification_dvi liBgc"
               @click="liClick(0, '')"
@@ -82,7 +82,8 @@
         </div>
 
         <!-- 文章列表 -->
-        <!--        <ZhutiArticle />-->
+        <ArticleList v-for="item in articleList" :key="item.id" :item="item" />
+        <BaseTwikoo></BaseTwikoo>
       </div>
 
       <div class="wz_yc">
@@ -99,10 +100,11 @@
 <script setup lang="ts">
 import { ApertureOutline, ArrowForwardCircle } from '@vicons/ionicons5'
 import api from '@/api'
+import type { Article } from '@/types/article'
 //查询所有说说
 const syMomentsData = ref([
   {
-    content: '内容111111111111111111111111111111111111111111111111111'
+    content: '内容'
   },
   {
     content: '内容2'
@@ -148,6 +150,28 @@ function getIp() {
     })
   })
 }
+
+const articleList = ref<Article[]>([
+  {
+    id: 1,
+    articleTitle: '文章标题1',
+    articleCover: 'https://cdn.qiniu.jwyt.cloud/common/298f491fc98a464b9b434564c42bf4aa.jpg',
+    articleContent: '文章内容1',
+    category: {
+      id: 1,
+      categoryName: 'Vue'
+    },
+    tagVOList: [
+      {
+        id: 1,
+        tagName: 'Vue'
+      }
+    ],
+    isTop: true,
+    createTime: '2021-09-15',
+    isTop: true
+  }
+])
 
 onMounted(() => {
   getIp()

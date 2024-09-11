@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="logos">
+  <div class="logos" style="width: 30%">
     <span class="site-title">
       <span class="logolink logo">
         <a href="/">

@@ -61,10 +61,10 @@ onMounted(() => {
   </n-config-provider>
 </template>
 
-<style scoped>
+<style>
 .page-enter-active,
 .page-leave-active {
-  transition: all 3s;
+  transition: all 1s;
 }
 .page-enter-from,
 .page-leave-to {
