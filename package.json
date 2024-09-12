@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "local": "node start.bat",
     "build": "nuxt build",
     "dev": "nuxt dev --open",
     "generate": "nuxt generate",

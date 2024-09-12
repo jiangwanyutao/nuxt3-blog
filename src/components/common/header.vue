@@ -47,13 +47,22 @@ const showMenu = computed(() => y.value === 0)
   transition-duration: 0.25s;
   transition-timing-function: ease-in;
 }
-/**毛玻璃 */
+
 .frosted-glass {
-  //box-shadow: 0 0.3px 0.3px rgba(0, 0, 0, 0.1), 0 0.7px 1px rgba(0, 0, 0, 0.15), 0 1.2px 2.5px rgba(0, 0, 0, 0.2), 0 1.4px 5px rgba(0, 0, 0, 0.25), 0 8px 15px rgba(0, 0, 0, 0.35);
-  //backdrop-filter: blur(1px);
+  /**
+  高度从0到100%的过渡动画
+   */
+  animation: glass 0.5s;
+}
+@keyframes glass {
+  0% {
+    backdrop-filter: blur(0);
+    opacity: 0; /* 初始透明 */
+  }
+  100% {
+    backdrop-filter: blur(10px);
+    opacity: 1; /* 完全可见 */
+  }
 }
 
-.frosted-glass:hover {
-  //box-shadow: 0 0.7px 1px rgba(0, 0, 0, 0.157), 0 1.7px 2.6px rgba(0, 0, 0, 0.224), 0 3.5px 5.3px rgba(0, 0, 0, 0.28), 0 7.3px 11px rgba(0, 0, 0, 0.346), 0 20px 30px rgba(0, 0, 0, 0.5);
-}
 </style>

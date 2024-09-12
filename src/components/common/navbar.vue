@@ -5,7 +5,6 @@ const isScrollUp = ref(false)
 //导航栏是否固定
 const lastScrollPosition = ref()
 
-
 // 监听滚动条事件
 const handleScroll = () => {
   const currentScrollPosition = window.scrollY
@@ -48,94 +47,79 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <!--  @mouseleave="menusMouseLeave"-->
   <nav
-      style="height: 64px;width: 40%"
-      @mouseleave="menusMouseLeave"
+    style="height: 64px; width: 40%"
+    @mouseleave="menusMouseLeave"
   >
     <ul
-        class="AppHeader flex nav-height justify-center items-center content-center frosted-glass"
-        :class="{ 'is-showUp': isScrollUp, 'is-showdown': !isScrollUp }"
+      class="AppHeader flex nav-height justify-center items-center content-center frosted-glass"
+      :class="{ 'is-showUp': isScrollUp, 'is-showdown': !isScrollUp }"
     >
       <li
-          v-for="(item, index) in blogStore.menuList"
-          :key="index"
-          :class="item.class"
-          @mouseover="menusMouseOver(index)"
+        v-for="(item, index) in blogStore.menuList"
+        :key="index"
+        :class="item.class"
+        @mouseover="menusMouseOver(index)"
       >
         <NuxtLink
-            :target="isExternalLink(item.path) ? '_blank' : '_self'"
-            :to="`${item.path}`"
-            class="flex items-center blog_menu"
+          :target="isExternalLink(item.path) ? '_blank' : '_self'"
+          :to="`${item.path}`"
+          class="flex items-center blog_menu"
         >
           <span
-              class="pl-1"
-              style="margin-right: 20px"
-          >{{ item.text }}</span
+            class="pl-1"
+            style="margin-right: 20px"
+            >{{ item.text }}</span
           >
         </NuxtLink>
-        <!--           其他菜单样式-->
-        <div v-if="menus_child_state === index && item.text !== '开始浏览'">
-          <ol class="menus_child slide-up-my">
-            <li
-                v-for="(child, childIndex) in item.children"
-                :key="childIndex"
-                :class="item.class"
-            >
-              <NuxtLink
-                  :target="isExternalLink(item.path) ? '_blank' : '_self'"
-                  :to="`${item.path}`"
-                  class="menus_child_item"
-              >
-                <Icon
-                    size="20"
-                    :name="child.icon"
-                />
-                &nbsp;
-                <h2 style="width: fit-content; min-width: 50px">{{ child.text }}</h2>
-              </NuxtLink>
-            </li>
-          </ol>
-        </div>
         <!--            开始浏览样式-->
-        <div v-if="menus_child_state === index && item.children[0]?.children">
+        <div v-if="menus_child_state === index">
           <ul class="menus_child slide-up-my">
             <li
-                class="submenu-item"
-                v-for="(child, childIndex) in item.children"
-                :key="childIndex"
-                :class="item.class"
+              class="submenu-item"
+              v-for="(child, childIndex) in item.children"
+              :key="childIndex"
+              :class="item.class"
             >
               <NuxtLink
-                  :target="isExternalLink(child.path) ? '_blank' : '_self'"
-                  :to="`${child.path}`"
-                  class="flex items-center"
+                :target="isExternalLink(child.path) ? '_blank' : '_self'"
+                :to="`${child.path}`"
+                class="flex items-center"
               >
                 <Icon
-                    size="20"
-                    :name="child.icon"
+                  size="20"
+                  :name="child.icon"
                 />
                 &nbsp;
-                <h2 style="width: fit-content; min-width: 50px">{{ child.text }}</h2>
+                <h2 style="width: fit-content; font-size: 16px; font-weight: bold">
+                  {{ child.text }}
+                </h2>
+                <Icon
+                  name="mynaui:chevron-right"
+                  class="ml-2"
+                />
               </NuxtLink>
 
-              <ul
-                  class="submenu"
+              <ul class="submenu">
+                <li
+                  class="menus_child_item"
                   v-for="(childs, childIndexs) in child.children"
                   :key="childIndexs"
                   :class="item.class"
-              >
-                <li class="menus_child_item">
+                >
                   <NuxtLink
-                      :to="`${childs.path}`"
-                      :target="isExternalLink(childs.path) ? '_blank' : '_self'"
-                      class="flex items-center menus_child_menu"
+                    :to="`${childs.path}`"
+                    :target="isExternalLink(childs.path) ? '_blank' : '_self'"
+                    class="flex items-center menus_child_menu"
                   >
                     <Icon
-                        size="20"
-                        :name="childs.icon"
+                      v-if="childs.icon"
+                      size="20"
+                      :name="childs.icon"
                     />
                     &nbsp;
-                    <h2 style="width: fit-content; min-width: 100px">{{ childs.text }}</h2>
+                    <h4 style="width: fit-content; text-align: center">{{ childs.text }}</h4>
                   </NuxtLink>
                 </li>
               </ul>
@@ -145,8 +129,8 @@ onUnmounted(() => {
       </li>
     </ul>
     <ul
-        class="nav-height flex justify-center items-center content-center"
-        :class="{ 'is-showUp': isScrollUp, 'is-showdown': !isScrollUp, invisible: !isScrollUp }"
+      class="nav-height flex justify-center items-center content-center"
+      :class="{ 'is-showUp': isScrollUp, 'is-showdown': !isScrollUp, invisible: !isScrollUp }"
     >
       <span class="py-1.5"> </span>
       <li class="flex items-center">
@@ -158,6 +142,8 @@ onUnmounted(() => {
 
 <style scoped>
 .submenu {
+  display: flex;
+  flex-wrap: wrap;
   margin: 0;
   /* 子菜单缩进 */
   padding: 0 0 0 20px;
@@ -166,24 +152,24 @@ onUnmounted(() => {
 .submenu-item {
   padding: 5px 0;
 }
-.blog_menu{
+.submenu-item:hover {
+  background: #fef7d9;
+  border-radius: 10px;
+}
+.blog_menu {
   padding: 0 10px;
   color: #000;
-  font-size: 16px;
   font-weight: 500;
   cursor: pointer;
 }
-.blog_menu:hover{
-  //background-color: #425aef;
-  //color: #fff;
-}
+
+
 .AppHeader {
   ul > li > span:hover {
     background-color: #425aef;
     color: #fff !important;
   }
 }
-
 
 .nav-height {
   height: 64px;
@@ -199,8 +185,6 @@ onUnmounted(() => {
   transition: transform 0.3s, -webkit-transform 0.3s;
 }
 
-
-
 /**毛玻璃 */
 .frosted-glass {
   //box-shadow: 0 0.3px 0.3px rgba(0, 0, 0, 0.1), 0 0.7px 1px rgba(0, 0, 0, 0.15), 0 1.2px 2.5px rgba(0, 0, 0, 0.2), 0 1.4px 5px rgba(0, 0, 0, 0.25), 0 8px 15px rgba(0, 0, 0, 0.35);
@@ -212,18 +196,50 @@ onUnmounted(() => {
 }
 
 .menus_child {
+  width: 300px;
   position: absolute;
   top: 50px;
-  border-radius: 5px;
+  border-radius: 10px;
   background-color: #fff;
   color: #000;
-  display: flex;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .menus_child li {
-  padding: 8px 15px;
+  margin: 8px 8px;
+  animation: slide-in-from-right 0.8s ease both;
+  opacity: 0; /* 初始透明 */
+  animation-fill-mode: forwards; /* 保持最后状态 */
 }
+
+/* 为每个菜单项设置不同的延迟 */
+.menus_child li:nth-child(1) {
+  animation-delay: 0s;
+}
+.menus_child li:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.menus_child li:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.menus_child li:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+/* 定义动画 */
+@keyframes slide-in-from-right {
+  0% {
+    transform: translate(80%, 0);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+
 
 .menus_child_item {
   display: flex;
@@ -235,11 +251,18 @@ onUnmounted(() => {
   padding: 0 10px;
 }
 
+.menus_child_menu {
+  padding: 5px 10px;
+  color: #000;
+  font-weight: 500;
+  cursor: pointer;
+}
+
 .menus_child_menu:hover {
-  text-decoration: underline;
-  //border-radius: 15px;
-  //background-color: #425aef;
-  //color: #fff;
+  --tw-text-opacity: 1;
+  color: rgb(249 115 22 / var(--tw-text-opacity));
+  border-radius: 15px;
+  background-color: #fceba1;
 }
 
 .menus_child_item h2 {
@@ -260,5 +283,15 @@ onUnmounted(() => {
 
 .slide-up-my {
   animation: slide-up-my 0.3s ease both;
+}
+
+/* 新增的动画效果 */
+.slide-fade-enter-active, .slide-fade-leave-active {
+  transition: all 0.8s ease;
+}
+
+.slide-fade-enter, .slide-fade-leave-to /* .slide-fade-leave-active在Vue 2中使用 */ {
+  opacity: 0;
+  transform: translateX(20px); /* 从右边进入 */
 }
 </style>

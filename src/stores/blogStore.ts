@@ -21,37 +21,32 @@ export const useBlogStore = defineStore('blog', () => {
       class: 'menu-item-home',
       children: [
         {
-          icon: 'noto:house-with-garden',
+          icon: 'mynaui:sparkles',
           text: '网站',
           children: [
             {
-              icon: 'noto:house-with-garden',
-              path: '/about',
-              text: '关于'
-            },
-            {
-              icon: 'noto:house-with-garden',
+              icon: '',
               path: '/',
-              text: '博客'
+              text: '个人主页'
             },
             {
-              icon: 'noto:house-with-garden',
+              icon: '',
               path: 'https://jwyt.cloud',
               text: '云盘主页'
             }
           ]
         },
         {
-          icon: 'noto:house-with-garden',
+          icon: 'mynaui:train',
           text: '项目',
           children: [
             {
-              icon: 'noto:house-with-garden',
+              icon: '',
               path: 'https://chat.jwyt.cloud',
               text: 'ChatGpt'
             },
             {
-              icon: 'noto:house-with-garden',
+              icon: '',
               text: '网站主题项目'
             }
           ]
@@ -59,83 +54,29 @@ export const useBlogStore = defineStore('blog', () => {
       ]
     },
     {
-      icon: 'flat-color-icons:calendar',
-      text: '归档',
-      path: '/archives',
+      icon: '',
+      text: '关于',
+      path: '/about',
       class: 'menu-item-archives',
-      children: [
-        {
-          icon: 'flat-color-icons:calendar',
-          text: '树洞1',
-          path: '/archives',
-          class: 'menu-item-archives'
-        },
-        {
-          icon: 'flat-color-icons:calendar',
-          text: '树洞1',
-          path: '/archives',
-          class: 'menu-item-archives'
-        },
-        {
-          icon: 'flat-color-icons:calendar',
-          text: '树洞1',
-          path: '/archives',
-          class: 'menu-item-archives'
-        }
-      ]
     },
-    {
-      icon: 'icon-park:category-management',
-      text: '分类',
-      path: '/category',
-      class: 'menu-item-category',
-      children: [
-        {
-          icon: 'flat-color-icons:calendar',
-          text: '树洞2',
-          path: '/archives',
-          class: 'menu-item-archives'
-        },
-        {
-          icon: 'flat-color-icons:calendar',
-          text: '树洞2',
-          path: '/archives',
-          class: 'menu-item-archives'
-        },
-        {
-          icon: 'flat-color-icons:calendar',
-          text: '树洞2',
-          path: '/archives',
-          class: 'menu-item-archives'
-        }
-      ]
-    },
-    {
-      icon: 'icon-park:comments',
-      text: '说说',
-      path: '/talk',
-      class: 'menu-item-talk',
-      children: [
-        {
-          icon: 'flat-color-icons:calendar',
-          text: '树洞3',
-          path: '/archives',
-          class: 'menu-item-archives'
-        },
-        {
-          icon: 'flat-color-icons:calendar',
-          text: '树洞3',
-          path: '/archives',
-          class: 'menu-item-archives'
-        },
-        {
-          icon: 'flat-color-icons:calendar',
-          text: '树洞3',
-          path: '/archives',
-          class: 'menu-item-archives'
-        }
-      ]
-    }
+    // {
+    //   icon: 'flat-color-icons:calendar',
+    //   text: '归档',
+    //   path: '/archives',
+    //   class: 'menu-item-archives',
+    // },
+    // {
+    //   icon: 'icon-park:category-management',
+    //   text: '分类',
+    //   path: '/category',
+    //   class: 'menu-item-category',
+    // },
+    // {
+    //   icon: 'icon-park:comments',
+    //   text: '说说',
+    //   path: '/talk',
+    //   class: 'menu-item-talk',
+    // },
     // {
     //   icon: 'icon-park:message',
     //   text: '留言',
@@ -215,5 +156,5 @@ export const useBlogStore = defineStore('blog', () => {
   }
 })
 
-// console.log(import.meta.hot)
+console.log(import.meta.hot,'import.meta.hot')
 if (import.meta.hot) import.meta.hot.accept(acceptHMRUpdate(useBlogStore, import.meta.hot))
