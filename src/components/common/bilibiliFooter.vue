@@ -10,12 +10,12 @@
 import { ref, onMounted } from 'vue'
 
 const images = ref([
-  { src: `https://cdn.qiniu.jwyt.cloud/common/bilibili-autumn-1.png` },
-  { src: 'https://cdn.qiniu.jwyt.cloud/common/bilibili-autumn-2.png' },
-  { src: 'https://cdn.qiniu.jwyt.cloud/common/bilibili-autumn-3.png' },
-  { src: 'https://cdn.qiniu.jwyt.cloud/common/bilibili-autumn-4.png' },
-  { src: 'https://cdn.qiniu.jwyt.cloud/common/bilibili-autumn-5.png' },
-  { src: 'https://cdn.qiniu.jwyt.cloud/common/bilibili-autumn-6.png' }
+  { src: new URL('@/assets/img/footer/bilibili-autumn-1.png', import.meta.url).href },
+  { src: new URL('@/assets/img/footer/bilibili-autumn-2.png', import.meta.url).href },
+  { src: new URL('@/assets/img/footer/bilibili-autumn-3.png', import.meta.url).href },
+  { src: new URL('@/assets/img/footer/bilibili-autumn-4.png', import.meta.url).href },
+  { src: new URL('@/assets/img/footer/bilibili-autumn-5.png', import.meta.url).href },
+  { src: new URL('@/assets/img/footer/bilibili-autumn-6.png', import.meta.url).href }
 ])
 
 const imageRefs = ref([])

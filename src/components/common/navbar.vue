@@ -150,19 +150,41 @@ onUnmounted(() => {
 }
 
 .submenu-item {
-  padding: 5px 0;
+  padding: 8px 12px;
+  margin: 4px 0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
+
 .submenu-item:hover {
-  background: #fef7d9;
-  border-radius: 10px;
+  background: rgba(254, 247, 217, 0.7);
+  transform: translateX(4px);
 }
+
 .blog_menu {
   padding: 0 10px;
   color: #000;
   font-weight: 500;
   cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
 }
 
+.blog_menu::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: #425aef;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.blog_menu:hover::after {
+  width: 100%;
+}
 
 .AppHeader {
   ul > li > span:hover {
@@ -196,13 +218,16 @@ onUnmounted(() => {
 }
 
 .menus_child {
-  width: 300px;
+  width: 320px;
   position: absolute;
-  top: 50px;
-  border-radius: 10px;
-  background-color: #fff;
+  top: 60px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.98);
   color: #000;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 12px;
+  backdrop-filter: blur(10px);
+  transform-origin: top center;
 }
 
 .menus_child li {
@@ -229,7 +254,7 @@ onUnmounted(() => {
 /* 定义动画 */
 @keyframes slide-in-from-right {
   0% {
-    transform: translate(80%, 0);
+    transform: translate(40px, 0);
     opacity: 0;
   }
 
@@ -238,8 +263,6 @@ onUnmounted(() => {
     opacity: 1;
   }
 }
-
-
 
 .menus_child_item {
   display: flex;
@@ -252,37 +275,37 @@ onUnmounted(() => {
 }
 
 .menus_child_menu {
-  padding: 5px 10px;
-  color: #000;
-  font-weight: 500;
-  cursor: pointer;
+  padding: 6px 12px;
+  color: #666;
+  font-weight: normal;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  font-size: 14px;
 }
 
 .menus_child_menu:hover {
-  --tw-text-opacity: 1;
-  color: rgb(249 115 22 / var(--tw-text-opacity));
-  border-radius: 15px;
-  background-color: #fceba1;
+  color: #f97316;
+  background-color: rgba(252, 235, 161, 0.5);
+  transform: translateX(4px);
 }
 
 .menus_child_item h2 {
   width: 45px;
 }
 
-@keyframes slide-up-my {
-  0% {
-    transform: translate(-40%, -10%);
-    opacity: 0;
-  }
-
-  100% {
-    transform: translate(-40%, 0);
-    opacity: 1;
-  }
+.slide-up-my {
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.slide-up-my {
-  animation: slide-up-my 0.3s ease both;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 新增的动画效果 */

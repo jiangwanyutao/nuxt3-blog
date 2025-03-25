@@ -4,7 +4,7 @@
     <div
       style="width: 100%; height: 100vh"
       ref="vantaRef"
-      class="bg saturate-100"
+      :class="['bg saturate-100', `bg-${currentBgIndex}`]"
     >
       <div
         id="headertop"
@@ -101,6 +101,41 @@ watch(colorMode, (newVal) => {
   init()
 })
 const birds = ref([])
+
+// 定义社交媒体链接
+const gitHub = 'https://github.com'
+const gitee = 'https://gitee.com' 
+const bilibili = 'https://bilibili.com'
+
+// 背景图片列表
+const bgImages = [
+  '/assets/img/banner/1.jpg',
+  '/assets/img/banner/2.jpg',
+  '/assets/img/banner/3.jpg',
+  '/assets/img/banner/4.jpg'
+]
+
+const currentBgIndex = ref(0)
+let bgInterval: NodeJS.Timer
+
+const opacity = ref(1)
+const nextBgIndex = computed(() => (currentBgIndex.value + 1) % bgImages.length)
+
+// 修改切换背景的函数
+const changeBg = async () => {
+  // 淡出当前背景
+  opacity.value = 0
+  
+  // 等待动画完成
+  await new Promise(resolve => setTimeout(resolve, 500))
+  
+  // 切换到下一张图
+  currentBgIndex.value = (currentBgIndex.value + 1) % bgImages.length
+  
+  // 重置透明度
+  opacity.value = 1
+}
+
 // 初始化
 function init() {
   vantaEffect = BIRDS({
@@ -125,6 +160,8 @@ onMounted(() => {
   nextTick(() => {
     init()
     initTyped()
+    // 每5秒切换一次背景
+    bgInterval = setInterval(changeBg, 50000)
   })
 })
 
@@ -132,6 +169,8 @@ onBeforeUnmount(() => {
   if (vantaEffect) {
     vantaEffect.destroy()
   }
+  // 清理定时器
+  clearInterval(bgInterval)
 })
 
 const handleRight = () => {
@@ -153,9 +192,26 @@ const initTyped = () => {
 </script>
 <style scoped lang="scss">
 .bg {
-  background: url('https://cdn.qiniu.jwyt.cloud/common/298f491fc98a464b9b434564c42bf4aa.jpg')
-    no-repeat center center;
   background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background-image 0.5s ease-in-out;
+}
+
+.bg-0 {
+  background-image: url('@/assets/img/banner/1.png');
+}
+
+.bg-1 { 
+  background-image: url('@/assets/img/banner/2.jpg');
+}
+
+.bg-2 {
+  background-image: url('@/assets/img/banner/3.png');
+}
+
+.bg-3 {
+  background-image: url('@/assets/img/banner/4.jpg');
 }
 
 .glitch {
@@ -300,5 +356,22 @@ const initTyped = () => {
     left: -1px;
     clip: rect(31px, 9999px, 149px, 0);
   }
+}
+
+.bg-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: opacity 0.5s ease-in-out;
 }
 </style>

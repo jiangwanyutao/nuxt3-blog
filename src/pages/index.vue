@@ -83,7 +83,8 @@
 
         <!-- 文章列表 -->
         <ArticleList v-for="item in articleList" :key="item.id" :item="item" />
-        <BaseTwikoo></BaseTwikoo>
+        <!-- <BaseTwikoo></BaseTwikoo> -->
+         <BaseWeek></BaseWeek>
       </div>
 
       <div class="wz_yc">

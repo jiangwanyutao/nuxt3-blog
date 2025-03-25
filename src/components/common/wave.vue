@@ -17,7 +17,7 @@
 #banner_wave_1 {
   width: auto;
   height: 55px;
-  background: url(https://cdn.qiniu.jwyt.cloud/common/wave_1.png) repeat-x;
+  background: url('@/assets/img/wave_1.png') repeat-x;
   _filter: alpha(opacity=80);
   position: absolute;
   bottom: 0;
@@ -37,7 +37,7 @@
 #banner_wave_2 {
   width: auto;
   height: 75px;
-  background: url(https://cdn.qiniu.jwyt.cloud/common/wave_2.png) repeat-x;
+  background: url('@/assets/img/wave_2.png') repeat-x;
   _filter: alpha(opacity=80);
   position: absolute;
   bottom: 0;

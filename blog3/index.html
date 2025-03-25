@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思境博客 - 首页</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        deep: '#1A202C',     // 深空蓝
+                        orange: '#DD6B20',   // 活力橙
+                        light: '#F7FAFC',    // 医疗白
+                        'orange-50': '#FFF5F0',
+                        'orange-100': '#FFEBD8',
+                        'orange-900': '#7B2E00',
+                        'deep-800': '#0F1628',
+                        'deep-900': '#080B16',
+                    },
+                    fontFamily: {
+                        'serif': ['"Noto Serif SC"', 'serif'],
+                        'sans': ['"Noto Sans SC"', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'elegant': '0 10px 50px -12px rgba(0, 0, 0, 0.05)',
+                        'elegant-lg': '0 20px 60px -15px rgba(0, 0, 0, 0.08)',
+                        'elegant-orange': '0 10px 40px -10px rgba(221, 107, 32, 0.25)',
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.8s ease-out forwards',
+                        'fade-down': 'fadeDown 0.5s ease-out forwards',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        fadeDown: {
+                            '0%': { opacity: '0', transform: 'translateY(-20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+        /* 通用样式 */
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .font-serif {
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        /* 高级动画效果 */
+        .hover-lift {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 导航栏下划线动画 */
+        .nav-underline {
+            position: relative;
+        }
+
+        .nav-underline::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #DD6B20;
+            transition: width 0.3s ease;
+        }
+
+        .nav-underline:hover::after,
+        .nav-underline.active::after {
+            width: 100%;
+        }
+
+        .nav-underline.active {
+            color: #1A202C;
+            font-weight: 500;
+        }
+
+        /* 暗黑模式 */
+        .dark-mode {
+            --bg-color: #1A202C;
+            --text-color: #F7FAFC;
+            --card-bg: #2D3748;
+            --border-color: #4A5568;
+        }
+
+        .dark-mode .bg-white {
+            background-color: var(--card-bg);
+        }
+
+        .dark-mode .text-deep {
+            color: var(--text-color);
+        }
+
+        .dark-mode .border-gray-100 {
+            border-color: var(--border-color);
+        }
+
+        .dark-mode .text-gray-600,
+        .dark-mode .text-gray-500 {
+            color: #CBD5E0;
+        }
+
+        /* 阅读进度条 */
+        .reading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #DD6B20 0%, #F6AD55 100%);
+            z-index: 9999;
+            transition: width 0.1s ease;
+        }
+
+        /* 图片悬停效果 */
+        .img-hover-zoom {
+            overflow: hidden;
+        }
+
+        .img-hover-zoom img {
+            transition: transform 0.75s ease;
+        }
+
+        .img-hover-zoom:hover img {
+            transform: scale(1.05);
+        }
+
+        /* 精美滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E0;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #DD6B20;
+        }
+
+        /* 导航蒙层 */
+        .nav-overlay {
+            background-color: rgba(26, 32, 44, 0.2);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        /* 当任何导航项被hover时显示蒙层 */
+        .group:hover ~ .nav-overlay {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 确保下拉菜单在蒙层之上 */
+        .nav-dropdown {
+            z-index: 50;
+        }
+
+        /* 导航下拉卡片动画 */
+        .category-item {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+
+        .group:hover .category-item {
+            opacity: 1;
+            transform: translateX(0);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* 优化动画延迟 */
+        .group:hover .category-item:nth-child(1) { transition-delay: 0.1s; }
+        .group:hover .category-item:nth-child(2) { transition-delay: 0.2s; }
+        .group:hover .category-item:nth-child(3) { transition-delay: 0.3s; }
+    </style>
+</head>
+<body class="bg-light text-deep">
+    <!-- 阅读进度条 -->
+    <div class="reading-progress" id="readingProgress"></div>
+
+    <!-- 全局导航蒙层 - 移到这里并修改类名 -->
+    <div id="navOverlay" class="pointer-events-none fixed inset-0 bg-deep/20 backdrop-blur-sm opacity-0 invisible transition-all duration-300 z-30"></div>
+
+    <!-- 顶部导航栏 - 全新设计 -->
+    <header class="sticky top-0 bg-white/90 backdrop-blur-md z-40 border-b border-gray-100 shadow-sm animate-fade-down">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+        <div class="flex items-center space-x-2">
+                    <a href="index.html" class="flex items-center">
+                        <span class="text-2xl font-serif font-bold text-deep">思<span class="text-orange">境</span></span>
+                        <span class="text-sm text-gray-500 border-l border-gray-200 ml-3 pl-3">探索思想的边界</span>
+                    </a>
+        </div>
+
+                <nav class="hidden md:flex items-center space-x-8 relative">
+                    <!-- 首页导航项 -->
+                    <div class="relative group">
+                        <a href="index.html" class="nav-underline active py-2 text-deep">首页</a>
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 nav-dropdown">
+                            <div class="bg-white rounded-xl shadow-elegant-lg border border-gray-100 p-6 min-w-[280px]">
+                                <div class="grid gap-4">
+                                    <a href="#" class="category-item flex items-center space-x-3 p-2 rounded-lg hover:bg-orange-50 transition-colors duration-300">
+                                        <span class="w-8 h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <p class="font-medium text-deep">最新文章</p>
+                                            <p class="text-xs text-gray-500">查看最新发布</p>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="category-item flex items-center space-x-3 p-2 rounded-lg hover:bg-orange-50 transition-colors duration-300">
+                                        <span class="w-8 h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-4-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <p class="font-medium text-deep">热门推荐</p>
+                                            <p class="text-xs text-gray-500">精选内容</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 分类导航项 -->
+                    <div class="relative group">
+                        <a href="categories.html" class="nav-underline py-2 text-gray-500 hover:text-deep transition-colors duration-300">分类</a>
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 nav-dropdown">
+                            <div class="bg-white rounded-xl shadow-elegant-lg border border-gray-100 p-6 min-w-[280px]">
+                                <div class="grid gap-4">
+                                    <a href="#" class="category-item flex items-center space-x-3 p-2 rounded-lg hover:bg-orange-50 transition-colors duration-300">
+                                        <span class="w-8 h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                                                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <p class="font-medium text-deep">写作技巧</p>
+                                            <p class="text-xs text-gray-500">12篇文章</p>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="category-item flex items-center space-x-3 p-2 rounded-lg hover:bg-orange-50 transition-colors duration-300">
+                                        <span class="w-8 h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <p class="font-medium text-deep">技术探索</p>
+                                            <p class="text-xs text-gray-500">18篇文章</p>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="category-item flex items-center space-x-3 p-2 rounded-lg hover:bg-orange-50 transition-colors duration-300">
+                                        <span class="w-8 h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <p class="font-medium text-deep">创意设计</p>
+                                            <p class="text-xs text-gray-500">9篇文章</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 归档导航项 -->
+                    <div class="relative group">
+                        <a href="archive.html" class="nav-underline py-2 text-gray-500 hover:text-deep transition-colors duration-300">归档</a>
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 nav-dropdown">
+                            <div class="bg-white rounded-xl shadow-elegant-lg border border-gray-100 p-6 min-w-[280px]">
+                                <div class="grid gap-4">
+                                    <a href="#" class="category-item flex items-center space-x-3 p-2 rounded-lg hover:bg-orange-50 transition-colors duration-300">
+                                        <span class="w-8 h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <p class="font-medium text-deep">按日期浏览</p>
+                                            <p class="text-xs text-gray-500">时间轴展示</p>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="category-item flex items-center space-x-3 p-2 rounded-lg hover:bg-orange-50 transition-colors duration-300">
+                                        <span class="w-8 h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <p class="font-medium text-deep">文章合集</p>
+                                            <p class="text-xs text-gray-500">主题系列</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 关于导航项 -->
+                    <div class="relative group">
+                        <a href="about.html" class="nav-underline py-2 text-gray-500 hover:text-deep transition-colors duration-300">关于</a>
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 nav-dropdown">
+                            <div class="bg-white rounded-xl shadow-elegant-lg border border-gray-100 p-6 min-w-[280px]">
+                                <div class="grid gap-4">
+                                    <a href="#" class="category-item flex items-center space-x-3 p-2 rounded-lg hover:bg-orange-50 transition-colors duration-300">
+                                        <span class="w-8 h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <p class="font-medium text-deep">团队介绍</p>
+                                            <p class="text-xs text-gray-500">了解我们</p>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="category-item flex items-center space-x-3 p-2 rounded-lg hover:bg-orange-50 transition-colors duration-300">
+                                        <span class="w-8 h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <p class="font-medium text-deep">联系我们</p>
+                                            <p class="text-xs text-gray-500">留言反馈</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="flex items-center space-x-5">
+                    <a href="search.html" class="text-gray-400 hover:text-deep transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </a>
+                    <button id="themeToggle" class="text-gray-400 hover:text-deep transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                    <button id="mobileMenuButton" class="md:hidden text-gray-400 hover:text-deep transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+            </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 移动端菜单 -->
+    <div id="mobileMenu" class="fixed inset-0 bg-white z-50 hidden animate-fade-in">
+        <div class="flex justify-end p-4">
+            <button id="closeMenu" class="text-gray-400 hover:text-deep transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="flex flex-col items-center justify-center h-full -mt-16">
+            <a href="index.html" class="text-2xl font-bold text-deep mb-12">思<span class="text-orange">境</span></a>
+            <nav class="flex flex-col items-center space-y-6">
+                <a href="index.html" class="text-xl font-medium text-deep">首页</a>
+                <a href="categories.html" class="text-xl font-medium text-gray-500 hover:text-deep transition-colors duration-300">分类</a>
+                <a href="archive.html" class="text-xl font-medium text-gray-500 hover:text-deep transition-colors duration-300">归档</a>
+                <a href="about.html" class="text-xl font-medium text-gray-500 hover:text-deep transition-colors duration-300">关于</a>
+            </nav>
+            <div class="mt-12 flex items-center space-x-4">
+                <a href="search.html" class="text-gray-400 hover:text-deep transition-colors duration-300 p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </a>
+                <button id="mobileDarkMode" class="text-gray-400 hover:text-deep transition-colors duration-300 p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- 特色文章板块 - 高度对齐优化 -->
+        <section class="mb-16 mt-4 animate-fade-up">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 主要特色文章 -->
+                <div class="lg:col-span-2 rounded-xl overflow-hidden group hover-lift relative h-[460px]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-deep/90 via-deep/50 to-transparent z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1629757509637-7c99379d6d26" alt="思考的力量" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute left-0 bottom-0 p-6 md:p-8 z-20 w-full">
+                        <div class="flex items-center mb-4">
+                            <span class="bg-orange text-white text-xs font-medium px-3 py-1 rounded-full">热门推荐</span>
+                            <span class="text-gray-300 text-sm ml-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                15分钟阅读
+                            </span>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-serif font-bold text-white mb-3 leading-tight">思考的力量：如何通过结构化思维解决复杂问题</h2>
+                        <p class="text-gray-200 mb-5 line-clamp-2 md:line-clamp-3 leading-relaxed">在这个信息爆炸的时代，如何有效地思考和解决问题成为了关键技能。本文探讨了结构化思维的方法与实践，帮助你在面对复杂问题时保持清晰的思路。</p>
+                        <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde" alt="作者头像" class="w-9 h-9 rounded-full border-2 border-white mr-3">
+                                <span class="text-white font-medium">陈思远</span>
+                            </div>
+                            <a href="#" class="text-white/80 hover:text-white transition-colors duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 12h14"></path>
+                                    <path d="M12 5l7 7-7 7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <a href="#" class="absolute inset-0 z-30" aria-label="阅读文章"></a>
+                </div>
+
+                <!-- 侧边文章容器 - 优化图片显示 -->
+                <div class="flex flex-col h-[460px] space-y-6">
+                    <!-- 侧边文章1 - 增加图片高度 -->
+                    <article class="bg-white rounded-xl overflow-hidden shadow-elegant group hover-lift relative flex-1 flex flex-col">
+                        <div class="h-64 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643" alt="极简主义与生产力" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <div class="p-4 flex flex-col flex-1">
+                            <div class="flex items-center text-xs mb-2">
+                                <span class="text-orange font-medium">生活方式</span>
+                                <span class="mx-2 text-gray-300">•</span>
+                                <span class="text-gray-500 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    8分钟
+                                </span>
+                            </div>
+                            <h3 class="text-base font-serif font-semibold mb-2 text-deep group-hover:text-orange transition-colors duration-300 leading-snug">极简主义：如何通过减法提升生活品质</h3>
+                            <p class="text-gray-600 mb-2 line-clamp-2 text-xs leading-relaxed">探索极简主义的精髓，以及如何将其应用于日常生活中，让我们的环境和思维都变得更加清晰。</p>
+                            <div class="mt-auto flex justify-end">
+                                <span class="text-orange text-sm">阅读全文</span>
+                            </div>
+                        </div>
+                        <a href="#" class="absolute inset-0 z-20" aria-label="阅读文章"></a>
+                    </article>
+
+                    <!-- 侧边文章2 - 增加图片高度 -->
+                    <article class="bg-white rounded-xl overflow-hidden shadow-elegant group hover-lift relative flex-1 flex flex-col">
+                        <div class="h-64 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1432821596592-e2c18b78144f" alt="数字时代的深度阅读" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <div class="p-4 flex flex-col flex-1">
+                            <div class="flex items-center text-xs mb-2">
+                                <span class="text-orange font-medium">阅读</span>
+                                <span class="mx-2 text-gray-300">•</span>
+                                <span class="text-gray-500 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    12分钟
+                                </span>
+                            </div>
+                            <h3 class="text-base font-serif font-semibold mb-2 text-deep group-hover:text-orange transition-colors duration-300 leading-snug">数字时代的深度阅读与思考</h3>
+                            <p class="text-gray-600 mb-2 line-clamp-2 text-xs leading-relaxed">在信息爆炸的时代，如何保持深度阅读的能力，以及培养批判性思维的方法与实践。</p>
+                            <div class="mt-auto flex justify-end">
+                                <span class="text-orange text-sm">阅读全文</span>
+                            </div>
+                        </div>
+                        <a href="#" class="absolute inset-0 z-20" aria-label="阅读文章"></a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- 最新文章 -->
+        <section class="mb-16">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-bold">最新文章</h2>
+                <a href="#" class="text-indigo-600 hover:text-indigo-800 transition">查看全部 →</a>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 文章卡片 1 -->
+                <div class="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition border border-gray-100">
+                    <img src="https://images.unsplash.com/photo-1432821596592-e2c18b78144f" alt="文章配图" class="w-full h-48 object-cover">
+                    <div class="p-5">
+                        <span class="text-xs text-gray-500">设计 · 5分钟阅读</span>
+                        <h3 class="text-xl font-semibold mt-2 mb-3">极简主义设计哲学的现代应用</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-2">探讨极简主义设计在当代数字产品中的应用，以及如何通过减法设计创造更好的用户体验。</p>
+                        <div class="flex items-center">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e" alt="作者头像" class="w-8 h-8 rounded-full mr-3">
+                            <span class="text-sm font-medium">王建国</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 文章卡片 2 -->
+                <div class="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition border border-gray-100">
+                    <img src="https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e" alt="文章配图" class="w-full h-48 object-cover">
+                    <div class="p-5">
+                        <span class="text-xs text-gray-500">技术 · 8分钟阅读</span>
+                        <h3 class="text-xl font-semibold mt-2 mb-3">TailwindCSS：重新思考CSS开发范式</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-2">关于TailwindCSS如何改变了我们构建网站的方式，以及它与传统CSS框架的差异与优势。</p>
+                        <div class="flex items-center">
+                            <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e" alt="作者头像" class="w-8 h-8 rounded-full mr-3">
+                            <span class="text-sm font-medium">张雯</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 文章卡片 3 -->
+                <div class="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition border border-gray-100">
+                    <img src="https://images.unsplash.com/photo-1629752187687-3d3c7ea3a21b" alt="文章配图" class="w-full h-48 object-cover">
+                    <div class="p-5">
+                        <span class="text-xs text-gray-500">思考 · 12分钟阅读</span>
+                        <h3 class="text-xl font-semibold mt-2 mb-3">数字时代的深度阅读与思考</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-2">在信息爆炸的时代，如何保持深度阅读的能力，以及培养批判性思维的方法与实践。</p>
+                        <div class="flex items-center">
+                            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956" alt="作者头像" class="w-8 h-8 rounded-full mr-3">
+                            <span class="text-sm font-medium">李思琪</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 分类浏览 -->
+        <section class="mb-16 animate-fade-up animate-delay-200">
+            <div class="flex items-center mb-8">
+                <span class="w-8 h-1 bg-orange rounded-full mr-3"></span>
+                <h2 class="text-2xl font-serif font-bold text-deep">探索分类</h2>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+                <!-- 写作分类 -->
+                <a href="categories.html" class="bg-gradient-to-br from-orange/25 to-orange/30 hover:from-orange/30 hover:to-orange/40 rounded-xl p-5 transition-all duration-300 group hover:shadow-md hover:-translate-y-1 border border-orange/15">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-14 h-14 flex items-center justify-center rounded-full bg-orange/30 text-orange mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                                <path d="M2 2l7.586 7.586"></path>
+                                <circle cx="11" cy="11" r="2"></circle>
+                            </svg>
+                        </div>
+                        <span class="font-medium text-deep group-hover:text-orange transition-colors duration-300">写作</span>
+                        <span class="text-xs text-gray-500 mt-1">12篇文章</span>
+                    </div>
+                </a>
+
+                <!-- 技术分类 -->
+                <a href="categories.html" class="bg-gradient-to-br from-deep/25 to-deep/30 hover:from-deep/30 hover:to-deep/40 rounded-xl p-5 transition-all duration-300 group hover:shadow-md hover:-translate-y-1 border border-deep/15">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-14 h-14 flex items-center justify-center rounded-full bg-deep/30 text-deep mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>
+                        </div>
+                        <span class="font-medium text-deep group-hover:text-orange transition-colors duration-300">技术</span>
+                        <span class="text-xs text-gray-500 mt-1">18篇文章</span>
+                    </div>
+                </a>
+
+                <!-- 创意分类 -->
+                <a href="categories.html" class="bg-gradient-to-br from-orange-900/25 to-orange-900/30 hover:from-orange-900/30 hover:to-orange-900/40 rounded-xl p-5 transition-all duration-300 group hover:shadow-md hover:-translate-y-1 border border-orange-900/15">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-14 h-14 flex items-center justify-center rounded-full bg-orange-900/30 text-orange-900 mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                        </div>
+                        <span class="font-medium text-deep group-hover:text-orange transition-colors duration-300">创意</span>
+                        <span class="text-xs text-gray-500 mt-1">9篇文章</span>
+                    </div>
+                </a>
+
+                <!-- 阅读分类 -->
+                <a href="categories.html" class="bg-gradient-to-br from-deep-800/25 to-deep-800/30 hover:from-deep-800/30 hover:to-deep-800/40 rounded-xl p-5 transition-all duration-300 group hover:shadow-md hover:-translate-y-1 border border-deep-800/15">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-14 h-14 flex items-center justify-center rounded-full bg-deep-800/30 text-deep-800 mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="font-medium text-deep group-hover:text-orange transition-colors duration-300">阅读</span>
+                        <span class="text-xs text-gray-500 mt-1">15篇文章</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 订阅区域 -->
+        <section class="mb-16 animate-fade-up animate-delay-300">
+            <div class="relative rounded-xl overflow-hidden shadow-lg">
+                <div class="absolute inset-0 bg-gradient-to-br from-black/70 to-deep/80 z-10"></div>
+                <img src="https://images.unsplash.com/photo-1519681393784-d1d0cf377fde" alt="订阅背景" class="absolute inset-0 w-full h-full object-cover object-center opacity-50">
+                <div class="relative z-20 py-10 px-4 lg:px-8">
+            <div class="max-w-3xl mx-auto text-center">
+                        <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-orange/20 text-orange mb-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-serif font-bold mb-4 text-white drop-shadow-md">加入思境，与思想者同行</h3>
+                        <p class="text-gray-200 mb-6 drop-shadow-md">每周精选内容直达您的收件箱，不错过任何有价值的思考与灵感</p>
+                <div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                            <input type="email" placeholder="您的邮箱地址" class="flex-grow px-4 py-3 rounded-lg border-0 bg-white/10 text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-orange focus:bg-white/20 placeholder-gray-300">
+                            <button class="bg-orange hover:bg-orange-900 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 shadow-sm flex items-center justify-center">
+                                <span>立即订阅</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-300 mt-4 drop-shadow-sm">我们尊重您的隐私，绝不会向第三方分享您的信息</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 引用区域 -->
+        <section class="mb-24 animate-fade-up animate-delay-400">
+            <div class="max-w-4xl mx-auto text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-orange mb-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1 1 1 1 1 1 1 1 1 1z"></path>
+                    <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
+                </svg>
+                <h2 class="text-3xl font-serif italic text-deep mb-6 leading-relaxed">思考是一种生活方式，阅读是一场心灵的旅行。在思境，我们探索知识的边界，打破思维的局限。</h2>
+                <p class="text-orange font-medium">林晓梦 - 思境创始人</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white border-t border-gray-100 pt-16 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-10 mb-16">
+                <div>
+                    <div class="flex items-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-orange mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                        <h4 class="text-xl font-serif font-bold text-deep">思境博客</h4>
+                    </div>
+                    <p class="text-gray-600 mb-6 leading-relaxed">思境是一个关注思考、创意和个人成长的博客平台，致力于分享有深度的内容和见解。</p>
+                    <div class="flex space-x-5">
+                        <a href="#" class="text-gray-400 hover:text-orange transition-colors duration-300" aria-label="Twitter">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-orange transition-colors duration-300" aria-label="Facebook">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-orange transition-colors duration-300" aria-label="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-orange transition-colors duration-300" aria-label="GitHub">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-serif font-bold text-deep mb-6">快速链接</h4>
+                    <ul class="space-y-4">
+                        <li>
+                            <a href="index.html" class="text-gray-600 hover:text-orange transition-colors duration-300 flex items-center group">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-orange mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                首页
+                            </a>
+                        </li>
+                        <li>
+                            <a href="archive.html" class="text-gray-600 hover:text-orange transition-colors duration-300 flex items-center group">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-orange mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                文章归档
+                            </a>
+                        </li>
+                        <li>
+                            <a href="about.html" class="text-gray-600 hover:text-orange transition-colors duration-300 flex items-center group">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-orange mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                关于我们
+                            </a>
+                        </li>
+                        <li>
+                            <a href="about.html#contact" class="text-gray-600 hover:text-orange transition-colors duration-300 flex items-center group">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-orange mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                联系方式
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-serif font-bold text-deep mb-6">内容分类</h4>
+                    <ul class="space-y-4">
+                        <li>
+                            <a href="categories.html" class="text-gray-600 hover:text-orange transition-colors duration-300 flex items-center group">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-orange mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                写作技巧
+                            </a>
+                        </li>
+                        <li>
+                            <a href="categories.html" class="text-gray-600 hover:text-orange transition-colors duration-300 flex items-center group">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-orange mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                设计思维
+                            </a>
+                        </li>
+                        <li>
+                            <a href="categories.html" class="text-gray-600 hover:text-orange transition-colors duration-300 flex items-center group">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-orange mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                技术探索
+                            </a>
+                        </li>
+                        <li>
+                            <a href="categories.html" class="text-gray-600 hover:text-orange transition-colors duration-300 flex items-center group">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-orange mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                个人成长
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-serif font-bold text-deep mb-6">订阅更新</h4>
+                    <p class="text-gray-600 mb-4">输入您的邮箱，获取最新内容提醒</p>
+                    <div class="flex mb-4">
+                        <input type="email" placeholder="您的邮箱地址" class="flex-grow px-4 py-3 rounded-l-lg border border-gray-200 focus:outline-none focus:ring-1 focus:ring-orange focus:border-orange">
+                        <button class="bg-orange hover:bg-orange-900 text-white p-3 rounded-r-lg transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500">每周更新，随时可以取消订阅</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-100 py-8 text-center">
+                <p class="text-gray-500 text-sm">&copy; 2023 思境博客 All Rights Reserved | 探索思想的边界</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="backToTop" class="fixed bottom-8 right-8 bg-orange text-white p-3 rounded-full shadow-elegant-orange opacity-0 invisible transition-all duration-300 hover:bg-deep transform hover:scale-110 z-50">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 移动端菜单控制
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const closeMenu = document.getElementById('closeMenu');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileDarkMode = document.getElementById('mobileDarkMode');
+
+            if (mobileMenuButton && closeMenu && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                });
+
+                closeMenu.addEventListener('click', function() {
+                    mobileMenu.classList.add('hidden');
+                    document.body.style.overflow = '';
+                });
+            }
+
+            // 回到顶部按钮
+            const backToTopButton = document.getElementById('backToTop');
+
+            if (backToTopButton) {
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 500) {
+                        backToTopButton.classList.remove('opacity-0', 'invisible');
+                        backToTopButton.classList.add('opacity-100');
+                    } else {
+                        backToTopButton.classList.add('opacity-0', 'invisible');
+                        backToTopButton.classList.remove('opacity-100');
+                    }
+                });
+
+                backToTopButton.addEventListener('click', function() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            }
+
+            // 暗黑模式切换功能
+            const toggleDarkMode = () => {
+                document.body.classList.toggle('dark-mode');
+
+                if (document.body.classList.contains('dark-mode')) {
+                    document.body.classList.add('bg-deep', 'text-light');
+                    document.body.classList.remove('bg-light', 'text-deep');
+
+                    // 保存用户偏好
+                    localStorage.setItem('darkMode', 'enabled');
+                } else {
+                    document.body.classList.add('bg-light', 'text-deep');
+                    document.body.classList.remove('bg-deep', 'text-light');
+
+                    // 保存用户偏好
+                    localStorage.setItem('darkMode', 'disabled');
+                }
+            };
+
+            // 暗黑模式按钮
+            const themeToggle = document.getElementById('themeToggle');
+
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleDarkMode);
+            }
+
+            if (mobileDarkMode) {
+                mobileDarkMode.addEventListener('click', toggleDarkMode);
+            }
+
+            // 检查用户偏好
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                toggleDarkMode();
+            }
+
+            // 图片懒加载
+            if ('IntersectionObserver' in window) {
+                const lazyImages = document.querySelectorAll('img[data-src]');
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src;
+                            img.removeAttribute('data-src');
+                            imageObserver.unobserve(img);
+                        }
+                    });
+                });
+
+                lazyImages.forEach(img => {
+                    imageObserver.observe(img);
+                });
+            }
+
+            // 添加动画延迟
+            document.querySelectorAll('.animate-fade-up').forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            // 修改导航蒙层控制
+            const navItems = document.querySelectorAll('.group');
+            const overlay = document.getElementById('navOverlay');
+
+            navItems.forEach(item => {
+                // 检查该导航项是否有下拉菜单
+                const hasDropdown = item.querySelector('.nav-dropdown');
+
+                if (hasDropdown) {
+                    item.addEventListener('mouseenter', () => {
+                        overlay.classList.remove('opacity-0', 'invisible');
+                    });
+
+                    item.addEventListener('mouseleave', () => {
+                        overlay.classList.add('opacity-0', 'invisible');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

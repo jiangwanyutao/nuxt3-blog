@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思境博客 - 搜索</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Noto Serif SC', serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- 顶部导航栏 -->
+    <header class="flex justify-between items-center p-5 border-b border-gray-100 bg-white">
+        <div class="flex items-center space-x-2">
+            <a href="index.html" class="text-2xl font-bold text-indigo-700">思境</a>
+            <span class="text-sm text-gray-500">探索思想的边界</span>
+        </div>
+        <nav class="hidden md:flex space-x-8">
+            <a href="index.html" class="font-medium text-gray-500 hover:text-indigo-600 transition">首页</a>
+            <a href="categories.html" class="font-medium text-gray-500 hover:text-indigo-600 transition">分类</a>
+            <a href="archive.html" class="font-medium text-gray-500 hover:text-indigo-600 transition">归档</a>
+            <a href="about.html" class="font-medium text-gray-500 hover:text-indigo-600 transition">关于</a>
+        </nav>
+        <div class="flex items-center space-x-4">
+            <a href="search.html" class="text-gray-900 hover:text-gray-600">
+                <i class="fas fa-search"></i>
+            </a>
+            <button class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- 搜索区域 -->
+        <div class="max-w-4xl mx-auto pt-16 pb-8">
+            <h1 class="text-3xl font-bold mb-8 text-center">搜索文章</h1>
+            <div class="relative">
+                <input type="text"
+                       placeholder="输入关键词搜索..."
+                       class="w-full px-6 py-4 text-lg rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 pl-14">
+                <i class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+
+            <!-- 热门搜索 -->
+            <div class="mt-6">
+                <h3 class="text-sm font-medium text-gray-500 mb-3">热门搜索：</h3>
+                <div class="flex flex-wrap gap-2">
+                    <a href="#" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-600 transition">写作技巧</a>
+                    <a href="#" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-600 transition">前端开发</a>
+                    <a href="#" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-600 transition">设计思维</a>
+                    <a href="#" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-600 transition">效率提升</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索结果 -->
+        <div class="max-w-4xl mx-auto mb-16">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-bold">搜索结果</h2>
+                <span class="text-gray-500">共找到 24 个结果</span>
+            </div>
+
+            <div class="space-y-6">
+                <!-- 搜索结果项 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition">
+                    <div class="flex items-start">
+                        <img src="https://images.unsplash.com/photo-1432821596592-e2c18b78144f"
+                             alt="文章配图"
+                             class="w-40 h-28 rounded-lg object-cover mr-6">
+                        <div class="flex-1">
+                            <div class="flex items-center mb-2">
+                                <span class="text-xs text-indigo-600 font-medium">设计</span>
+                                <span class="mx-2 text-gray-300">•</span>
+                                <span class="text-xs text-gray-500">2023-10-15</span>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2 hover:text-indigo-600 transition">
+                                <a href="#">极简主义设计哲学的现代应用</a>
+                            </h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">探讨极简主义设计在当代数字产品中的应用，以及如何通过减法设计创造更好的用户体验。本文将深入分析多个成功案例，为读者提供实用的设计思路和方法论。</p>
+                            <div class="flex items-center">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e"
+                                     alt="作者头像"
+                                     class="w-6 h-6 rounded-full mr-2">
+                                <span class="text-sm text-gray-500">王建国</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition">
+                    <div class="flex items-start">
+                        <img src="https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e"
+                             alt="文章配图"
+                             class="w-40 h-28 rounded-lg object-cover mr-6">
+                        <div class="flex-1">
+                            <div class="flex items-center mb-2">
+                                <span class="text-xs text-emerald-600 font-medium">技术</span>
+                                <span class="mx-2 text-gray-300">•</span>
+                                <span class="text-xs text-gray-500">2023-10-12</span>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2 hover:text-indigo-600 transition">
+                                <a href="#">TailwindCSS：重新思考CSS开发范式</a>
+                            </h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">关于TailwindCSS如何改变了我们构建网站的方式，以及它与传统CSS框架的差异与优势。通过实际项目经验，分享使用TailwindCSS的最佳实践。</p>
+                            <div class="flex items-center">
+                                <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e"
+                                     alt="作者头像"
+                                     class="w-6 h-6 rounded-full mr-2">
+                                <span class="text-sm text-gray-500">张雯</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分页 -->
+            <div class="flex justify-center mt-12">
+                <nav class="flex items-center space-x-2">
+                    <a href="#" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-500 hover:text-indigo-600 hover:border-indigo-600 transition">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                    <a href="#" class="px-4 py-2 border border-indigo-600 bg-indigo-600 text-white rounded-lg">1</a>
+                    <a href="#" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-500 hover:text-indigo-600 hover:border-indigo-600 transition">2</a>
+                    <a href="#" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-500 hover:text-indigo-600 hover:border-indigo-600 transition">3</a>
+                    <span class="px-4 py-2 text-gray-500">...</span>
+                    <a href="#" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-500 hover:text-indigo-600 hover:border-indigo-600 transition">8</a>
+                    <a href="#" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-500 hover:text-indigo-600 hover:border-indigo-600 transition">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white border-t border-gray-200 pt-10">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 mb-10">
+                <div>
+                    <h4 class="font-bold text-lg mb-4">关于思境</h4>
+                    <p class="text-gray-600">思境是一个关注思考、创意和个人成长的博客平台，致力于分享有深度的内容和见解。</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-4">快速链接</h4>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="text-gray-600 hover:text-indigo-600 transition">首页</a></li>
+                        <li><a href="archive.html" class="text-gray-600 hover:text-indigo-600 transition">文章归档</a></li>
+                        <li><a href="about.html" class="text-gray-600 hover:text-indigo-600 transition">关于我们</a></li>
+                        <li><a href="about.html#contact" class="text-gray-600 hover:text-indigo-600 transition">联系方式</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-4">内容分类</h4>
+                    <ul class="space-y-2">
+                        <li><a href="categories.html" class="text-gray-600 hover:text-indigo-600 transition">写作技巧</a></li>
+                        <li><a href="categories.html" class="text-gray-600 hover:text-indigo-600 transition">设计思维</a></li>
+                        <li><a href="categories.html" class="text-gray-600 hover:text-indigo-600 transition">技术探索</a></li>
+                        <li><a href="categories.html" class="text-gray-600 hover:text-indigo-600 transition">个人成长</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-4">关注我们</h4>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="text-gray-600 hover:text-indigo-600 transition"><i class="fab fa-twitter text-xl"></i></a>
+                        <a href="#" class="text-gray-600 hover:text-indigo-600 transition"><i class="fab fa-facebook text-xl"></i></a>
+                        <a href="#" class="text-gray-600 hover:text-indigo-600 transition"><i class="fab fa-instagram text-xl"></i></a>
+                        <a href="#" class="text-gray-600 hover:text-indigo-600 transition"><i class="fab fa-github text-xl"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 py-6 text-center text-gray-500 text-sm">
+                <p>© 2023 思境博客 All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
