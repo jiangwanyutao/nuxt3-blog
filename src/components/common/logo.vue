@@ -6,23 +6,23 @@
       <span class="logolink logo">
         <a href="/">
           <ruby>
-            <span class="sakuraso">江晚</span>
+            <span class="sakuraso">思境</span>
             <span class="no"></span>
-            <span class="shironeko">正愁余</span>
+            <span class="shironeko">Blog</span>
             <rp></rp>
-            <rt class="logo">jiangwanzhengchouyu</rt>
+            <rt class="logo">江晚正愁余</rt>
             <rp></rp>
           </ruby>
         </a>
       </span>
     </span>
 
-    <!--    <p>-->
-    <!--    <span id="n" style="width: 100px;">江晚</span>-->
-    <!--    <span id="e" style="width: 100px;">正</span>-->
-    <!--    <span id="o" style="width: 100px;">愁</span>-->
-    <!--    <span id="n2" style="width: 100px;">余</span>-->
-    <!--  </p>-->
+       <!-- <p>
+       <span id="n" style="width: 100px;">江晚</span>
+       <span id="e" style="width: 100px;">正</span>
+       <span id="o" style="width: 100px;">愁</span>
+       <span id="n2" style="width: 100px;">余</span>
+    </p> -->
   </div>
 </template>
 
@@ -143,13 +143,14 @@ p:hover #n2 {
 
 .logolink ruby rt {
   font-size: 12px;
-  transform: translateY(10px);
+  transform: translateY(0);
   opacity: 0;
-  transition-property: opacity;
+  transition-property: opacity, transform;
   transition-duration: 0.5s, 0.5s;
 }
 
 .logolink a:hover ruby rt {
   opacity: 1;
+  transform: translateY(25px);
 }
 </style>

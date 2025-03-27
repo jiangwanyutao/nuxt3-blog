@@ -17,7 +17,10 @@
         <span class="m-2">
           <BaseDarkToggle />
         </span>
-        <span class="m-2">登录</span>
+        <template v-if="showUserInfo">
+          <CommonAvatar />
+        </template>
+        <span v-else class="m-2 cursor-pointer" @click="goLogin">登录</span>
       </div>
     </div>
   </header>
@@ -25,9 +28,23 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/userStore'
 //获取滚动条位置
 const { y } = useWindowScroll()
 const showMenu = computed(() => y.value === 0)
+const router = useRouter()
+const userStore = useUserStore()
+//显示用户信息
+const showUserInfo = ref(false)
+onMounted(() => {
+    // 从 localStorage 读取存储的用户信息
+    const savedUserInfo = localStorage.getItem('userInfo')
+    showUserInfo.value = savedUserInfo ? true : false
+});
+const goLogin = () => {
+  router.push('/login')
+}
 </script>
 
 <style scoped lang="scss">

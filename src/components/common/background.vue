@@ -158,10 +158,10 @@ function init() {
 
 onMounted(() => {
   nextTick(() => {
-    init()
-    initTyped()
+    // init()
+    // initTyped()
     // 每5秒切换一次背景
-    bgInterval = setInterval(changeBg, 50000)
+    // bgInterval = setInterval(changeBg, 50000)
   })
 })
 

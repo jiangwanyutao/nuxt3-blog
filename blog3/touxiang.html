@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document</title>
+<style>
+*{
+box-sizing: border-box;
+}
+.box{
+width: 200px;
+height: 300px;
+border-radius: 0 0 100px 100px;
+padding-top: 100px;
+overflow: hidden;
+position: relative;
+transition: all 0.5s;
+transform: scale(1);
+}
+.box::after{
+content: '';
+position: absolute;
+left: 0;
+bottom: 0;
+width: 200px;
+height: 100px;
+border: 4px solid red;
+z-index: 1000;
+border-radius: 0 0 100px 100px;
+border-top-width: 0;
+box-sizing: border-box;
+}
+.box::before{
+content: '';
+position: absolute;
+left: 0;
+top: 200px;
+width: 200px;
+height: 100px;
+border: 4px solid red;
+z-index: 10;
+border-radius: 100px 100px 0 0;
+border-bottom-width: 0;
+box-sizing: border-box;
+}
+.img{
+position: absolute;
+z-index: 1000;
+transform: scale(1);
+transition: all 0.5s;
+}
+
+.box:hover .img{
+transform: scale(1.3);
+transition: all 0.5s;
+}
+.box:hover{
+transform: scale(0.90);
+transition: all 0.5s;
+}
+
+</style>
+</head>
+<body>
+<div class="box">
+<img class="img" width="200px" height="200px" src="https://cn.bing.com/images/search?q=b%E7%AB%99%E5%A4%B4%E5%83%8F&FORM=IQFRBA&id=5037051CB251D02DB2E0C7AC4F72662E6893CE25" alt="">
+
+</div>
+</div>
+</body>
+</html>

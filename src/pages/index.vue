@@ -100,7 +100,7 @@
 </template>
 <script setup lang="ts">
 import { ApertureOutline, ArrowForwardCircle } from '@vicons/ionicons5'
-import api from '@/api'
+// import api from '@/api'
 import type { Article } from '@/types/article'
 //查询所有说说
 const syMomentsData = ref([

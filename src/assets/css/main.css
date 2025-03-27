@@ -41,8 +41,8 @@
 @font-face {
   font-family: misans;
    /* src: url(https://sourcebucket.s3.bitiful.net/fonts/霞鹜文楷.woff2); */
-   src: url(https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&display=swap);
-  /*src: url('~/assets/fonts/miSans-Normal.woff2');*/
+   /* src: url(https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&display=swap); */
+  src: url('~/assets/fonts/miSans-Normal.woff2');
   font-display: swap;
   font-variant-numeric: tabular-nums;
 }

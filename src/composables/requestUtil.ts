@@ -5,7 +5,7 @@
  * @param opt
  * @param custom
  */
-const fetch = async (url: string, opt: object = {}, custom: object = {}) => {
+const fetch = async (url: string, opt: object = {}, custom: object = {isToken:true}) => {
   // 解决刷新页面useFetch无返回
   if (nextTick) await nextTick()
 
@@ -20,16 +20,20 @@ const fetch = async (url: string, opt: object = {}, custom: object = {}) => {
       baseURL,
       // onRequest相当于请求拦截
       onRequest({ options }) {
-        // 根据额外的参数, 判断是否需要登录, 默认需要登录,如果没有 token, 直接重定向到登录
-
         // 请求开始的时候, 显示加载 loading
         utilMsg.$loadingBar.start()
-
+        //判断是否需要设置token
+        const isToken = custom.isToken
+        let authorization = ''
+        if (isToken) {
+          authorization  = 'Bearer ' + localStorage.getItem('token')
+        }
         // 设置请求头
         options.headers = {
           ...options.headers,
-          authorization: 'Token'
+          authorization
         }
+        console.log(options.headers,'options.headers')
       },
       // onResponse相当于响应拦截
       onResponse({ response }) {
