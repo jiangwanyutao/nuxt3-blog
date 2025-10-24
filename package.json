@@ -13,13 +13,16 @@
   "dependencies": {
     "@nuxt/image": "1.7.0",
     "@pinia/nuxt": "0.5.1",
+    "github-markdown-css": "^5.8.1",
+    "highlight.js": "^11.11.1",
+    "marked": "^16.4.1",
     "nuxt": "3.12.1",
     "pinia": "2.1.7",
     "three": "0.121.0",
+    "typed.js": "2.1.0",
     "vanta": "0.5.24",
     "vue": "3.4.27",
-    "vue-router": "4.3.3",
-    "typed.js": "2.1.0"
+    "vue-router": "4.3.3"
   },
   "devDependencies": {
     "@css-render/vue3-ssr": "0.15.14",

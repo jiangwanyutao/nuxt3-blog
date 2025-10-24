@@ -1,15 +1,15 @@
 <template>
   <header
     class="headerclass fixed top-0 left-0 right-0 css-animation bg-[rgba(255,255,255,0.7)] px-4 transition-colors duration-700 dark:bg-[rgba(38,38,38,0.7)]"
-    style="z-index: 9999"
+    style="z-index: 1999"
     :class="{ 'frosted-glass': !showMenu, 'bg-transparent': showMenu }"
   >
     <div
       class="container flex  mx-auto nav-height"
       ref="el"
     >
-      <CommonLogo></CommonLogo>
-      <CommonNavbar></CommonNavbar>
+    <CommonLogo></CommonLogo>
+    <CommonNavbar></CommonNavbar>
       <div
         class="flex justify-center items-center content-center"
         style="width: 30%"
@@ -39,8 +39,10 @@ const userStore = useUserStore()
 const showUserInfo = ref(false)
 onMounted(() => {
     // 从 localStorage 读取存储的用户信息
-    const savedUserInfo = localStorage.getItem('userInfo')
+    const savedUserInfo = localStorage.getItem('sj_userInfo')
+    console.log(savedUserInfo,'savedUserInfo')
     showUserInfo.value = savedUserInfo ? true : false
+    console.log(showUserInfo.value,'showUserInfo')
 });
 const goLogin = () => {
   router.push('/login')

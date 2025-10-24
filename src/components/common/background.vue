@@ -18,9 +18,9 @@
           >
             <h1
               class="mb-5 cursor-pointer text-7xl font-bold glitch"
-              data-text="Hi, 江晚"
+              :data-text="slogan"
             >
-              Hi, 江晚
+              {{ slogan }}
             </h1>
             <div
               class="centerbg-info rounded-lg bg-[rgba(0,0,0,.5)] p-3.5 max-md:w-[350px] md:min-w-[500px]"
@@ -37,35 +37,41 @@
                   color="#3b82f6"
                   @click="handleLeft"
                 />
-                <nuxt-link
-                  target="_blank"
-                  :to="gitHub"
-                >
-                  <Icon
-                    name="tdesign:logo-github-filled"
-                    class="mx-1.5 cursor-pointer"
-                  />
-                </nuxt-link>
-                <nuxt-link
-                  target="_blank"
-                  :to="gitee"
-                >
-                  <Icon
-                    name="simple-icons:gitee"
-                    class="mx-1.5 cursor-pointer"
-                    color="#be3020"
-                  />
-                </nuxt-link>
-                <nuxt-link
-                  target="_blank"
-                  :to="bilibili"
-                >
-                  <Icon
-                    name="tabler:brand-bilibili"
-                    class="mx-1.5 cursor-pointer"
-                    color="#38acea"
-                  />
-                </nuxt-link>
+                <!-- 动态渲染联系方式图标 -->
+                <template v-if="blogStore.blogConfig?.contactList && blogStore.blogConfig.contactList.length > 0">
+                  <a
+                    v-for="(contact, index) in blogStore.blogConfig.contactList"
+                    :key="index"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    :href="contact.link"
+                    :title="contact.name"
+                  >
+                    <img
+                      v-if="contact.icon.startsWith('http')"
+                      :src="contact.icon"
+                      :alt="contact.name"
+                      class="mx-1.5 cursor-pointer inline-block w-8 h-8 object-contain"
+                    />
+                    <Icon
+                      v-else
+                      :name="contact.icon"
+                      class="mx-1.5 cursor-pointer"
+                    />
+                  </a>
+                </template>
+                <!-- 默认图标（如果没有配置） -->
+                <template v-else>
+                  <a target="_blank" rel="noopener noreferrer" :href="gitHub">
+                    <Icon name="tdesign:logo-github-filled" class="mx-1.5 cursor-pointer" />
+                  </a>
+                  <a target="_blank" rel="noopener noreferrer" :href="gitee">
+                    <Icon name="simple-icons:gitee" class="mx-1.5 cursor-pointer" color="#be3020" />
+                  </a>
+                  <a target="_blank" rel="noopener noreferrer" :href="bilibili">
+                    <Icon name="tabler:brand-bilibili" class="mx-1.5 cursor-pointer" color="#38acea" />
+                  </a>
+                </template>
                 <Icon
                   name="ic:baseline-keyboard-double-arrow-right"
                   class="ml-4 cursor-pointer"
@@ -88,10 +94,16 @@
 import * as THREE from 'three'
 import BIRDS from 'vanta/dist/vanta.birds.min'
 import Typed from 'typed.js'
+import { useBlogStore } from '@/stores/blogStore'
+
 const vantaRef = ref(null)
 let vantaEffect: any = null
 const colorMode = useColorMode()
 const nuxtApp = useNuxtApp()
+const blogStore = useBlogStore()
+
+// 计算属性：获取标语
+const slogan = computed(() => blogStore.blogConfig?.slogan || 'Hi, 江晚')
 
 // watch 监听深色模式变化
 watch(colorMode, (newVal) => {
@@ -158,8 +170,8 @@ function init() {
 
 onMounted(() => {
   nextTick(() => {
-    // init()
-    // initTyped()
+    init()
+    initTyped()
     // 每5秒切换一次背景
     // bgInterval = setInterval(changeBg, 50000)
   })
@@ -183,7 +195,7 @@ const handleLeft = () => {
 
 const initTyped = () => {
   new Typed('#typed', {
-    strings: ['生老病死,天地万象,尽在吾辈', '挫其锐，解其纷，和其光，同其尘'], //数组：可以放多个打印内容
+    strings: ['生老病死,天地万象,尽在吾辈', '挫其锐，解其纷，和其光，同其尘', '坚持你所热爱的，热爱你所坚持的'], //数组：可以放多个打印内容
     typeSpeed: 150, //打印速度，单位是毫秒。
     backSpeed: 40, //回退速度，单位是毫秒。
     loop: true //是否循环播放。

@@ -11,33 +11,85 @@ export interface Article {
    */
   id: number
   /**
-   * 文章缩略图
+   * 文章缩略图 (前端字段)
    */
-  articleCover: string
+  articleCover?: string
   /**
-   * 文章标题
+   * 文章标题 (前端字段)
    */
-  articleTitle: string
+  articleTitle?: string
   /**
-   * 文章内容
+   * 文章内容 (前端字段)
    */
-  articleContent: string
+  articleContent?: string
   /**
-   * 文章分类
+   * 文章分类 (前端字段)
    */
-  category: CategoryVO
+  category?: CategoryVO | string
   /**
-   * 文章标签
+   * 文章标签 (前端字段)
    */
-  tagVOList: TagVO[]
+  tagVOList?: TagVO[]
   /**
    * 是否置顶 (0否 1是)
    */
-  isTop: number
+  isTop?: number | boolean
   /**
    * 发表时间
    */
   createTime: string
+  
+  // 后端字段
+  /**
+   * 文章标题 (后端字段)
+   */
+  title?: string
+  /**
+   * 文章摘要 (后端字段)
+   */
+  summary?: string
+  /**
+   * 文章内容 (后端字段)
+   */
+  content?: string
+  /**
+   * 文章封面 (后端字段)
+   */
+  cover?: string
+  /**
+   * 文章标签 (后端字段)
+   */
+  tags?: string[]
+  /**
+   * 浏览数
+   */
+  viewCount?: number
+  /**
+   * 点赞数
+   */
+  likeCount?: number
+  /**
+   * 评论数
+   */
+  commentCount?: number
+  /**
+   * 发布状态
+   */
+  publishStatus?: string
+  /**
+   * 用户ID
+   */
+  userId?: number
+  /**
+   * 用户信息
+   */
+  user?: {
+    id: number
+    userName: string
+    nickName: string
+    avatar?: string
+    remark?: string
+  }
 }
 
 /**

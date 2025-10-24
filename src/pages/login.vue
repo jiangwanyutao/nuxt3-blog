@@ -24,8 +24,8 @@
                             </path>
                         </svg>
                         <h2 class="text-3xl font-serif italic text-deep mb-6 leading-relaxed">
-                            思考是一种生活方式，阅读是一场心灵的旅行。在思境，我们探索知识的边界，打破思维的局限。</h2>
-                        <p class="text-orange font-medium">@江晚正愁余 - 思境创始人</p>
+                            思考是一种生活方式，阅读是一场心灵的旅行。在江晚正愁余，我们探索知识的边界，打破思维的局限。</h2>
+                        <p class="text-orange font-medium">@江晚正愁余 - 江晚正愁余创始人</p>
                     </div>
                 </section>
                 </p>
@@ -102,7 +102,7 @@
             <div class="w-full max-w-md p-6">
                 <div class="flex justify-between items-center mb-6">
                     <div>
-                        <p class="text-gray-600 pb-2">Welcome to <span class="text-blue-500 font-bold">思境blog</span></p>
+                        <p class="text-gray-600 pb-2">Welcome to <span class="text-blue-500 font-bold">江晚正愁余blog</span></p>
                         <h1 class="text-3xl font-bold text-gray-900 mt-1">{{ isLoginPanel ? '登录' : '注册' }}</h1>
                     </div>
                 </div>

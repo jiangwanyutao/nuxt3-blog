@@ -36,7 +36,7 @@
     </n-carousel>
     <div
         id="qwLink"
-        @click="router.push({ name: 'Links' })"
+        @click="$router.push({ path: 'FriendShip' })"
     >
       <button
           class="link_btn"
@@ -56,20 +56,11 @@ const linksTableData = reactive({
   records: [
     {
       id: 1,
-      log: 'https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel1.jpeg',
-      backImg: 'https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel1.jpeg',
-      name: 'itning',
-      description: 'itning的个人博客',
-      realmName: 'https://itning.github.io',
-      state: true
-    },
-    {
-      id: 2, // 修改 id，确保唯一性
-      log: 'https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel1.jpeg',
-      backImg: 'https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel1.jpeg',
-      name: '2121212',
-      description: 'itning的个人博客',
-      realmName: 'https://itning.github.io',
+      log: 'https://lk.jwyt.cloud/sijing/2025/10/23/68fa1cbd8650a.png',
+      backImg: 'https://lk.jwyt.cloud/sijing/2025/10/23/68fa1813bddc2.jpg',
+      name: '江晚正愁余',
+      description: '坚持你所热爱的，热爱你所坚持的!',
+      realmName: 'https://jwyt.xyz',
       state: true
     }
   ],
@@ -92,18 +83,18 @@ const linksTableData = reactive({
 
 .carousel-content {
   position: relative; /* 使内容相对定位 */
-  height: 140%; /* 确保内容占满 */
+  height: 100%; /* 确保内容占满 */
 }
 
 .background-image {
   width: 100%; /* 背景图片占满 */
-  height: 140%; /* 背景图片占满 */
+  height: 100%; /* 背景图片占满 */
   object-fit: cover; /* 保持比例，裁剪多余部分 */
 }
 
 .overlay {
   position: absolute; /* 绝对定位，覆盖在背景图片上 */
-  top: 30%; /* 垂直居中 */
+  top: 40%; /* 垂直居中 */
   left: 50%; /* 水平居中 */
   transform: translate(-50%, -50%); /* 使元素以中心为基准居中 */
   display: flex;

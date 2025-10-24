@@ -48,7 +48,7 @@
       </div>
     </div>
 
-    <div class="overlay" @click="router.push({ name: 'About' })">
+    <div class="overlay" @click="goToRandomArticle">
       <div class="mask">
         <h1>随便逛逛</h1>
         <div>
@@ -60,9 +60,40 @@
     </div>
     </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ArrowForwardSharp } from '@vicons/ionicons5'
-const router = useRouter();
+
+const router = useRouter()
+
+// 跳转到随机文章
+const goToRandomArticle = async () => {
+  try {
+    // 调用后端API获取文章列表
+    const { getArticleList } = await import('~/api/article')
+    const response = await getArticleList({
+      page: 1,
+      limit: 100 // 获取足够多的文章用于随机选择
+    }) as any
+    
+    console.log('随机文章API响应:', response)
+    
+    if (response && response.data && response.data.items && response.data.items.length > 0) {
+      const articles = response.data.items
+      // 随机选择一篇文章
+      const randomIndex = Math.floor(Math.random() * articles.length)
+      const randomArticle = articles[randomIndex]
+      
+      console.log('随机选中的文章:', randomArticle)
+      
+      // 跳转到文章详情页
+      router.push(`/article/${randomArticle.id}`)
+    } else {
+      console.log('暂无文章，快去写一篇吧~')
+    }
+  } catch (error) {
+    console.error('获取随机文章失败:', error)
+  }
+}
 </script>
 <style  scoped>
 .blog_main_one_item {

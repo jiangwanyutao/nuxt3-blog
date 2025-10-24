@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const blogStore = useBlogStore()
+</script>
 
 <template>
   <div class="logos" style="width: 30%">
@@ -6,11 +8,11 @@
       <span class="logolink logo">
         <a href="/">
           <ruby>
-            <span class="sakuraso">思境</span>
+            <span class="sakuraso">{{ blogStore.blogConfig?.title || '江晚正愁余' }}</span>
             <span class="no"></span>
             <span class="shironeko">Blog</span>
             <rp></rp>
-            <rt class="logo">江晚正愁余</rt>
+            <rt class="logo">{{ blogStore.blogConfig?.hoverTitle || 'jiang wan zheng chou yu' }}</rt>
             <rp></rp>
           </ruby>
         </a>
@@ -147,10 +149,12 @@ p:hover #n2 {
   opacity: 0;
   transition-property: opacity, transform;
   transition-duration: 0.5s, 0.5s;
+  line-height: 1.2;
+  margin-top: 5px;
 }
 
 .logolink a:hover ruby rt {
   opacity: 1;
-  transform: translateY(25px);
+  transform: translateY(35px);
 }
 </style>

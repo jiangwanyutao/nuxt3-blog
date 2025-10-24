@@ -2,7 +2,7 @@
   <div class="contonter">
     <CommonBackground ref="target"></CommonBackground>
     <div
-      class="w-full mx-auto max-w-screen-2xl"
+      class="w-[80%] mx-auto max-w-screen-2xl"
       style="display: flex; margin-top: 20px"
     >
       <div class="gossip">
@@ -19,6 +19,7 @@
           mousewheel
           style="width: 100%; height: 50px"
           autoplay
+          centered-slides="true"
         >
           <n-carousel-item
             v-for="item in syMomentsData"
@@ -28,12 +29,12 @@
             <NuxtLink
               :to="`${item.path}`"
               class="flex items-center"
-              style="margin-left: 25px"
+              style="margin-left: 55px"
             >
-              <Icon
+              <!-- <Icon
                 size="20"
                 :name="item.icon"
-              />
+              /> -->
               <span style="margin-right: 20px; height: 100%; line-height: 50px">{{
                 item.content
               }}</span>
@@ -42,7 +43,7 @@
         </n-carousel>
         <div
           class="go_gossip"
-          @click="router.push({ name: 'Moments' })"
+          @click="$router.push({ name: 'Moments' })"
         >
           <n-icon size="25">
             <ArrowForwardCircle />
@@ -75,110 +76,314 @@
             >
           </div>
           <NuxtLink
-            :to="`${item}`"
+            to="/article"
             class="gd"
             >更多</NuxtLink
           >
         </div>
 
         <!-- 文章列表 -->
-        <ArticleList v-for="item in articleList" :key="item.id" :item="item" />
-        <!-- <BaseTwikoo></BaseTwikoo> -->
-         <BaseWeek></BaseWeek>
+        <div class="articles-grid">
+          <ArticleList v-for="item in articleList" :key="item.id" :item="item" />
+        </div>
       </div>
 
       <div class="wz_yc">
-        <!--        <n-affix-->
-        <!--            :top="120" :trigger-top="160"-->
-        <!--        >-->
         <!-- 博主面板 -->
         <HomeUserInfo />
-        <!--        </n-affix>-->
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import { ApertureOutline, ArrowForwardCircle } from '@vicons/ionicons5'
-// import api from '@/api'
+import { useBlogStore } from '@/stores/blogStore'
 import type { Article } from '@/types/article'
-//查询所有说说
-const syMomentsData = ref([
-  {
-    content: '内容'
-  },
-  {
-    content: '内容2'
-  },
-  {
-    content: '内容3'
-  },
-  {
-    content: '内容4'
-  }
-])
 
-//查看所有文章分类
-const ArticleTypes = ref([
-  'Vue',
-  'Java',
-  '算法',
-  '数据结构',
-  '网络',
-  '操作系统',
-  '前端',
-  '后端',
-  '数据库',
-  '中间件'
-])
-//获取当前用户的ip地址
-function getIp() {
-  api.common.apiGetIp().then((res) => {
-    console.log(res)
-    utilMsg.$notification.create({
-      placement: 'bottom-right',
-      title: '欢迎访问',
-      content: () => {
-        return h('div', {}, [
-          h('p', {}, `来自：${res.location}`),
-          h('p', {}, `你的ip地址是：${res.ip}`),
-          h('p', {}, `设备信息：${res.system}`),
-          h('p', {}, `今天是：${res.week}, ${res.tip}`)
-        ])
-      },
-      meta: res.time,
-      duration: 5000
-    })
-  })
+const blogStore = useBlogStore()
+//查询所有说说
+interface MomentDisplayItem {
+  id: number
+  content: string
+  icon: string
+  path: string
+  createTime?: string
+  user?: {
+    userId: number
+    userName: string
+    nickName: string
+    avatar?: string
+  }
 }
 
-const articleList = ref<Article[]>([
-  {
-    id: 1,
-    articleTitle: '文章标题1',
-    articleCover: 'https://cdn.qiniu.jwyt.cloud/common/298f491fc98a464b9b434564c42bf4aa.jpg',
-    articleContent: '文章内容1',
-    category: {
-      id: 1,
-      categoryName: 'Vue'
-    },
-    tagVOList: [
-      {
-        id: 1,
-        tagName: 'Vue'
-      }
-    ],
-    isTop: true,
-    createTime: '2021-09-15',
-    isTop: true
+const syMomentsData = ref<MomentDisplayItem[]>([])
+
+// 获取说说数据
+const fetchMomentsData = async () => {
+  try {
+    const { getMomentsList } = await import('~/api/moments')
+    const response = await getMomentsList({ 
+      page: 1, 
+      size: 5,
+      isPublic: true 
+    })
+    
+    if (response && response.code === 200) {
+      // 为轮播图添加必要的字段
+      syMomentsData.value = response.data.list.map(item => ({
+        id: item.id,
+        content: item.content || '暂无内容',
+        icon: 'material-symbols:chat-bubble-outline', // 默认图标
+        path: '/moments', // 跳转到说说页面
+        createTime: item.createTime,
+        user: item.user
+      }))
+    } else {
+      console.warn('说说数据格式异常:', response)
+      // 使用默认数据作为fallback
+      syMomentsData.value = getDefaultMomentsData()
+    }
+  } catch (error) {
+    console.error('获取说说数据失败:', error)
+    // 使用默认数据作为fallback
+    syMomentsData.value = getDefaultMomentsData()
   }
-])
+}
+
+// 默认说说数据（作为fallback）
+const getDefaultMomentsData = () => {
+  return [
+    {
+      id: 1,
+      content: '欢迎来到江晚正愁余Blog！',
+      icon: 'material-symbols:chat-bubble-outline',
+      path: '/moments'
+    },
+    {
+      id: 2,
+      content: '分享生活中的美好时刻',
+      icon: 'material-symbols:favorite-outline',
+      path: '/moments'
+    },
+    {
+      id: 3,
+      content: '记录每一个精彩瞬间',
+      icon: 'material-symbols:photo-camera-outline',
+      path: '/moments'
+    }
+  ]
+}
+
+// 文章分类列表
+const ArticleTypes = ref<string[]>([])
+// 当前选中的分类
+const selectedCategory = ref<string>('')
+// 当前选中的分类索引
+const selectedCategoryIndex = ref<number>(0)
+
+const articleList = ref<Article[]>([])
+
+// 获取文章分类列表
+const fetchCategories = async () => {
+  try {
+    const { getCategories } = await import('~/api/article')
+    const response = await getCategories() as any
+    console.log('分类列表响应:', response)
+    
+    if (response && response.data) {
+      // 提取分类名称
+      ArticleTypes.value = response.data.map((cat: any) => cat.categoryName || cat.name)
+      console.log('分类列表:', ArticleTypes.value)
+    }
+  } catch (error) {
+    console.error('获取分类列表失败:', error)
+    // 使用默认分类
+    ArticleTypes.value = ['算法', '数据结构', '网络', '操作系统', '前端', '后端', '数据库', '中间件']
+  }
+}
+
+// 获取文章列表
+const fetchArticleList = async (category: string = '') => {
+  console.log('开始获取文章列表...', category ? `分类: ${category}` : '全部')
+  try {
+    const { getArticleList } = await import('~/api/article')
+    const params: any = {
+      page: 1,
+      limit: 4,
+      ...(category && { category }) // 如果有分类，添加分类参数
+    }
+    console.log('API调用参数:', params)
+    const response = await getArticleList(params) as any
+    console.log('API响应数据:', response)
+    
+    if (response) {
+      articleList.value = response.data.items
+      console.log('文章列表获取成功:', articleList.value)
+      console.log('文章数量:', articleList.value.length)
+    } else {
+      console.warn('文章列表数据格式异常:', response)
+      // 使用默认数据作为fallback
+      articleList.value = getDefaultArticleData()
+    }
+  } catch (error) {
+    console.error('获取文章列表失败:', error)
+    // 使用默认数据作为fallback
+    articleList.value = getDefaultArticleData()
+  }
+}
+
+// 分类点击事件
+const liClick = (index: number, category: string) => {
+  console.log('点击分类:', index, category)
+  selectedCategoryIndex.value = index
+  selectedCategory.value = category
+  
+  // 更新样式
+  const items = document.querySelectorAll('.articleClassification_dvi')
+  items.forEach((item, i) => {
+    if (i === index) {
+      item.classList.add('liBgc')
+    } else {
+      item.classList.remove('liBgc')
+    }
+  })
+  
+  // 根据分类筛选文章
+  fetchArticleList(category)
+}
+
+// 默认文章数据（作为fallback）
+const getDefaultArticleData = (): Article[] => {
+  return [
+    {
+      id: 1,
+      articleTitle: '欢迎来到江晚正愁余Blog',
+      articleCover: 'https://cdn.qiniu.jwyt.cloud/common/298f491fc98a464b9b434564c42bf4aa.jpg',
+      articleContent: '这是一个基于Nuxt3和NestJS构建的现代化博客系统，具有优雅的设计和丰富的功能。',
+      category: {
+        id: 1,
+        categoryName: 'Vue'
+      },
+      tagVOList: [
+        {
+          id: 1,
+          tagName: 'Vue'
+        },
+        {
+          id: 2,
+          tagName: 'Nuxt3'
+        }
+      ],
+      isTop: 1,
+      createTime: new Date().toISOString()
+    }
+  ]
+}
 
 onMounted(() => {
-  getIp()
+  utilMsg.$message.success('欢迎来到江晚正愁余的Blog')
+  blogStore.blogInfoData()
+  // 获取说说数据
+  fetchMomentsData()
+  // 获取文章分类列表
+  fetchCategories()
+  // 获取文章列表
+  fetchArticleList()
 })
 </script>
 <style scoped lang="scss">
+/* 分类头部 */
+.category-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 48px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f0ebe5;
+}
+
+.category-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.category-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #f5d4cc 0%, #e8b4a8 100%);
+  color: white;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.category-name {
+  font-size: 28px;
+  font-weight: 600;
+  color: #e8b4a8;
+  margin: 0;
+}
+
+.category-meta {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.category-description {
+  color: #9a9a9a;
+  font-size: 14px;
+  margin: 0;
+}
+
+.enter-category {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #e8b4a8;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.enter-category:hover {
+  color: #d89b8d;
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .category-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .category-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+/* 文章网格布局 */
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  margin-top: 32px;
+}
+
+@media (max-width: 768px) {
+  .articles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .contonter {
   position: relative;
 }
@@ -209,7 +414,7 @@ onMounted(() => {
   top: 100px;
 }
 .gossip {
-  width: 80%;
+  width: 100%;
   height: 50px;
   background-color: #fff;
   margin: 0 auto;

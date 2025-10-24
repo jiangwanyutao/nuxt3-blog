@@ -136,7 +136,7 @@ function user_db_ico_yk() {
 
 onMounted(() => {
   //查询一言
-  fetchData()
+  // fetchData()
 })
 
 // 一言

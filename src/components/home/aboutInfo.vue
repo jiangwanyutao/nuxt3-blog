@@ -51,13 +51,14 @@
 </template>
 
 <script setup lang="ts">
-// Mock 数据
-const syArticleData = ref([
-  120, // 文章数量
-  30,  // 运行天数
-  500  // 访问数量
-]);
 import { BookSharp, Bonfire, BowlingBallSharp } from '@vicons/ionicons5';
+
+// 统计数据
+const syArticleData = ref([
+  0, // 文章数量
+  0, // 运行天数
+  0  // 访问数量
+]);
 // ---------------数据START-------------------
 const titles = ['文章数量', '运行天数', '访问数量'];
 const icons = [Bonfire, BookSharp, BowlingBallSharp];
@@ -96,6 +97,34 @@ const resetWidth = (index) => {
   wz_num.value[index] = true; // 只显示当前选项的数字
   blog_main_two_div_width.value = true;
 };
+
+// 获取网站统计数据
+const fetchWebsiteStats = async () => {
+  try {
+    const config = useRuntimeConfig()
+    const baseURL = config.public.baseURL
+    const response = await $fetch<{
+      articleCount: number
+      runningDays: number
+      visitCount: number
+    }>(`${baseURL}/website-config/stats`)
+    
+    if (response) {
+      syArticleData.value = [
+        response.articleCount || 0,
+        response.runningDays || 0,
+        response.visitCount || 0
+      ]
+    }
+  } catch (error) {
+    console.error('获取网站统计数据失败:', error)
+  }
+}
+
+// 组件挂载时获取数据
+onMounted(() => {
+  fetchWebsiteStats()
+})
 
 // ---------------数据END-------------------
 </script>

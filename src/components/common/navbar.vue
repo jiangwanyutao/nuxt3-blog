@@ -1,15 +1,31 @@
 <script setup lang="ts">
-const blogStore = useBlogStore()
-//滚动条
-const isScrollUp = ref(false)
-//导航栏是否固定
-const lastScrollPosition = ref()
+import { getMenuTree, type MenuTreeItem } from '~/api/menu'
+import { useBlogStore } from '~/stores/blogStore'
 
-// 监听滚动条事件
+// 菜单数据
+const menuTree = ref<MenuTreeItem[]>([])
+const isMenuVisible = ref(false)
+const activeMenuId = ref<number | null>(null)
+let hoverTimeout: NodeJS.Timeout | null = null
+
+// 使用 store
+const blogStore = useBlogStore()
+
+// 滚动相关
+const isScrollUp = ref(false)
+const lastScrollPosition = ref(0)
+const route = useRoute()
+
+// 判断是否为文章页
+const isArticlePage = computed(() => {
+  return route.path.startsWith('/article/')
+})
+
+// 监听滚动事件
 const handleScroll = () => {
   const currentScrollPosition = window.scrollY
-  if (currentScrollPosition > lastScrollPosition.value) {
-    // 向下滚动
+  if (currentScrollPosition > lastScrollPosition.value && currentScrollPosition > 100) {
+    // 向下滚动且超过100px
     isScrollUp.value = true
   } else {
     // 向上滚动
@@ -18,303 +34,598 @@ const handleScroll = () => {
   lastScrollPosition.value = currentScrollPosition
 }
 
-// ------------------- 导航栏鼠标悬停移开显示消失START------------------------
-let menus_child_state = ref(-99)
+// 显示的文字
+const scrollText = computed(() => {
+  if (isArticlePage.value && blogStore.currentArticleTitle) {
+    return `正在阅读：${blogStore.currentArticleTitle}`
+  }
+  return '旅途总有一天会迎来终点,不必匆忙'
+})
 
-function menusMouseOver(type) {
-  menus_child_state.value = type
+// 获取菜单数据
+const fetchMenuTree = async () => {
+  try {
+    const response = await getMenuTree()
+    if (response && response.code === 200) {
+      menuTree.value = response.data || []
+    } else {
+      console.warn('菜单数据格式异常:', response)
+      menuTree.value = getDefaultMenuData()
+    }
+  } catch (error) {
+    console.error('获取菜单数据失败:', error)
+    // 使用默认菜单数据作为fallback
+    menuTree.value = getDefaultMenuData()
+  }
 }
 
-function menusMouseLeave() {
-  menus_child_state.value = -99
+// 默认菜单数据（作为fallback）
+const getDefaultMenuData = (): MenuTreeItem[] => {
+  return [
+    {
+      menuId: 1,
+      icon: 'noto:house-with-garden',
+      text: '开始浏览',
+      path: '/',
+      class: 'menu-item-home',
+      sort: 1,
+      parentId: undefined,
+      isExternal: '0',
+      visible: '0',
+      enabled: '0',
+      children: [
+        {
+          menuId: 2,
+          icon: 'mynaui:sparkles',
+          text: '网站',
+          path: undefined,
+          class: undefined,
+          sort: 1,
+          parentId: 1,
+          isExternal: '0',
+          visible: '0',
+          enabled: '0',
+          children: [
+            {
+              menuId: 3,
+              icon: '',
+              text: '个人主页',
+              path: '/',
+              class: undefined,
+              sort: 1,
+              parentId: 2,
+              isExternal: '0',
+              visible: '0',
+              enabled: '0'
+            },
+            {
+              menuId: 4,
+              icon: '',
+              text: '云盘主页',
+              path: 'https://jwyt.cloud',
+              class: undefined,
+              sort: 2,
+              parentId: 2,
+              isExternal: '1',
+              visible: '0',
+              enabled: '0'
+            }
+          ]
+        },
+        {
+          menuId: 5,
+          icon: 'mynaui:train',
+          text: '项目',
+          path: undefined,
+          class: undefined,
+          sort: 2,
+          parentId: 1,
+          isExternal: '0',
+          visible: '0',
+          enabled: '0',
+          children: [
+            {
+              menuId: 6,
+              icon: '',
+              text: 'ChatGpt',
+              path: 'https://chat.jwyt.cloud',
+              class: undefined,
+              sort: 1,
+              parentId: 5,
+              isExternal: '1',
+              visible: '0',
+              enabled: '0'
+            },
+            {
+              menuId: 7,
+              icon: '',
+              text: '网站主题项目',
+              path: undefined,
+              class: undefined,
+              sort: 2,
+              parentId: 5,
+              isExternal: '0',
+              visible: '0',
+              enabled: '0'
+            }
+          ]
+        }
+      ]
+    },
+    {
+      menuId: 8,
+      icon: '',
+      text: '关于',
+      path: '/about',
+      class: 'menu-item-archives',
+      sort: 2,
+      parentId: undefined,
+      isExternal: '0',
+      visible: '0',
+      enabled: '0'
+    }
+  ]
 }
 
-// ------------------- 导航栏鼠标悬停移开显示消失END------------------------
-
-const isExternalLink = (path) => {
-  // 判断是否为外链
-  return /^(http|https):\/\//.test(path)
+// 判断是否为外链
+const isExternalLink = (path?: string) => {
+  return path && /^(http|https):\/\//.test(path)
 }
 
+// 显示菜单
+const showMenu = (menuId: number) => {
+  if (hoverTimeout) {
+    clearTimeout(hoverTimeout)
+    hoverTimeout = null
+  }
+  // 防止重复设置相同的菜单
+  if (activeMenuId.value === menuId && isMenuVisible.value) {
+    return
+  }
+  activeMenuId.value = menuId
+  isMenuVisible.value = true
+}
+
+// 隐藏菜单
+const hideMenu = () => {
+  hoverTimeout = setTimeout(() => {
+    activeMenuId.value = null
+    isMenuVisible.value = false
+  }, 300)
+}
+
+// 取消隐藏菜单
+const cancelHideMenu = () => {
+  if (hoverTimeout) {
+    clearTimeout(hoverTimeout)
+    hoverTimeout = null
+  }
+}
+
+
+// 获取当前激活的菜单项
+const activeMenu = computed(() => {
+  if (!activeMenuId.value) return null
+  return menuTree.value.find(menu => menu.menuId === activeMenuId.value)
+})
+
+// 组件挂载时获取菜单数据
 onMounted(() => {
+  fetchMenuTree()
   lastScrollPosition.value = window.scrollY
   window.addEventListener('scroll', handleScroll)
 })
 
+// 组件卸载时清理定时器
 onUnmounted(() => {
+  if (hoverTimeout) {
+    clearTimeout(hoverTimeout)
+  }
   window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
 <template>
-  <!--  @mouseleave="menusMouseLeave"-->
-  <nav
-    style="height: 64px; width: 40%"
-    @mouseleave="menusMouseLeave"
-  >
-    <ul
-      class="AppHeader flex nav-height justify-center items-center content-center frosted-glass"
-      :class="{ 'is-showUp': isScrollUp, 'is-showdown': !isScrollUp }"
-    >
-      <li
-        v-for="(item, index) in blogStore.menuList"
-        :key="index"
-        :class="item.class"
-        @mouseover="menusMouseOver(index)"
-      >
-        <NuxtLink
-          :target="isExternalLink(item.path) ? '_blank' : '_self'"
-          :to="`${item.path}`"
-          class="flex items-center blog_menu"
-        >
-          <span
-            class="pl-1"
-            style="margin-right: 20px"
-            >{{ item.text }}</span
-          >
-        </NuxtLink>
-        <!--            开始浏览样式-->
-        <div v-if="menus_child_state === index">
-          <ul class="menus_child slide-up-my">
-            <li
-              class="submenu-item"
-              v-for="(child, childIndex) in item.children"
-              :key="childIndex"
-              :class="item.class"
-            >
-              <NuxtLink
-                :target="isExternalLink(child.path) ? '_blank' : '_self'"
-                :to="`${child.path}`"
-                class="flex items-center"
-              >
-                <Icon
-                  size="20"
-                  :name="child.icon"
-                />
-                &nbsp;
-                <h2 style="width: fit-content; font-size: 16px; font-weight: bold">
-                  {{ child.text }}
-                </h2>
-                <Icon
-                  name="mynaui:chevron-right"
-                  class="ml-2"
-                />
-              </NuxtLink>
+  <!-- 背景蒙层 -->
+  <div 
+    class="overlay" 
+    :class="{ show: isMenuVisible }"
+  ></div>
 
-              <ul class="submenu">
-                <li
-                  class="menus_child_item"
-                  v-for="(childs, childIndexs) in child.children"
-                  :key="childIndexs"
-                  :class="item.class"
-                >
-                  <NuxtLink
-                    :to="`${childs.path}`"
-                    :target="isExternalLink(childs.path) ? '_blank' : '_self'"
-                    class="flex items-center menus_child_menu"
-                  >
-                    <Icon
-                      v-if="childs.icon"
-                      size="20"
-                      :name="childs.icon"
-                    />
-                    &nbsp;
-                    <h4 style="width: fit-content; text-align: center">{{ childs.text }}</h4>
-                  </NuxtLink>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </li>
-    </ul>
-    <ul
-      class="nav-height flex justify-center items-center content-center"
-      :class="{ 'is-showUp': isScrollUp, 'is-showdown': !isScrollUp, invisible: !isScrollUp }"
+  <!-- 导航栏容器 -->
+  <div 
+    class="navbar-container"
+    @mouseenter="cancelHideMenu"
+    @mouseleave="hideMenu"
+  >
+    <!-- 主导航栏 -->
+    <nav class="top-navbar" :class="{ 'is-hidden': isScrollUp }">
+      <!-- 导航头部 -->
+      <div class="nav-header">
+        <template v-for="menu in menuTree" :key="menu.menuId">
+          <a 
+            v-if="menu.children && menu.children.length > 0"
+            href="#" 
+            class="nav-link has-dropdown"
+            :class="{ active: activeMenuId === menu.menuId }"
+            @mouseenter="showMenu(menu.menuId)"
+          >
+            {{ menu.text }}
+          </a>
+          <NuxtLink 
+            v-else
+            :to="menu.path || '#'"
+            :target="isExternalLink(menu.path || undefined) ? '_blank' : '_self'"
+            class="nav-link"
+          >
+            {{ menu.text }}
+          </NuxtLink>
+        </template>
+      </div>
+    </nav>
+
+    <!-- 悬浮菜单框 -->
+    <div 
+      class="floating-menu" 
+      :class="{ show: isMenuVisible && activeMenu }"
+      @mouseenter="cancelHideMenu"
+      @mouseleave="hideMenu"
     >
-      <span class="py-1.5"> </span>
-      <li class="flex items-center">
-        <span class="pl-1">旅途总有一天会迎来终点,不必匆忙</span>
-      </li>
-    </ul>
-  </nav>
+      <div v-if="activeMenu" class="menu-content">
+      <template v-for="(section, sectionIndex) in activeMenu.children" :key="section.menuId">
+        <div 
+          class="menu-section" 
+          :style="{ animationDelay: `${sectionIndex * 0.1 + 0.1}s` }"
+        >
+          <a href="#" class="menu-item" :class="{ 'has-submenu': section.children && section.children.length > 0 }">
+            <span v-if="section.icon" class="menu-icon">
+              <Icon :name="section.icon" size="20" />
+            </span>
+            <span v-else class="menu-icon">📁</span>
+            {{ section.text }}
+          </a>
+          
+          <div 
+            v-if="section.children && section.children.length > 0" 
+            class="submenu-items two-column"
+          >
+            <template v-for="(child, childIndex) in section.children" :key="child.menuId">
+              <NuxtLink 
+                :to="child.path || '#'"
+                :target="isExternalLink(child.path || undefined) ? '_blank' : '_self'"
+                class="submenu-item"
+                :style="{ animationDelay: `${sectionIndex * 0.1 + childIndex * 0.05 + 0.3}s` }"
+              >
+                {{ child.text }}
+              </NuxtLink>
+            </template>
+          </div>
+        </div>
+      </template>
+      </div>
+    </div>
+
+    <!-- 滚动时显示的文字栏 -->
+    <div class="scroll-text-bar" :class="{ 'is-visible': isScrollUp }">
+      <span>{{ scrollText }}</span>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.submenu {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0;
-  /* 子菜单缩进 */
-  padding: 0 0 0 20px;
-}
-
-.submenu-item {
-  padding: 8px 12px;
-  margin: 4px 0;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-.submenu-item:hover {
-  background: rgba(254, 247, 217, 0.7);
-  transform: translateX(4px);
-}
-
-.blog_menu {
-  padding: 0 10px;
-  color: #000;
-  font-weight: 500;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.blog_menu::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background: #425aef;
-  transition: all 0.3s ease;
-  transform: translateX(-50%);
-}
-
-.blog_menu:hover::after {
-  width: 100%;
-}
-
-.AppHeader {
-  ul > li > span:hover {
-    background-color: #425aef;
-    color: #fff !important;
-  }
-}
-
-.nav-height {
-  height: 64px;
-}
-
-.is-showUp {
-  transform: translateY(-100%);
-  transition: transform 0.3s, -webkit-transform 0.3s;
-}
-
-.is-showdown {
-  transform: translateY(0);
-  transition: transform 0.3s, -webkit-transform 0.3s;
-}
-
-/**毛玻璃 */
-.frosted-glass {
-  //box-shadow: 0 0.3px 0.3px rgba(0, 0, 0, 0.1), 0 0.7px 1px rgba(0, 0, 0, 0.15), 0 1.2px 2.5px rgba(0, 0, 0, 0.2), 0 1.4px 5px rgba(0, 0, 0, 0.25), 0 8px 15px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(1px);
-}
-
-.frosted-glass:hover {
-  //box-shadow: 0 0.7px 1px rgba(0, 0, 0, 0.157), 0 1.7px 2.6px rgba(0, 0, 0, 0.224), 0 3.5px 5.3px rgba(0, 0, 0, 0.28), 0 7.3px 11px rgba(0, 0, 0, 0.346), 0 20px 30px rgba(0, 0, 0, 0.5);
-}
-
-.menus_child {
-  width: 320px;
-  position: absolute;
-  top: 60px;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.98);
-  color: #000;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  padding: 12px;
+/* 背景蒙层 - 白色磨砂效果，覆盖除菜单外的所有内容 */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(10px);
-  transform-origin: top center;
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 9999;
+  pointer-events: none;
 }
 
-.menus_child li {
-  margin: 8px 8px;
-  animation: slide-in-from-right 0.8s ease both;
-  opacity: 0; /* 初始透明 */
-  animation-fill-mode: forwards; /* 保持最后状态 */
+.overlay.show {
+  opacity: 1;
+  visibility: visible;
 }
 
-/* 为每个菜单项设置不同的延迟 */
-.menus_child li:nth-child(1) {
-  animation-delay: 0s;
-}
-.menus_child li:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.menus_child li:nth-child(3) {
-  animation-delay: 0.3s;
-}
-.menus_child li:nth-child(4) {
-  animation-delay: 0.4s;
+/* 导航栏容器 - 适应整体布局 */
+.navbar-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10000;
 }
 
-/* 定义动画 */
-@keyframes slide-in-from-right {
-  0% {
-    transform: translate(40px, 0);
-    opacity: 0;
-  }
-
-  100% {
-    transform: translate(0, 0);
-    opacity: 1;
-  }
+/* 顶部导航栏 - 移除背景和阴影 */
+.top-navbar {
+  background: transparent;
+  padding: 0 20px;
+  height: 50px;
+  overflow: visible;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.menus_child_item {
+.top-navbar.is-hidden {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+/* 滚动文字栏 */
+.scroll-text-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
 }
 
-.menus_child li > div {
-  padding: 0 10px;
+.scroll-text-bar.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.menus_child_menu {
-  padding: 6px 12px;
+.scroll-text-bar span {
+  font-size: 16px;
+  color: #333;
+  font-weight: 700;
+}
+
+/* 悬浮菜单框 - 相对定位 */
+.floating-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  padding: 8px;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  width: auto;
+  min-width: 360px;
+  max-width: 90vw;
+  height: auto;
+  overflow: visible;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(-10px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10001;
+  margin-top: 10px;
+}
+
+.floating-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* 导航头部 */
+.nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  height: 50px;
+}
+
+.nav-link {
+  color: #333;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 15px 0;
+  position: relative;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 15px;
+}
+
+.nav-link:hover {
+  color: #000;
+}
+
+/* .nav-link.has-dropdown::after {
+  content: '▼';
+  font-size: 10px;
+  margin-left: 4px;
   color: #666;
-  font-weight: normal;
-  transition: all 0.2s ease;
-  border-radius: 6px;
+  transition: transform 0.3s ease;
+} */
+
+.nav-link.active {
+  background: rgba(255, 182, 193, 0.2);
+  color: #d63384;
+  padding: 8px 16px;
+  border-radius: 20px;
+  margin: -8px 0;
+}
+
+.nav-link.active::after {
+  transform: rotate(180deg);
+  color: #d63384;
+}
+
+/* 菜单内容 */
+.menu-content {
+  box-sizing: border-box;
+}
+
+/* 菜单项样式 */
+.menu-section {
+  padding: 2px;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.menu-section:last-child {
+  margin-bottom: 0;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  color: #666;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  margin-bottom: 4px;
   font-size: 14px;
+  font-weight: 500;
+  position: relative;
 }
 
-.menus_child_menu:hover {
-  color: #f97316;
-  background-color: rgba(252, 235, 161, 0.5);
-  transform: translateX(4px);
+/* 有子菜单的一级菜单添加箭头 */
+.menu-item.has-submenu::after {
+  content: '›';
+  font-size: 14px;
+  margin-left: 8px;
+  color: #999;
+  transition: all 0.3s ease;
+  font-weight: normal;
 }
 
-.menus_child_item h2 {
-  width: 45px;
+/* hover整个菜单区域时的背景效果 */
+.menu-section:hover {
+  background: rgba(255, 182, 193, 0.1);
+  border-radius: 8px;
 }
 
-.slide-up-my {
-  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* hover整个菜单区域时，一级菜单文字变色 */
+.menu-section:hover > .menu-item {
+  color: #d63384;
 }
 
-@keyframes slideUp {
-  from {
+.menu-section:hover > .menu-item.has-submenu::after {
+  color: #d63384;
+}
+
+/* 当子菜单被hover时箭头变化 */
+.menu-section:hover .submenu-items:hover ~ .menu-item.has-submenu::after,
+.menu-section .submenu-items:hover + .menu-item.has-submenu::after {
+  transform: rotate(90deg);
+}
+
+/* 更简单的方法：当子菜单容器被hover时，父级menu-item的箭头旋转 */
+.menu-section:has(.submenu-items:hover) .menu-item.has-submenu::after {
+  transform: rotate(90deg);
+}
+
+.menu-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+/* 子菜单项 */
+.submenu-items {
+  margin-left: 16px;
+  margin-top: 0px;
+  padding-right: 16px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.submenu-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  color: #666;
+  text-decoration: none;
+  font-size: 13px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  margin-bottom: 3px;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.submenu-item:hover {
+  background: rgba(255, 182, 193, 0.25);
+  color: #d63384;
+  font-weight: 500;
+}
+
+/* 双列布局 */
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+/* 隐藏滚动条 */
+.floating-menu::-webkit-scrollbar {
+  display: none;
+}
+
+.floating-menu {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* 简单的从上往下显示动画 - 所有元素初始状态 */
+.menu-section, .menu-item, .submenu-item {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* 菜单区域按顺序显示 */
+.floating-menu.show .menu-section {
+  animation: simpleSlideIn 0.3s ease-out forwards;
+  /* 延迟由模板中的 :style="{ animationDelay: `${sectionIndex * 0.1 + 0.1}s` }" 控制 */
+}
+
+/* 一级菜单项显示 */
+.floating-menu.show .menu-section .menu-item {
+  animation: simpleSlideIn 0.3s ease-out forwards;
+  animation-delay: inherit;
+}
+
+/* 子菜单项按顺序显示 */
+.floating-menu.show .menu-section .submenu-item {
+  animation: simpleSlideIn 0.3s ease-out forwards;
+  /* 延迟由模板中的 :style="{ animationDelay: `${sectionIndex * 0.1 + childIndex * 0.05 + 0.3}s` }" 控制 */
+}
+
+/* 简单的滑入动画 */
+@keyframes simpleSlideIn {
+  0% {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(-20px);
   }
-  to {
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* 新增的动画效果 */
-.slide-fade-enter-active, .slide-fade-leave-active {
-  transition: all 0.8s ease;
-}
-
-.slide-fade-enter, .slide-fade-leave-to /* .slide-fade-leave-active在Vue 2中使用 */ {
-  opacity: 0;
-  transform: translateX(20px); /* 从右边进入 */
 }
 </style>

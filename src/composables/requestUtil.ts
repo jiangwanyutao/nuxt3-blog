@@ -5,87 +5,60 @@
  * @param opt
  * @param custom
  */
-const fetch = async (url: string, opt: object = {}, custom: object = {isToken:true}) => {
-  // 解决刷新页面useFetch无返回
-  if (nextTick) await nextTick()
-
+const fetch = async (url: string, opt: object = {}, custom: any = { isToken: true }) => {
   const config = useRuntimeConfig()
   const baseURL = config.public.baseURL
 
-  return new Promise((resolve, reject) => {
-    useFetch(url, {
-      // method, body, query, ...
+  try {
+    // 请求开始的时候, 显示加载 loading
+    utilMsg.$loadingBar.start()
+
+    //判断是否需要设置token
+    const isToken = custom.isToken
+    let authorization = ''
+    if (isToken && process.client) {
+      authorization = 'Bearer ' + localStorage.getItem('sj_token')
+    }
+
+    // 使用 $fetch 替代 useFetch
+    const response: any = await $fetch(url, {
       ...opt,
-      // ofetch 库会自动识别请求地址，对于url已包含域名的请求不会再拼接baseURL
       baseURL,
-      // onRequest相当于请求拦截
-      onRequest({ options }) {
-        // 请求开始的时候, 显示加载 loading
-        utilMsg.$loadingBar.start()
-        //判断是否需要设置token
-        const isToken = custom.isToken
-        let authorization = ''
-        if (isToken) {
-          authorization  = 'Bearer ' + localStorage.getItem('token')
-        }
-        // 设置请求头
-        options.headers = {
-          ...options.headers,
-          authorization
-        }
-        console.log(options.headers,'options.headers')
-      },
-      // onResponse相当于响应拦截
-      onResponse({ response }) {
-        // console.log('response', response)
-        // 隐藏Loading
-        utilMsg.$loadingBar.finish()
-
-        // 接口返回的数据
-        const data = response._data
-
-        // 处理 http 状态码
-        const status = response.status
-        // console.log('status', status)
-        if (status !== 200) return reject(data)
-
-        // 如果是 200, 直接返回数据
-        if (data.code === 200 || status === 200) {
-          // 根据参数, 判断是否显示成功的消息
-          if (custom?.toast) utilMsg.$message.success(data.message)
-          return resolve(data)
-        }
-
-        // 判断不同的状态, 执行不同的操作
-        if (data.code === 401) {
-          // 重定向到登录
-        }
-
-        // 提示错误消息
-        //utilMsg.$message.error(data.message)
-
-        // 如果需要catch返回，则进行reject
-        if (custom?.catch) {
-          return reject(data)
-        }
-
-        // 否则返回一个pending中的promise，请求不会进入catch中
-        return new Promise(() => ({}))
-      },
-      // error
-      onRequestError() {
-        // 隐藏Loading
-        utilMsg.$loadingBar.finish()
-        utilMsg.$message.error('Request Error')
-      },
-      // request, response, options
-      onResponseError() {
-        // 隐藏Loading
-        utilMsg.$loadingBar.finish()
-        utilMsg.$message.error('Request Error')
+      headers: {
+        authorization
       }
     })
-  })
+
+    // 隐藏Loading
+    utilMsg.$loadingBar.finish()
+
+    // 根据参数, 判断是否显示成功的消息
+    if (custom?.toast && response?.message) {
+      utilMsg.$message.success(response.message)
+    }
+
+    return response
+  } catch (error: any) {
+    // 隐藏Loading
+    utilMsg.$loadingBar.finish()
+
+    // 处理错误
+    if (error?.data?.code === 401) {
+      // 重定向到登录
+      utilMsg.$message.error('请先登录')
+    } else if (error?.data?.message) {
+      utilMsg.$message.error(error.data.message)
+    } else {
+      utilMsg.$message.error('请求失败')
+    }
+
+    // 如果需要catch返回，则进行reject
+    if (custom?.catch) {
+      throw error
+    }
+
+    return null
+  }
 }
 
 export default {

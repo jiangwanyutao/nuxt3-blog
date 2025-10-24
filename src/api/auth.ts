@@ -53,6 +53,12 @@ interface UserInfo {
   user: any;
 }
 
+//定义网站默认配置接口
+interface ConfigResponse {
+  code: number;
+  msg: string;
+  data: any;
+}
 
 
 // Login API
@@ -74,4 +80,10 @@ export const apiRegister = (params: RegisterParams): Promise<RegisterResponse> =
 //获取用户详细信息
 export const apiGetUserInfo = (): Promise<UserInfo> => {
   return requestUtil.get('/getInfo', {}, {isToken:true}) as Promise<UserInfo>
+}
+
+
+//获取网站默认配置
+export const apiGetConfig = (): Promise<ConfigResponse> => {
+  return requestUtil.get('/website-config', {}, {isToken:true}) as Promise<ConfigResponse>
 }

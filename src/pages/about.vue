@@ -14,7 +14,7 @@
               友好的握手
             </n-tooltip>
           </p>
-          <h1>我叫 江晚</h1>
+          <h1>我叫 江晚正愁余</h1>
           <p>
             以前是一名
             <span style="background: linear-gradient(to right, #8be4be, #e7cbaa); color: #3077ff"
@@ -41,7 +41,7 @@
         <n-card class="js">
           <h1>关于本站</h1>
           <div style="font-size: 15px; margin-bottom: 20px">
-            一款前(Nuxt3)后(java)端分离的博客系统，在我不断地复制粘贴、复制粘贴，又复制粘贴的努力下，它终于问世啦~
+            一款前(Nuxt3)后(nestjs)端分离的博客系统，在我不断地复制粘贴、复制粘贴，又复制粘贴的努力下，它终于问世啦~
           </div>
           <div class="scrolling-text">
             小伙伴们大家好，我是练习时长两年半的程序猿，喜欢复制、粘贴，在今后的日子中，我还会将此博客继续完善、改进，期待的话可以互换友联，或者收藏博客。
