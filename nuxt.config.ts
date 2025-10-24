@@ -14,7 +14,10 @@ export default defineNuxtConfig({
     // apiSecret 只能在服务器端上访问
     apiSecret: '',
     // public 命名空间中定义的，在服务器端和客户端都可以普遍访问
-    public: { baseURL: process.env.NUXT_PUBLIC_API_BASE }
+    public: { 
+      env:true,
+      baseURL: process.env.NUXT_PUBLIC_API_BASE
+     }
   },
   devtools: { enabled: true },
   //插件

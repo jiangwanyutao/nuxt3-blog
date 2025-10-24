@@ -4,6 +4,7 @@
 export const useClientIp = () => {
   const config = useRuntimeConfig()
   const baseURL = config.public.baseURL || 'http://localhost:8080'
+  console.log(baseURL,'请求的api地址1')
 
   /**
    * 获取客户端IP（快速版本，使用自己的后端接口）

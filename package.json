@@ -4,10 +4,10 @@
   "type": "module",
   "scripts": {
     "local": "node start.bat",
-    "build": "nuxt build",
-    "dev": "nuxt dev --open",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
+    "build": "nuxt build --dotenv .env.development",
+    "dev": "nuxt dev --open --dotenv .env.development",
+    "generate": "nuxt generate --dotenv .env.production",
+    "preview": "nuxt preview --dotenv .env.production",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {

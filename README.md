@@ -88,3 +88,28 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 ```
 declare module 'vanta/src/vanta.halo';
 ```
+
+
+
+"scripts": {
+    "build-dev": "nuxt build --dotenv .env.test",
+    "build-prd": "nuxt build --dotenv .env.production",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+
+
+// 配置
+runtimeConfig: {
+    public: {
+      env: true,
+      mode: process.env.NODE_ENV,
+    }
+  }
+
+// 使用
+const envconfig = useRuntimeConfig()
+console.log(envconfig.public.mode)
+
