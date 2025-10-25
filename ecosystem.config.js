@@ -8,7 +8,7 @@ module.exports = {
         script: './.output/server/index.mjs',
         env: {
           NODE_ENV: 'production',
-          NUXT_PUBLIC_API_BASE: 'http://localhost:3006'  // 后端API地址
+          NUXT_PUBLIC_API_BASE: '/api'  // 使用相对路径，通过 Nginx 代理
         }
       }
     ]

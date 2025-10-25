@@ -92,7 +92,6 @@
 </template>
 <script setup lang="ts">
 import * as THREE from 'three'
-import BIRDS from 'vanta/dist/vanta.birds.min'
 import Typed from 'typed.js'
 import { useBlogStore } from '@/stores/blogStore'
 
@@ -116,7 +115,7 @@ const birds = ref([])
 
 // 定义社交媒体链接
 const gitHub = 'https://github.com'
-const gitee = 'https://gitee.com' 
+const gitee = 'https://gitee.com'
 const bilibili = 'https://bilibili.com'
 
 // 背景图片列表
@@ -137,35 +136,39 @@ const nextBgIndex = computed(() => (currentBgIndex.value + 1) % bgImages.length)
 const changeBg = async () => {
   // 淡出当前背景
   opacity.value = 0
-  
+
   // 等待动画完成
   await new Promise(resolve => setTimeout(resolve, 500))
-  
+
   // 切换到下一张图
   currentBgIndex.value = (currentBgIndex.value + 1) % bgImages.length
-  
+
   // 重置透明度
   opacity.value = 1
 }
 
 // 初始化
-function init() {
-  vantaEffect = BIRDS({
-    el: vantaRef.value,
-    THREE: THREE, // 也可以换成 p5，但我没试过
-    mouseControls: true, // 是否允许动画和鼠标手势交互，想启用的话改成true
-    touchControls: false, // 触摸屏交互
-    gyroControls: false, // 加速度交互，应该是晃动手机的效果
-    minHeight: 200.0,
-    minWidth: 200.0,
-    scale: 2.0,
-    scaleMobile: 1.0,
-    backgroundAlpha: 0.0,
-    birdSize: 1.5, // 鸟的大小
-    wingSpan: 20.0, // 翅膀展开的角度
-    quantity: 3.0, // 鸟的数量
-    speedLimit: 4.0 // 速度限制
-  })
+async function init() {
+  // 只在客户端导入 vanta
+  if (process.client) {
+    const BIRDS = (await import('vanta/dist/vanta.birds.min')).default
+    vantaEffect = BIRDS({
+      el: vantaRef.value,
+      THREE: THREE, // 也可以换成 p5，但我没试过
+      mouseControls: true, // 是否允许动画和鼠标手势交互，想启用的话改成true
+      touchControls: false, // 触摸屏交互
+      gyroControls: false, // 加速度交互，应该是晃动手机的效果
+      minHeight: 200.0,
+      minWidth: 200.0,
+      scale: 2.0,
+      scaleMobile: 1.0,
+      backgroundAlpha: 0.0,
+      birdSize: 1.5, // 鸟的大小
+      wingSpan: 20.0, // 翅膀展开的角度
+      quantity: 3.0, // 鸟的数量
+      speedLimit: 4.0 // 速度限制
+    })
+  }
 }
 
 onMounted(() => {
@@ -214,7 +217,7 @@ const initTyped = () => {
   background-image: url('@/assets/img/banner/1.png');
 }
 
-.bg-1 { 
+.bg-1 {
   background-image: url('@/assets/img/banner/2.jpg');
 }
 
