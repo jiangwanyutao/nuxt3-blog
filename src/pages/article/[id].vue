@@ -386,11 +386,11 @@ const fetchArticle = async () => {
     const { getArticleById } = await import('~/api/article')
     const response = await getArticleById(articleId) as any
 
-    console.log('文章详情响应:', response)
+    // console.log('文章详情响应:', response)
 
     if (response && response.code === 200) {
       article.value = response.data
-      console.log('文章详情获取成功:', article.value)
+      // console.log('文章详情获取成功:', article.value)
       
       // 设置导航栏文章标题到 store
       if (article.value?.title) {
@@ -403,7 +403,7 @@ const fetchArticle = async () => {
       error.value = response?.message || '获取文章详情失败'
     }
   } catch (err: any) {
-    console.error('获取文章详情失败:', err)
+    // console.error('获取文章详情失败:', err)
     error.value = err.message || '获取文章详情失败'
   } finally {
     loading.value = false
@@ -419,15 +419,15 @@ const fetchAdjacentArticles = async () => {
       limit: 100
     }) as any
     
-    console.log('文章列表响应:', response)
+    // console.log('文章列表响应:', response)
     
     if (response) {
       const articles = response.data.items
-      console.log('文章列表:', articles)
-      console.log('当前文章ID:', articleId)
+      // console.log('文章列表:', articles)
+      // console.log('当前文章ID:', articleId)
       
       const currentIndex = articles.findIndex((a: any) => a.id === articleId)
-      console.log('当前文章索引:', currentIndex)
+      // console.log('当前文章索引:', currentIndex)
       
       if (currentIndex > 0) {
         // 有上一篇
@@ -435,7 +435,7 @@ const fetchAdjacentArticles = async () => {
           id: articles[currentIndex - 1].id,
           title: articles[currentIndex - 1].title
         }
-        console.log('上一篇文章:', prevArticle.value)
+        // console.log('上一篇文章:', prevArticle.value)
       }
       
       if (currentIndex >= 0 && currentIndex < articles.length - 1) {
@@ -444,7 +444,7 @@ const fetchAdjacentArticles = async () => {
           id: articles[currentIndex + 1].id,
           title: articles[currentIndex + 1].title
         }
-        console.log('下一篇文章:', nextArticle.value)
+        // console.log('下一篇文章:', nextArticle.value)
       }
     }
   } catch (err) {

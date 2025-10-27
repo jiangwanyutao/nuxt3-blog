@@ -75,7 +75,6 @@ const goToRandomArticle = async () => {
       limit: 100 // 获取足够多的文章用于随机选择
     }) as any
     
-    console.log('随机文章API响应:', response)
     
     if (response && response.data && response.data.items && response.data.items.length > 0) {
       const articles = response.data.items
@@ -83,7 +82,6 @@ const goToRandomArticle = async () => {
       const randomIndex = Math.floor(Math.random() * articles.length)
       const randomArticle = articles[randomIndex]
       
-      console.log('随机选中的文章:', randomArticle)
       
       // 跳转到文章详情页
       router.push(`/article/${randomArticle.id}`)

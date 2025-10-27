@@ -136,7 +136,6 @@
     const comment = comments.value.find(c => c.id === commentId);
     if (comment) {
       // 在实际应用中，这里应该调用API来更新点赞数
-      console.log(`评论 ${commentId} ${isLiked ? '点赞' : '取消点赞'}`);
     }
   };
   

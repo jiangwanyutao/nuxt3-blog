@@ -40,9 +40,7 @@ const showUserInfo = ref(false)
 onMounted(() => {
     // 从 localStorage 读取存储的用户信息
     const savedUserInfo = localStorage.getItem('sj_userInfo')
-    console.log(savedUserInfo,'savedUserInfo')
     showUserInfo.value = savedUserInfo ? true : false
-    console.log(showUserInfo.value,'showUserInfo')
 });
 const goLogin = () => {
   router.push('/login')

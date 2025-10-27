@@ -40,7 +40,7 @@ const fetchFriendLinks = async () => {
     const response: any = await getApprovedFriendLinks()
     if (response?.code === 200) {
       friendLinks.value = response.data || []
-      console.log('友链列表获取成功:', friendLinks.value)
+      // console.log('友链列表获取成功:', friendLinks.value)
     }
   } catch (error) {
     console.error('获取友链列表失败:', error)
@@ -51,15 +51,12 @@ const fetchFriendLinks = async () => {
 
 const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text)
-  console.log('[v0] Copied to clipboard:', text)
+  // console.log('[v0] Copied to clipboard:', text)
   // 复制成功提示
   utilMsg.$message.success('已复制到剪贴板')
 }
 
-const autoFill = () => {
-  // Auto-fill logic would go here
-  console.log('[v0] Auto-fill triggered')
-}
+
 
 /**
  * 提交友链申请

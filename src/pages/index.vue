@@ -139,7 +139,6 @@ const fetchMomentsData = async () => {
         user: item.user
       }))
     } else {
-      console.warn('说说数据格式异常:', response)
       // 使用默认数据作为fallback
       syMomentsData.value = getDefaultMomentsData()
     }
@@ -188,12 +187,10 @@ const fetchCategories = async () => {
   try {
     const { getCategories } = await import('~/api/article')
     const response = await getCategories() as any
-    console.log('分类列表响应:', response)
     
     if (response && response.data) {
       // 提取分类名称
       ArticleTypes.value = response.data.map((cat: any) => cat.categoryName || cat.name)
-      console.log('分类列表:', ArticleTypes.value)
     }
   } catch (error) {
     console.error('获取分类列表失败:', error)
@@ -204,7 +201,6 @@ const fetchCategories = async () => {
 
 // 获取文章列表
 const fetchArticleList = async (category: string = '') => {
-  console.log('开始获取文章列表...', category ? `分类: ${category}` : '全部')
   try {
     const { getArticleList } = await import('~/api/article')
     const params: any = {
@@ -212,16 +208,11 @@ const fetchArticleList = async (category: string = '') => {
       limit: 4,
       ...(category && { category }) // 如果有分类，添加分类参数
     }
-    console.log('API调用参数:', params)
     const response = await getArticleList(params) as any
-    console.log('API响应数据:', response)
     
     if (response) {
       articleList.value = response.data.items
-      console.log('文章列表获取成功:', articleList.value)
-      console.log('文章数量:', articleList.value.length)
     } else {
-      console.warn('文章列表数据格式异常:', response)
       // 使用默认数据作为fallback
       articleList.value = getDefaultArticleData()
     }
@@ -234,7 +225,6 @@ const fetchArticleList = async (category: string = '') => {
 
 // 分类点击事件
 const liClick = (index: number, category: string) => {
-  console.log('点击分类:', index, category)
   selectedCategoryIndex.value = index
   selectedCategory.value = category
   

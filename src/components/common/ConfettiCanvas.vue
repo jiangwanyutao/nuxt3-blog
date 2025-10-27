@@ -72,7 +72,6 @@ function confettiParticle(t, size) {
 // 设置全局变量
 function SetGlobals() {
   canvas1 = document.getElementById('canvas');
-  console.log(canvas1,'canvas1')
   ctx = canvas1.getContext('2d');
   W = window.innerWidth;
   H = window.innerHeight;

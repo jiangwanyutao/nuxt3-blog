@@ -8,8 +8,6 @@
 const fetch = async (url: string, opt: object = {}, custom: any = { isToken: true }) => {
   const config = useRuntimeConfig()
   const baseURL = config.public.baseURL
-  console.log(config,'请求的api地址')
-  console.log(baseURL,'请求的api地址')
 
 
   try {

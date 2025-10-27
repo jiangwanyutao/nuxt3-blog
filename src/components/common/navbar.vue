@@ -49,7 +49,6 @@ const fetchMenuTree = async () => {
     if (response && response.code === 200) {
       menuTree.value = response.data || []
     } else {
-      console.warn('菜单数据格式异常:', response)
       menuTree.value = getDefaultMenuData()
     }
   } catch (error) {

@@ -460,7 +460,6 @@ const fetchComments = async () => {
     if (response.code === 200) {
       comments.value = response.data.records || response.data.list || []
       total.value = response.data.total || 0
-      console.log('评论数据已更新:', comments.value.length, '条评论')
     }
   } catch (error) {
     console.error('获取评论失败:', error)
@@ -484,7 +483,6 @@ const submitComment = async () => {
     const browser = getBrowserInfo()
     const os = getOSInfo()
     
-    console.log('客户端信息:', { clientIp, browser, os })
     
     const commentData = {
       content: commentText.value.trim(),
@@ -498,14 +496,9 @@ const submitComment = async () => {
       os: os || undefined                // 操作系统信息
     }
 
-    console.log('提交评论数据:', commentData)
     // 使用momentId=0表示页面级评论
     const response = await addMomentsComment(0, commentData) as any
-    console.log('评论提交响应:', response)
-    console.log('响应类型:', typeof response)
-    console.log('响应code:', response?.code)
-    console.log('响应message:', response?.message)
-    
+
     if (response) {
       utilMsg.$message.success('评论发表成功！')
       // 重置表单
@@ -560,10 +553,6 @@ const submitReply = async () => {
 
     // 使用momentId=0表示页面级评论
     const response = await addMomentsComment(0, replyData) as any
-    console.log('回复提交响应:', response)
-    console.log('回复响应类型:', typeof response)
-    console.log('回复响应code:', response?.code)
-    console.log('回复响应message:', response?.message)
     
     if (response && response.code === 200) {
       utilMsg.$message.success('回复发表成功！')

@@ -493,11 +493,11 @@ const handleLogin = async () => {
             localStorage.setItem('sj_token', res.data.token);
             userStore.setToken(res.data.token)
             // 获取用户信息
-            console.log(res, 'res')
+            // console.log(res, 'res')
             // 获取用户信息
             try {
                 const resUserInfo = await apiGetUserInfo()
-                console.log(resUserInfo, 'resUserInfo')
+                // console.log(resUserInfo, 'resUserInfo')
                 if (resUserInfo.code === 200) {
                     // 只存储必要的用户信息
                     const userToStore = {
@@ -626,7 +626,7 @@ const handleRegister = async () => {
         });
 
         // 注册成功后处理
-        console.log('注册成功:', response);
+        // console.log('注册成功:', response);
         if (response.code === 200) {
             utilMsg.$message.success('注册成功,请登录')
             // 可以自动切换到登录面板

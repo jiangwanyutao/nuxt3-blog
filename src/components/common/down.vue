@@ -17,7 +17,6 @@
 
 <script setup lang="ts">
 const headertopdown = () => {
-  console.log('点击了')
   //向下移动100vh
   window.scrollTo({
     top: window.innerHeight,

@@ -4,7 +4,6 @@
 export const useClientIp = () => {
   const config = useRuntimeConfig()
   const baseURL = config.public.baseURL || 'http://localhost:8080'
-  console.log(baseURL,'请求的api地址1')
 
   /**
    * 获取客户端IP（快速版本，使用自己的后端接口）
@@ -22,7 +21,6 @@ export const useClientIp = () => {
       if (response.ok) {
         const result = await response.json()
         if (result.code === 200 && result.data?.ip) {
-          console.log('从后端接口获取到IP:', result.data.ip)
           return result.data.ip
         }
       }
@@ -31,7 +29,6 @@ export const useClientIp = () => {
     }
 
     // 备用方案：返回空字符串（后端会自动从请求中提取IP）
-    console.log('使用备用方案，后端将自动提取IP')
     return ''
   }
 
@@ -50,7 +47,6 @@ export const useClientIp = () => {
       if (response.ok) {
         const result = await response.json()
         if (result.code === 200 && result.data) {
-          console.log('获取到IP信息:', result.data)
           return {
             ip: result.data.ip || '',
             region: result.data.region || '',

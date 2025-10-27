@@ -150,7 +150,6 @@ function fetchData() {
   api.poetry
     .getYiYan3()
     .then((response) => {
-      console.log(response, 'response')
       let res = response
       // 检查结果的长度，如果大于15，重新调用
       if (res.length > 13) {

@@ -51,7 +51,8 @@
 </template>
 
 <script setup lang="ts">
-import { BookSharp, Bonfire, BowlingBallSharp } from '@vicons/ionicons5';
+import { BookSharp, Bonfire, BowlingBallSharp } from '@vicons/ionicons5'
+import { apiGetWebsiteStats } from '~/api/website'
 
 // 统计数据
 const syArticleData = ref([
@@ -101,13 +102,7 @@ const resetWidth = (index) => {
 // 获取网站统计数据
 const fetchWebsiteStats = async () => {
   try {
-    const config = useRuntimeConfig()
-    const baseURL = config.public.baseURL
-    const response = await $fetch<{
-      articleCount: number
-      runningDays: number
-      visitCount: number
-    }>(`${baseURL}/website-config/stats`)
+    const response = await apiGetWebsiteStats()
     
     if (response) {
       syArticleData.value = [

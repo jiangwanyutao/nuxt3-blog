@@ -22,7 +22,6 @@ const imageRefs = ref([])
 
 onMounted(() => {
   imageRefs.value = document.querySelectorAll('.footer img')
-  console.log(window.outerWidth / 2,'window.outerWidth / 2')
   //进入页面时触发一次
   mouseMethod({ clientX: window.outerWidth / 3 })
 })
