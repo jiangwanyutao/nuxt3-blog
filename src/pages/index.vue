@@ -281,7 +281,7 @@ const getDefaultArticleData = (): Article[] => {
 }
 
 onMounted(() => {
-  utilMsg.$message.success('欢迎来到江晚正愁余的Blog')
+  // utilMsg.$message.success('欢迎来到江晚正愁余的Blog')
   blogStore.blogInfoData()
   // 获取说说数据
   fetchMomentsData()

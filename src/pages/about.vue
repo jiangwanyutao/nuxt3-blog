@@ -211,111 +211,59 @@
           <use xlink:href="#icon-gaojipaoche"></use>
         </svg>
 
-        <div class="game">
-          <video
-            autoplay
-            loop
-            muted
-            playsinline
-            class="gamevideo"
-          >
-            <source
-              src="/lol/1.mp4"
-              type="video/mp4"
-            />
-          </video>
-
-          <div class="fontLol">
-            <el-carousel
-              height="50px"
-              direction="vertical"
-              indicator-position="none"
-            >
-              <el-carousel-item
-                v-for="item in lolDate"
-                :key="item.id"
+        <!-- 性格卡片 -->
+        <div class="personality-card">
+          <div class="personality-content">
+            <div class="personality-text">
+              <p class="personality-label">性格</p>
+              <h2 class="personality-type">守护者</h2>
+              <h3 class="personality-code">ISFJ-T</h3>
+              <p class="personality-desc">
+                守卫者是真正的利他主义者，他们会以更大的善意来对待友善，并以热情和慷慨的态度参与他们的工作和对待他们相信的人们。
+              </p>
+              <a 
+                href="https://www.16personalities.com/" 
+                target="_blank"
+                class="personality-link"
               >
-                <span
-                  >{{ item.content }}
-                  <span style="margin-left: 40px">--{{ item.figure }}</span>
-                </span>
-              </el-carousel-item>
-            </el-carousel>
-          </div>
-
-          <div class="toggle-cont gameIco">
-            <input
-              @click="paly"
-              class="toggle-input"
-              id="toggle"
-              name="toggle"
-              type="checkbox"
-            />
-            <label
-              class="toggle-label"
-              for="toggle"
-            >
-              <div class="cont-label-play">
-                <span class="label-play"></span>
-              </div>
-            </label>
+                在 16personalities 了解更多关于 守护者
+              </a>
+            </div>
+            <div class="personality-image">
+              <img src="~/assets/common/ISFJ_male.png" alt="ESFJ性格" />
+            </div>
           </div>
         </div>
       </div>
 
-      <div style="display: flex; justify-content: space-between">
-        <!-- 运行时间 -->
-        <div id="yxTime">
-          <RunningTime />
-        </div>
-
-        <!-- 打劫  -->
-        <div id="dajie">
-          <img
-            src="/dj/dj.png"
-            width="150px"
-          />
-          <img
-            src="/dj/jsm.png"
-            width="200px"
-            style="margin: 0 50px"
-          />
-
-          <button
-            id="djan"
-            @click="djan"
-          >
-            <div class="svg-wrapper-1">
-              <div class="svg-wrapper">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  height="24"
-                >
-                  <path
-                    fill="none"
-                    d="M0 0h24v24H0z"
-                  ></path>
-                  <path
-                    fill="currentColor"
-                    d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
-                  ></path>
-                </svg>
-              </div>
+      <!-- 原神游戏展示 -->
+      <div class="genshin-game">
+          <!-- 手风琴图片展示（铺满容器） -->
+          <div class="accordion-container">
+            <div 
+              v-for="(img, index) in genshinImages" 
+              :key="index"
+              class="accordion-item"
+              :style="{ backgroundImage: `url(${img})` }"
+            >
             </div>
-            <span>查看</span>
-          </button>
-
-          <div id="DJDiv">
-            <video id="DJVideo">
-              <source
-                src="/dj/dog.mp4"
-                type="video/mp4"
-              />
-            </video>
           </div>
-        </div>
+
+          <!-- 文字悬浮层 -->
+          <div class="genshin-header">
+            <p class="game-label">爱好游戏</p>
+            <h2 class="game-title">原神</h2>
+          </div>
+          
+          <!-- UID右下角 -->
+          <div class="game-uid-container">
+            <p class="game-uid">UID: 171038996</p>
+          </div>
+
+          <!-- 加载条动画 -->
+          <div class="loading-bar-container">
+            <img src="~/assets/img/about/loading-bar.png" alt="loading" class="loading-bar" />
+          </div>
       </div>
 
       <n-card class="dashang">
@@ -357,10 +305,7 @@
       >
         <p style="font-size: 20px; margin-bottom: 10px"><Icon type="ios-chatbubbles" />留言</p>
         <div id="yjplk">
-          <!--          <Comment type="About" />-->
-          <!--          <Spin fix :show="variable.yjplkZz.value">回复评论中...</Spin>-->
         </div>
-        <!--        <CommentList type="About" />-->
       </div>
     </div>
   </div>
@@ -420,15 +365,16 @@ const resizeCanvas = () => {
 }
 
 onMounted(() => {
-  resizeCanvas()
-  window.addEventListener('resize', resizeCanvas)
+  // 注释掉 canvas 绘制，使用背景图片
+  // resizeCanvas()
+  // window.addEventListener('resize', resizeCanvas)
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', resizeCanvas)
-  if (animationFrameId) {
-    cancelAnimationFrame(animationFrameId)
-  }
+  // window.removeEventListener('resize', resizeCanvas)
+  // if (animationFrameId) {
+  //   cancelAnimationFrame(animationFrameId)
+  // }
 })
 // const axios = inject("axios");
 // import variable from "../../js/variable";
@@ -458,6 +404,15 @@ const visitData = ref({
 }) //访问数据
 const gameMusic = ref(true) //lol音乐播放ico状态
 const lolDate = ref(null) //lol台词数据
+
+// 原神图片数据
+const genshinImages = ref([
+  new URL('~/assets/img/about/1.jpg', import.meta.url).href,
+  new URL('~/assets/img/about/2.jpg', import.meta.url).href,
+  new URL('~/assets/img/about/3.jpg', import.meta.url).href,
+  new URL('~/assets/img/about/4.jpg', import.meta.url).href,
+  new URL('~/assets/img/about/5.png', import.meta.url).href
+])
 
 //技能
 function mouseoverJs() {
@@ -673,13 +628,30 @@ onMounted(() => {
 .sj {
   border-radius: 20px;
   width: 40%;
-  height: 50%;
+  height: 300px;
   color: #fff;
   position: relative;
+  background-image: url('~/assets/common/code.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.sj::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+  animation: rotate 20s linear infinite;
+  z-index: 0;
 }
 
 .sj::after {
-  box-shadow: 0 -159px 173px 71px #0f1114 inset;
+  box-shadow: 0 -159px 173px 71px rgba(15, 17, 20, 0.6) inset;
   position: absolute;
   content: '';
   width: 100%;
@@ -687,13 +659,24 @@ onMounted(() => {
   top: 0;
   left: 0;
   border-radius: 20px;
+  z-index: 0;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .sjDIv {
   position: absolute;
   color: #fff;
-  top: 60px;
-  left: 60px;
+  top: 38px;
+  left: 50px;
+  z-index: 1;
 }
 
 .sjDIv h1 {
@@ -734,11 +717,260 @@ p {
   padding-bottom: 10px;
 }
 
+/* 性格卡片样式 */
+.personality-card {
+  width: 55%;
+  height: 300px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 20px;
+  padding: 30px 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.personality-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+}
+
+.personality-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.personality-text {
+  flex: 1;
+}
+
+.personality-label {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 10px 0;
+  font-weight: 500;
+}
+
+.personality-type {
+  font-size: 40px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+}
+
+.personality-code {
+  font-size: 30px;
+  font-weight: 300;
+  color: #9b59b6;
+  margin: 0 0 15px 0;
+  letter-spacing: 2px;
+}
+
+.personality-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #555;
+  margin: 0 0 15px 0;
+  max-width: 400px;
+}
+
+.personality-link {
+  display: inline-block;
+  font-size: 14px;
+  color: #3498db;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.personality-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #3498db;
+  transition: width 0.3s ease;
+}
+
+.personality-link:hover {
+  color: #2980b9;
+}
+
+.personality-link:hover::after {
+  width: 100%;
+}
+
+.personality-image {
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.personality-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+}
+
+/* 原神游戏展示样式 */
+.genshin-game {
+  width: 100%;
+  height: 400px;
+  border-radius: 20px;
+  margin: 20px 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.genshin-header {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  z-index: 10;
+}
+
+.game-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 10px 0;
+  letter-spacing: 2px;
+}
+
+.game-title {
+  font-size: 64px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 10px 0;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  letter-spacing: 4px;
+}
+
+.game-uid-container {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  z-index: 10;
+}
+
+.game-uid {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+/* 手风琴容器 */
+.accordion-container {
+  display: flex;
+  height: 100%;
+  width: calc(100% + 40px);
+  gap: 0;
+  position: absolute;
+  top: 0;
+  left: -20px;
+  z-index: 1;
+  perspective: 1500px;
+  padding: 0;
+}
+
+.accordion-item {
+  flex: 1;
+  background-size: cover;
+  background-position: center;
+  border-radius: 0;
+  transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  filter: grayscale(0.6) brightness(0.6);
+  transform: skewX(-3deg);
+  margin: 0 -2px;
+}
+
+.accordion-item:first-child {
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  margin-left: 0;
+}
+
+.accordion-item:last-child {
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  margin-right: 0;
+}
+
+.accordion-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.4) 100%); */
+  transition: all 0.5s ease;
+  z-index: 1;
+}
+
+.accordion-item:hover {
+  flex: 3.5;
+  filter: grayscale(0) brightness(1.1);
+  transform: skewX(-3deg) scale(1.05);
+  z-index: 5;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.accordion-item:hover::before {
+  opacity: 0;
+}
+
+/* 加载条动画 */
+.loading-bar-container {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  width: 300px;
+  height: 30px;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.loading-bar {
+  width: 300px;
+  height: 30px;
+  object-fit: contain;
+  clip-path: inset(0 100% 0 0);
+  animation: loading-reveal 3s ease-in-out infinite;
+}
+
+@keyframes loading-reveal {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
 .dashang {
   background-color: #fff;
   border-radius: 20px;
   width: 100%;
-  margin: 20px 0 100px 0;
+  margin: 20px 0 10px 0;
 }
 
 .game {

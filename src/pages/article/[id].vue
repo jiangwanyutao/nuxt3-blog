@@ -468,6 +468,10 @@ const formatDate = (dateString: string | undefined) => {
 // 页面加载时获取文章
 onMounted(() => {
   fetchArticle()
+   // 如果 store 中没有博客配置，则加载（首次访问或缓存过期）
+  if (!blogStore.blogConfig) {
+    blogStore.blogInfoData()
+  }
   window.addEventListener('scroll', handleScroll)
 })
 

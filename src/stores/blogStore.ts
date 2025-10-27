@@ -161,6 +161,10 @@ export const useBlogStore = defineStore('blog', () => {
     setCurrentArticleTitle,
     clearCurrentArticleTitle
   }
+}, {
+  persist: {
+    storage: typeof window !== 'undefined' ? localStorage : undefined,
+  } as any
 })
 
 console.log(import.meta.hot,'import.meta.hot')

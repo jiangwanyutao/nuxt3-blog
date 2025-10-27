@@ -45,7 +45,7 @@
     <div class="user_db">
       <div class="user_db_title">
         <span>{{ bz_name }}</span>
-        <span>生活日记，技术探索。</span>
+        <span>生活日记。</span>
       </div>
       <div class="user_db_ico">
         <div
@@ -89,20 +89,25 @@
   <div class="card">
     <div class="content">
       <div class="front">
-        <p>公众号</p>
-        <p>快人一步获取最新文章</p>
+        <div class="front-content">
+          <div class="front-text">
+            <h3>公众号 <span class="wechat-badge">微信</span></h3>
+            <p>快人一步获取最新文章 <span class="arrow">▶</span></p>
+          </div>
+        </div>
       </div>
       <div class="back">
-        <div style="display: flex">
-          <div>
-            <p>扫一扫</p>
-            <p>不错过精彩文章</p>
+        <div class="back-content">
+          <div class="back-text">
+            <h3>扫一扫</h3>
+            <p>不错过精彩文章 <span class="arrow">▶</span></p>
           </div>
-          <img
-            style="width: 50px; height: 50px"
-            src="https://cdn.qiniu.jwyt.cloud/common/creator-cover-8.png"
-            alt="二维码"
-          />
+          <div class="qr-code">
+            <img
+              src="~/assets/common/wechat_gongzhonghao.png"
+              alt="二维码"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -159,22 +164,25 @@ function fetchData() {
 </script>
 <style scoped>
 .card {
-  width: 100%; /* 根据需要调整宽度 */
-  height: 150px; /* 根据需要调整高度 */
+  width: 100%;
+  height: 100px;
   position: relative;
   margin-top: 20px;
-  perspective: 1000px; /* 透视效果 */
-  border-radius: 10px; /* 圆角 */
-  overflow: hidden; /* 隐藏溢出内容 */
-  background-color: #4caf50; /* 背景色 */
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  background: linear-gradient(135deg, #5cb85c 0%, #4caf50 50%, #66bb6a 100%);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
 }
 
 .content {
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.6s; /* 动画效果 */
-  transform-style: preserve-3d; /* 保持3D效果 */
+  perspective: 1000px;
 }
 
 .front,
@@ -182,26 +190,111 @@ function fetchData() {
   position: absolute;
   width: 100%;
   height: 100%;
-  backface-visibility: hidden; /* 隐藏背面 */
+  backface-visibility: hidden;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  font-size: 20px;
+  align-items: center;
+  transition: transform 0.6s, opacity 0.6s;
+  transform-style: preserve-3d;
+}
+
+.front {
+  opacity: 1;
+  transform: rotateY(0deg);
+}
+
+.back {
+  opacity: 0;
+  transform: rotateY(180deg);
+}
+
+.card:hover .front {
+  opacity: 0;
+  transform: rotateY(180deg);
+}
+
+.card:hover .back {
+  opacity: 1;
+  transform: rotateY(0deg);
+}
+
+/* 正面内容 */
+.front-content {
+  width: 100%;
+}
+
+.front-text h3 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: bold;
   color: white;
-  text-align: left;
-  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.back {
-  left: -10px;
+.wechat-badge {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: normal;
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-.back {
-  transform: rotateY(180deg); /* 背面旋转180度 */
+.front-text p {
+  margin: 0;
+  font-size: 14px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.card:hover .content {
-  transform: rotateY(180deg); /* 内容旋转180度 */
+.arrow {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* 背面内容 */
+.back-content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back-text h3 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+}
+
+.back-text p {
+  margin: 0;
+  font-size: 14px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qr-code {
+  width: 70px;
+  height: 70px;
+  background: white;
+  border-radius: 8px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.qr-code img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 /* userInfo start*/
@@ -269,33 +362,39 @@ function fetchData() {
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   color: #fff;
   position: relative;
+  padding: 12px 10px;
+  box-sizing: border-box;
 }
 
 .yy {
   width: 100%;
-  /* background-color: #7789f3; */
-  padding: 3px 0;
+  padding: 3px 10px;
   border-radius: 10px;
   display: flex;
   justify-content: space-around;
+  align-items: center;
+  box-sizing: border-box;
 }
 
 .user_db {
   display: flex;
   width: 100%;
   height: 50px;
+  padding: 0 5px;
+  box-sizing: border-box;
 }
 
 .user_db_title {
-  width: 75%;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-left: 15px;
+  padding-left: 10px;
+  min-width: 0;
 }
 
 .user_db_title span:nth-child(1) {
@@ -310,10 +409,11 @@ function fetchData() {
 }
 
 .user_db_ico {
-  width: 35%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-right: 5px;
 }
 
 .user_db_ico div {
@@ -327,8 +427,8 @@ function fetchData() {
   cursor: pointer;
 }
 
-.user_db_ico div:nth-child(1) {
-  margin-right: 10px;
+.user_db_ico div {
+  flex-shrink: 0;
 }
 
 .user_db_ico_gq {
@@ -385,9 +485,11 @@ function fetchData() {
 .wheel-and-hamster {
   --dur: 1s;
   position: relative;
-  width: 12em;
-  height: 12em;
-  font-size: 14px;
+  width: 10em;
+  height: 10em;
+  font-size: 12px;
+  margin: 10px 0;
+  flex-shrink: 0;
 }
 
 .wheel,
@@ -413,7 +515,7 @@ function fetchData() {
 
 .hamster {
   animation: hamster var(--dur) ease-in-out infinite;
-  top: 50%;
+  top: 40%;
   left: calc(50% - 3.5em);
   width: 7em;
   height: 3.75em;
