@@ -1,115 +1,355 @@
-# Nuxt 3 Minimal Starter
+# 思境 Blog - 全栈个人博客系统
 
+<div align="center">
+
+![思境Blog](https://img.shields.io/badge/思境Blog-v1.0.0-blue)
+![NestJS](https://img.shields.io/badge/NestJS-10.x-red)
+![Vue3](https://img.shields.io/badge/Vue3-3.x-green)
+![Nuxt3](https://img.shields.io/badge/Nuxt3-3.x-00DC82)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
+
+一个功能完善、设计精美的全栈个人博客系统
+
+[在线演示](https://jwyt.xyz) | [文档](./docs) | [更新日志](./CHANGELOG.md)
+
+</div>
+
+---
+
+## 📖 项目简介
+
+**思境 Blog** 是一个基于现代化技术栈构建的全栈个人博客系统，采用前后端分离架构，提供了完整的博客内容管理、用户交互、数据统计等功能。项目包含三个核心模块：后端 API 服务、管理后台和前台展示，致力于为开发者提供一个开箱即用、易于扩展的博客解决方案。
+
+系统采用 **NestJS** 作为后端框架，提供稳定高效的 RESTful API 服务；管理后台使用 **Vue3 + Element Plus** 构建，提供直观友好的内容管理界面；前台展示基于 **Nuxt3** 开发，实现服务端渲染（SSR），优化 SEO 和首屏加载性能。整体架构清晰、代码规范、功能完善，适合个人博客、技术分享、内容创作等场景使用。
+
+---
+
+## ✨ 核心特性
 ```
 1.头部毛玻璃效果
 2.仿知乎状态栏滑动
 3.首页随时间切换云彩
 4.深色模式
 5.首屏加载loading
-
-
 ```
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+### 🎯 功能特性
 
-## Setup
+- **📝 文章管理**：支持 Markdown 编辑、分类标签、草稿发布、文章搜索等完整功能
+- **💬 评论系统**：访客评论、评论审核、邮件通知、回复功能
+- **🎨 动态展示**：朋友圈动态、图片上传、点赞评论
+- **👥 用户系统**：用户注册登录、权限管理、个人资料
+- **📊 数据统计**：访问统计、文章统计、用户统计、趋势分析
+- **🔔 邮件通知**：评论通知、审核通知、系统消息
+- **🎮 个性化**：关于页面、游戏展示、性格测试、技能展示
+- **🎯 菜单配置**：动态菜单、图标选择、树形结构、拖拽排序
 
-Make sure to install the dependencies:
+### 🛠 技术特性
+
+- **TypeScript**：全面使用 TypeScript，提供类型安全和更好的开发体验
+- **响应式设计**：完美适配桌面端、平板和移动端
+- **SSR 渲染**：Nuxt3 服务端渲染，优化 SEO 和性能
+- **组件化开发**：高度组件化，代码复用性强
+- **API 统一管理**：环境变量配置，统一请求封装
+- **权限控制**：基于 JWT 的身份认证和权限管理
+- **Docker 部署**：提供完整的 Docker 部署方案
+
+---
+
+## 🏗 技术架构
+
+### 后端技术栈
+
+- **框架**：NestJS 10.x
+- **语言**：TypeScript 5.x
+- **数据库**：MySQL 8.0 + TypeORM
+- **缓存**：Redis 6.x
+- **认证**：JWT + Passport
+- **邮件**：Nodemailer
+- **文件上传**：Multer
+- **API 文档**：Swagger
+
+### 管理后台技术栈
+
+- **框架**：Vue 3.x
+- **构建工具**：Vite 5.x
+- **UI 框架**：Element Plus
+- **状态管理**：Pinia
+- **路由**：Vue Router 4.x
+- **HTTP 客户端**：Axios
+- **Markdown 编辑器**：md-editor-v3
+- **图表**：ECharts
+
+### 前台展示技术栈
+
+- **框架**：Nuxt 3.x
+- **UI 框架**：Naive UI
+- **状态管理**：Pinia
+- **HTTP 客户端**：Axios
+- **Markdown 渲染**：markdown-it
+- **图标**：Iconify
+
+---
+
+## 📦 项目结构
+
+```
+project/
+├── nest-admin/                 # 后端服务
+│   ├── server/                # NestJS 后端 API
+│   │   ├── src/
+│   │   │   ├── module/       # 业务模块
+│   │   │   ├── common/       # 公共模块
+│   │   │   ├── config/       # 配置文件
+│   │   │   └── main.ts       # 入口文件
+│   │   └── package.json
+│   └── admin-vue3/           # 管理后台
+│       ├── src/
+│       │   ├── views/        # 页面组件
+│       │   ├── components/   # 公共组件
+│       │   ├── api/          # API 接口
+│       │   ├── store/        # 状态管理
+│       │   └── router/       # 路由配置
+│       └── package.json
+├── nuxt3-app/                # 前台展示
+│   ├── src/
+│   │   ├── pages/           # 页面
+│   │   ├── components/      # 组件
+│   │   ├── composables/     # 组合式函数
+│   │   ├── api/             # API 接口
+│   │   ├── stores/          # 状态管理
+│   │   └── assets/          # 静态资源
+│   └── package.json
+├── docker-compose.yml        # Docker 编排
+└── README.md                # 项目说明
+```
+
+---
+
+## 🚀 快速开始
+
+### 环境要求
+
+- Node.js >= 18.x
+- MySQL >= 8.0
+- Redis >= 6.x
+- pnpm >= 8.x（推荐）
+
+### 安装步骤
+
+1. **克隆项目**
 
 ```bash
-# npm
-npm install
+git clone <repository-url>
+cd project
+```
 
-# pnpm
+2. **安装依赖**
+
+```bash
+# 后端服务
+cd nest-admin/server
 pnpm install
 
-# yarn
-yarn install
+# 管理后台
+cd ../admin-vue3
+pnpm install
 
-# bun
-bun install
+# 前台展示
+cd ../../nuxt3-app
+pnpm install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+3. **配置环境变量**
 
 ```bash
-# npm
-npm run dev
+# 后端配置
+cd nest-admin/server
+cp src/config/dev.yml.example src/config/dev.yml
+# 修改数据库、Redis、邮件等配置
 
-# pnpm
+# 管理后台配置
+cd ../admin-vue3
+cp .env.example .env
+# 修改 API 地址
+
+# 前台配置
+cd ../../nuxt3-app
+cp .env.example .env
+# 修改 API 地址
+```
+
+4. **初始化数据库**
+
+```bash
+# 导入数据库文件
+mysql -u root -p < database.sql
+```
+
+5. **启动服务**
+
+```bash
+# 启动后端（端口 3001）
+cd nest-admin/server
+pnpm run start:dev
+
+# 启动管理后台（端口 8888）
+cd ../admin-vue3
 pnpm run dev
 
-# yarn
-yarn dev
-
-# bun
-bun run dev
+# 启动前台（端口 3000）
+cd ../../nuxt3-app
+pnpm run dev
 ```
 
-## Production
+6. **访问应用**
 
-Build the application for production:
+- 前台展示：http://localhost:3000
+- 管理后台：http://localhost:8888
+- API 文档：http://localhost:3001/api-docs
+
+---
+
+## 🐳 Docker 部署
+
+项目提供完整的 Docker 部署方案，支持一键部署所有服务。
 
 ```bash
-# npm
-npm run build
+# 构建镜像
+docker-compose build
 
-# pnpm
-pnpm run build
+# 启动服务
+docker-compose up -d
 
-# yarn
-yarn build
+# 查看日志
+docker-compose logs -f
 
-# bun
-bun run build
+# 停止服务
+docker-compose down
 ```
 
-Locally preview production build:
+详细部署文档请参考：[Docker 部署指南](./Docker部署指南.md)
 
-```bash
-# npm
-npm run preview
+---
 
-# pnpm
-pnpm run preview
+## 📸 功能展示
 
-# yarn
-yarn preview
+### 前台展示
 
-# bun
-bun run preview
+- **首页**：文章列表、分类标签、热门推荐
+- **文章详情**：Markdown 渲染、目录导航、评论互动
+- **关于页面**：个人介绍、技能展示、游戏展示、性格测试
+- **动态页面**：朋友圈动态、图片展示、点赞评论
+
+### 管理后台
+
+- **仪表盘**：数据统计、访问趋势、快捷操作
+- **文章管理**：文章列表、新增编辑、分类标签管理
+- **评论管理**：评论审核、回复管理
+- **动态管理**：动态发布、图片管理
+- **用户管理**：用户列表、权限配置
+- **系统配置**：菜单配置、网站设置
+
+---
+
+## 🎨 设计特色
+
+### 视觉设计
+
+- **现代化 UI**：采用 Naive UI 和 Element Plus，界面简洁美观
+- **渐变色彩**：紫色渐变主题，视觉效果出众
+- **动画效果**：平滑过渡、悬浮效果、加载动画
+- **响应式布局**：完美适配各种设备尺寸
+
+### 交互设计
+
+- **手风琴效果**：游戏展示采用倾斜手风琴设计
+- **波浪背景**：登录页面 SVG 波浪动画
+- **加载动画**：渐显式加载条，提升用户体验
+- **图标选择器**：130+ 图标分类选择
+
+---
+
+## 📝 开发指南
+
+### 代码规范
+
+- 使用 ESLint + Prettier 统一代码风格
+- 遵循 Vue3 Composition API 最佳实践
+- TypeScript 严格模式，确保类型安全
+- 组件命名采用 PascalCase
+- 文件命名采用 kebab-case
+
+### Git 提交规范
+
+```
+feat: 新功能
+fix: 修复 bug
+docs: 文档更新
+style: 代码格式调整
+refactor: 重构
+perf: 性能优化
+test: 测试相关
+chore: 构建/工具链相关
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+---
 
+## 🤝 贡献指南
 
-```
-declare module 'vanta/src/vanta.halo';
-```
+欢迎提交 Issue 和 Pull Request！
 
+1. Fork 本项目
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'feat: Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 提交 Pull Request
 
+---
 
-"scripts": {
-    "build-dev": "nuxt build --dotenv .env.test",
-    "build-prd": "nuxt build --dotenv .env.production",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
-  },
+## 📄 开源协议
 
+本项目采用 [MIT](./LICENSE) 协议开源。
 
-// 配置
-runtimeConfig: {
-    public: {
-      env: true,
-      mode: process.env.NODE_ENV,
-    }
-  }
+---
 
-// 使用
-const envconfig = useRuntimeConfig()
-console.log(envconfig.public.mode)
+## 👨‍💻 作者
 
+**江晚正愁余**
+
+- 博客：https://jwyt.xyz
+- GitHub：[@your-github](https://github.com/your-github)
+- Email：your-email@example.com
+
+---
+
+## 🙏 致谢
+
+感谢以下开源项目：
+
+- [NestJS](https://nestjs.com/)
+- [Vue.js](https://vuejs.org/)
+- [Nuxt.js](https://nuxt.com/)
+- [Element Plus](https://element-plus.org/)
+- [Naive UI](https://www.naiveui.com/)
+- [TypeORM](https://typeorm.io/)
+
+---
+
+## 📮 联系方式
+
+如有问题或建议，欢迎通过以下方式联系：
+
+- 提交 [Issue](https://github.com/your-repo/issues)
+- 发送邮件至：your-email@example.com
+- 访问博客留言：https://jwyt.xyz
+
+---
+
+<div align="center">
+
+**⭐ 如果这个项目对你有帮助，请给一个 Star ⭐**
+
+Made with ❤️ by 江晚正愁余
+
+</div>
