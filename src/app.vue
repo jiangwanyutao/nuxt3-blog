@@ -48,13 +48,18 @@ onMounted(() => {
   >
     <n-notification-provider :max="3">
       <n-modal-provider>
-      <Loading v-if="isFullLoading"></Loading>
-      <NuxtLayout v-else>
-        <!-- 在页面导航之间显示一个进度条 -->
-        <NuxtLoadingIndicator />
-        <NuxtPage />
-        <CommonSideEdge></CommonSideEdge>
-      </NuxtLayout>
+        <!-- 页面内容始终渲染，loading 作为遮罩层 -->
+        <NuxtLayout>
+          <!-- 在页面导航之间显示一个进度条 -->
+          <NuxtLoadingIndicator />
+          <NuxtPage />
+          <CommonSideEdge></CommonSideEdge>
+        </NuxtLayout>
+        
+        <!-- Loading 遮罩层 -->
+        <Transition name="fade">
+          <Loading v-if="isFullLoading" class="loading-overlay"></Loading>
+        </Transition>
       </n-modal-provider>
     </n-notification-provider>
     <!-- 回到顶部 -->
@@ -62,6 +67,7 @@ onMounted(() => {
 </template>
 
 <style>
+/* 页面切换动画 */
 .page-enter-active,
 .page-leave-active {
   transition: all 1s;
@@ -70,5 +76,27 @@ onMounted(() => {
 .page-leave-to {
   opacity: 0;
   filter: blur(1rem);
+}
+
+/* Loading 遮罩层样式 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: #fff; /* 或者使用你的背景色 */
+}
+
+/* Loading 淡出动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

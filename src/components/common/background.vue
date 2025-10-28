@@ -118,16 +118,20 @@ const gitHub = 'https://github.com'
 const gitee = 'https://gitee.com'
 const bilibili = 'https://bilibili.com'
 
-// 背景图片列表
+// 背景图片列表（使用 public 目录，支持预加载）
 const bgImages = [
-  '/assets/img/banner/1.jpg',
-  '/assets/img/banner/2.jpg',
-  '/assets/img/banner/3.jpg',
-  '/assets/img/banner/4.jpg'
+  '/images/banner/1.jpg',
+  '/images/banner/2.jpg',
+  '/images/banner/3.jpg',
+  '/images/banner/4.jpg',
+  '/images/banner/5.jpg',
+  '/images/banner/6.png',
+  '/images/banner/7.jpg',
+  '/images/banner/8.jpg',
 ]
 
-const currentBgIndex = ref(0)
-let bgInterval: NodeJS.Timer
+const currentBgIndex = ref(2)
+let bgInterval: ReturnType<typeof setInterval> | null = null
 
 const opacity = ref(1)
 const nextBgIndex = computed(() => (currentBgIndex.value + 1) % bgImages.length)
@@ -175,25 +179,69 @@ onMounted(() => {
   nextTick(() => {
     init()
     initTyped()
+    preloadImages() // 预加载其他背景图片
     // 每5秒切换一次背景
-    // bgInterval = setInterval(changeBg, 50000)
+    // bgInterval = setInterval(changeBg, 5000)
   })
 })
+
+// 预加载其他背景图片
+const preloadImages = () => {
+  // 首屏图片已经通过 CSS 加载，这里预加载其他图片
+  bgImages.slice(1).forEach((src) => {
+    const img = new Image()
+    img.src = src
+  })
+}
 
 onBeforeUnmount(() => {
   if (vantaEffect) {
     vantaEffect.destroy()
   }
   // 清理定时器
-  clearInterval(bgInterval)
+  if (bgInterval) {
+    clearInterval(bgInterval)
+  }
 })
 
-const handleRight = () => {
-  // nuxtApp.router.push("/home");
+// 是否正在切换（防止快速点击）
+const isSwitching = ref(false)
+
+// 平滑切换背景图片
+const smoothSwitchBg = async (newIndex: number) => {
+  if (isSwitching.value) return // 防止重复点击
+  
+  isSwitching.value = true
+  
+  // 预加载目标图片
+  const targetImg = new Image()
+  targetImg.src = bgImages[newIndex]
+  
+  // 等待图片加载完成
+  await new Promise((resolve) => {
+    targetImg.onload = resolve
+    targetImg.onerror = resolve // 即使加载失败也继续
+  })
+  
+  // 切换索引
+  currentBgIndex.value = newIndex
+  
+  // 短暂延迟后允许下次切换
+  setTimeout(() => {
+    isSwitching.value = false
+  }, 300)
 }
 
+// 切换到下一张背景图片
+const handleRight = () => {
+  const nextIndex = (currentBgIndex.value + 1) % bgImages.length
+  smoothSwitchBg(nextIndex)
+}
+
+// 切换到上一张背景图片
 const handleLeft = () => {
-  // nuxtApp.router.push("/home");
+  const prevIndex = (currentBgIndex.value - 1 + bgImages.length) % bgImages.length
+  smoothSwitchBg(prevIndex)
 }
 
 const initTyped = () => {
@@ -210,23 +258,49 @@ const initTyped = () => {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  transition: background-image 0.5s ease-in-out;
+  transition: background-image 0.6s ease-in-out, opacity 0.3s ease-in-out;
+  /* 添加硬件加速 */
+  will-change: background-image;
+  transform: translateZ(0);
+  /* 防止白色闪烁 */
+  background-color: #1a1a2e;
 }
 
 .bg-0 {
-  background-image: url('@/assets/img/banner/1.png');
+  background-image: url('/images/banner/1.jpg');
+  /* 添加模糊占位符 */
+  // background-color: #1a1a2e;
 }
 
 .bg-1 {
-  background-image: url('@/assets/img/banner/2.jpg');
+  background-image: url('/images/banner/2.jpg');
+  // background-color: #16213e;
 }
 
 .bg-2 {
-  background-image: url('@/assets/img/banner/3.png');
+  background-image: url('/images/banner/3.jpg');
+  // background-color: #0f3460;
 }
 
 .bg-3 {
-  background-image: url('@/assets/img/banner/4.jpg');
+  background-image: url('/images/banner/4.jpg');
+  // background-color: #533483;
+}
+.bg-4 {
+  background-image: url('/images/banner/5.jpg');
+  // background-color: #533483;
+}
+.bg-5 {
+  background-image: url('/images/banner/6.png');
+  // background-color: #533483;
+}
+.bg-6 {
+  background-image: url('/images/banner/7.jpg');
+  // background-color: #533483;
+}
+.bg-7 {
+  background-image: url('/images/banner/8.jpg');
+  // background-color: #533483;
 }
 
 .glitch {

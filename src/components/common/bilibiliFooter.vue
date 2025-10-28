@@ -9,13 +9,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
+// 使用 public 目录的图片，SSR 友好
 const images = ref([
-  { src: new URL('@/assets/img/footer/bilibili-autumn-1.png', import.meta.url).href },
-  { src: new URL('@/assets/img/footer/bilibili-autumn-2.png', import.meta.url).href },
-  { src: new URL('@/assets/img/footer/bilibili-autumn-3.png', import.meta.url).href },
-  { src: new URL('@/assets/img/footer/bilibili-autumn-4.png', import.meta.url).href },
-  { src: new URL('@/assets/img/footer/bilibili-autumn-5.png', import.meta.url).href },
-  { src: new URL('@/assets/img/footer/bilibili-autumn-6.png', import.meta.url).href }
+  { src: '/images/footer/bilibili-autumn-1.png' },
+  { src: '/images/footer/bilibili-autumn-2.png' },
+  { src: '/images/footer/bilibili-autumn-3.png' },
+  { src: '/images/footer/bilibili-autumn-4.png' },
+  { src: '/images/footer/bilibili-autumn-5.png' },
+  { src: '/images/footer/bilibili-autumn-6.png' }
 ])
 
 const imageRefs = ref([])

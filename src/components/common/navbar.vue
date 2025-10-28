@@ -232,13 +232,14 @@ onUnmounted(() => {
   ></div>
 
   <!-- 导航栏容器 -->
-  <div 
-    class="navbar-container"
-    @mouseenter="cancelHideMenu"
-    @mouseleave="hideMenu"
-  >
+  <div class="navbar-container">
     <!-- 主导航栏 -->
-    <nav class="top-navbar" :class="{ 'is-hidden': isScrollUp }">
+    <nav 
+      class="top-navbar" 
+      :class="{ 'is-hidden': isScrollUp }"
+      @mouseenter="cancelHideMenu"
+      @mouseleave="hideMenu"
+    >
       <!-- 导航头部 -->
       <div class="nav-header">
         <template v-for="menu in menuTree" :key="menu.menuId">
@@ -251,6 +252,16 @@ onUnmounted(() => {
           >
             {{ menu.text }}
           </a>
+          <!-- 关于页面使用智能预加载 -->
+          <CommonPreloadLink 
+            v-else-if="menu.path === '/about'"
+            :to="menu.path"
+            preload-type="about"
+            class="nav-link"
+          >
+            {{ menu.text }}
+          </CommonPreloadLink>
+          <!-- 其他普通链接 -->
           <NuxtLink 
             v-else
             :to="menu.path || '#'"
@@ -276,7 +287,7 @@ onUnmounted(() => {
           class="menu-section" 
           :style="{ animationDelay: `${sectionIndex * 0.1 + 0.1}s` }"
         >
-          <a href="#" class="menu-item" :class="{ 'has-submenu': section.children && section.children.length > 0 }">
+          <a :href="section.path || '#'" class="menu-item" :class="{ 'has-submenu': section.children && section.children.length > 0 }">
             <span v-if="section.icon" class="menu-icon">
               <Icon :name="section.icon" size="20" />
             </span>
@@ -326,12 +337,13 @@ onUnmounted(() => {
   visibility: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 9999;
-  pointer-events: none;
+  pointer-events: none; /* 始终不阻挡点击 */
 }
 
 .overlay.show {
   opacity: 1;
   visibility: visible;
+  pointer-events: none; /* 确保显示时也不阻挡点击 */
 }
 
 /* 导航栏容器 - 适应整体布局 */
@@ -375,12 +387,13 @@ onUnmounted(() => {
   opacity: 0;
   transform: translateY(-100%);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: none;
+  pointer-events: none; /* 始终不阻挡点击 */
 }
 
 .scroll-text-bar.is-visible {
   opacity: 1;
   transform: translateY(0);
+  pointer-events: none; /* 确保可见时也不阻挡点击 */
 }
 
 .scroll-text-bar span {
@@ -440,10 +453,12 @@ onUnmounted(() => {
   align-items: center;
   gap: 4px;
   margin: 0 15px;
+  cursor: pointer; /* 添加手型光标 */
 }
 
 .nav-link:hover {
   color: #000;
+  cursor: pointer; /* 确保 hover 时也是手型 */
 }
 
 /* .nav-link.has-dropdown::after {

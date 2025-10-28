@@ -262,7 +262,7 @@
 
           <!-- 加载条动画 -->
           <div class="loading-bar-container">
-            <img src="~/assets/img/about/loading-bar.png" alt="loading" class="loading-bar" />
+            <img src="/images/about/loading-bar.png" alt="loading" class="loading-bar" />
           </div>
       </div>
 
@@ -405,13 +405,13 @@ const visitData = ref({
 const gameMusic = ref(true) //lol音乐播放ico状态
 const lolDate = ref(null) //lol台词数据
 
-// 原神图片数据
+// 原神图片数据（使用 public 目录，SSR 友好）
 const genshinImages = ref([
-  new URL('~/assets/img/about/1.jpg', import.meta.url).href,
-  new URL('~/assets/img/about/2.jpg', import.meta.url).href,
-  new URL('~/assets/img/about/3.jpg', import.meta.url).href,
-  new URL('~/assets/img/about/4.jpg', import.meta.url).href,
-  new URL('~/assets/img/about/5.png', import.meta.url).href
+  '/images/about/1.jpg',
+  '/images/about/2.jpg',
+  '/images/about/3.jpg',
+  '/images/about/4.jpg',
+  '/images/about/5.png'
 ])
 
 //技能

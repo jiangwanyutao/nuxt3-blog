@@ -1,4 +1,5 @@
 import requestUtil from '~/composables/requestUtil'
+import type { ApiResponse } from '~/types/api'
 
 // 菜单项接口定义
 export interface MenuTreeItem {
@@ -13,13 +14,6 @@ export interface MenuTreeItem {
   visible: string
   enabled: string
   children?: MenuTreeItem[]
-}
-
-// API响应接口
-export interface ApiResponse<T = any> {
-  code: number
-  data: T
-  message?: string
 }
 
 /**

@@ -8,11 +8,11 @@ const blogStore = useBlogStore()
       <span class="logolink logo">
         <a href="/">
           <ruby>
-            <span class="sakuraso">{{ blogStore.blogConfig?.title || '江晚正愁余' }}</span>
+            <span class="sakuraso">{{ blogStore.blogConfig?.title + 'Blog' || '江晚正愁余Blog' }}</span>
             <span class="no"></span>
-            <span class="shironeko">Blog</span>
+            <span class="shironeko"></span>
             <rp></rp>
-            <rt class="logo">{{ blogStore.blogConfig?.hoverTitle || 'jiang wan zheng chou yu' }}</rt>
+            <rt class="logo">{{ blogStore.blogConfig?.hoverTitle + 'Blog' || 'jiang wan zheng chou yu' }}</rt>
             <rp></rp>
           </ruby>
         </a>
@@ -87,7 +87,7 @@ p:hover #n2 {
 }
 
 .logolink .sakuraso {
-  background-color: rgba(255, 255, 255, 0.5);
+  // background-color: rgba(255, 255, 255, 0.5);
   border-radius: 5px;
   color: #464646;
   height: auto;

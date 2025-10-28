@@ -8,7 +8,29 @@ export default defineNuxtConfig({
   //资源放入src目录
   srcDir: 'src/',
   app: {
-    pageTransition: { name: 'page', mode: 'out-in' }
+    pageTransition: { name: 'page', mode: 'out-in' },
+    head: {
+      title: '江晚正愁余 Blog',
+      meta: [
+         { charset: 'utf-8' },
+        { name: 'keywords', content: '江晚正愁余,blog,个人博客,博客,sakura,主题,前端,知识库,nuxt3' },
+        { name: 'author', content: '江晚正愁余' },
+        { name: 'description', content: '江晚正愁余 & 前端开发 & Nuxt3 & 个人博客 & 个人知识库' }
+      ],
+      link: [
+        { rel: 'icon', href: '/favicon.ico' },
+        // 🎯 预加载首屏关键图片
+        { rel: 'preload', href: '/images/banner/3.jpg', as: 'image' }, // 首屏默认显示的图片 (currentBgIndex = 3)
+        // 💡 智能预加载策略：
+        // - About 页面图片：鼠标悬停"关于"链接时预加载（使用 PreloadLink 组件）
+        // - 其他 Banner 图片：在首屏加载后自动预加载（见 background.vue 的 preloadImages 方法）
+        // 详见：PreloadLink 组件和 useImagePreload composable
+      ]
+    }
+  },
+  routeRules: {
+    // 首页预渲染
+    '/': { prerender: true },
   },
   runtimeConfig: {
     // apiSecret 只能在服务器端上访问

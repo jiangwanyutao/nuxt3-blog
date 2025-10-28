@@ -83,8 +83,10 @@
         </div>
       </div>
     </div>
-    <!-- 纸屑特效 -->
-    <CommonConfettiCanvas />
+    <!-- 纸屑特效 - 仅在客户端渲染 -->
+    <ClientOnly>
+      <CommonConfettiCanvas />
+    </ClientOnly>
   </div>
   <div class="card">
     <div class="content">

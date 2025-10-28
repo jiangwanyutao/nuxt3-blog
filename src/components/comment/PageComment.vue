@@ -554,7 +554,7 @@ const submitReply = async () => {
     // 使用momentId=0表示页面级评论
     const response = await addMomentsComment(0, replyData) as any
     
-    if (response && response.code === 200) {
+    if (response) {
       utilMsg.$message.success('回复发表成功！')
       // 重置回复表单
       cancelReply()

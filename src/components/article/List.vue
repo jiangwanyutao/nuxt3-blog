@@ -16,9 +16,11 @@ const createTime = computed(() => (time: string) => useDateFormat(time, 'YYYY-MM
   <article class="article-card">
     <a :href="`/article/${item.id}`" class="article-link">
       <div class="article-image">
-        <img 
-          :src="item.cover || item.articleCover || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'" 
-          :alt="item.title || item.articleTitle" 
+        <BaseImage 
+          :src="item.cover || item.articleCover || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'"
+          :lazy="true"
+          priority="low"
+          placeholder-color="#f5f3f0"
         />
         <div v-if="item.isTop" class="top-badge">
           <Icon name="ant-design:pushpin-filled" size="14" />
@@ -78,16 +80,7 @@ const createTime = computed(() => (time: string) => useDateFormat(time, 'YYYY-MM
   position: relative;
 }
 
-.article-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s ease;
-}
-
-.article-card:hover .article-image img {
-  transform: scale(1.08);
-}
+/* BaseImage 组件已自带悬停缩放效果，无需额外样式 */
 
 .top-badge {
   position: absolute;

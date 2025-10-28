@@ -1,4 +1,5 @@
 import requestUtil from '~/composables/requestUtil'
+import type { ApiResponse, PageData } from '~/types/api'
 
 // 说说接口定义
 export interface MomentItem {
@@ -29,13 +30,6 @@ export interface MomentItem {
   isLiked?: boolean
 }
 
-// API响应接口
-export interface ApiResponse<T = any> {
-  code: number
-  data: T
-  message?: string
-}
-
 // 分页查询参数
 export interface MomentsQuery {
   page?: number
@@ -45,13 +39,8 @@ export interface MomentsQuery {
   isPublic?: boolean
 }
 
-// 分页响应数据
-export interface MomentsPageData {
-  list: MomentItem[]
-  total: number
-  page: number
-  size: number
-}
+// 说说分页响应数据
+export type MomentsPageData = PageData<MomentItem>
 
 /**
  * 获取说说列表（前端使用，只获取公开的说说）

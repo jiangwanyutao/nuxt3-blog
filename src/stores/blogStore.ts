@@ -124,7 +124,7 @@ export const useBlogStore = defineStore('blog', () => {
   async function blogInfoData() {
     try {
       const { data } = await api.auth.apiGetConfig();
-      console.log(data, '博客配置列表')
+      // console.log(data, '博客配置列表')
       
       // 存储博客配置信息
       if (data) {
