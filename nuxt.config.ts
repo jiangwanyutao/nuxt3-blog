@@ -21,6 +21,8 @@ export default defineNuxtConfig({
         { rel: 'icon', href: '/favicon.ico' },
         // 🎯 预加载首屏关键图片
         { rel: 'preload', href: '/images/banner/3.jpg', as: 'image' }, // 首屏默认显示的图片 (currentBgIndex = 3)
+        { rel: 'preload', href: '/images/banner/log.png', as: 'image' },
+        { rel: 'preload', href: '/images/banner/backImg.jpg', as: 'image' },
         // 💡 智能预加载策略：
         // - About 页面图片：鼠标悬停"关于"链接时预加载（使用 PreloadLink 组件）
         // - 其他 Banner 图片：在首屏加载后自动预加载（见 background.vue 的 preloadImages 方法）

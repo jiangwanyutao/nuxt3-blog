@@ -56,8 +56,8 @@ const linksTableData = reactive({
   records: [
     {
       id: 1,
-      log: 'https://lk.jwyt.cloud/sijing/2025/10/23/68fa1cbd8650a.png',
-      backImg: 'https://lk.jwyt.cloud/sijing/2025/10/23/68fa1813bddc2.jpg',
+      log: '/images/banner/log.png',
+      backImg: '/images/banner/backImg.jpg',
       name: '江晚正愁余',
       description: '坚持你所热爱的，热爱你所坚持的!',
       realmName: 'https://jwyt.xyz',
