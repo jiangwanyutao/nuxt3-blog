@@ -44,7 +44,7 @@
 /* 本地备份字体 - 仅在CDN失败时使用 */
 @font-face {
   font-family: 'MiSans Local';
-  src: url('~/assets/fonts/miSans-Normal.woff2') format('woff2');
+  src: url('~/assets/fonts/MiSans-Normal.woff2') format('woff2');
   font-display: swap; /* 快速显示备用字体，然后替换 */
   font-weight: 400;
   font-style: normal;
