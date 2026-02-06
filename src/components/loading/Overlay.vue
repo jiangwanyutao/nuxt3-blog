@@ -1,57 +1,39 @@
 <template>
-  <div>
-    <div class="center w-screen h-screen">
-      <div class="g-container">
-        <div class="g-group">
-          <div class="item item-right"></div>
-          <div class="item item-left"></div>
-          <div class="item item-top"></div>
-          <div class="item item-bottom"></div>
-          <div class="item item-middle"></div>
-        </div>
-        <div class="g-group">
-          <div class="item item-right"></div>
-          <div class="item item-left"></div>
-          <div class="item item-top"></div>
-          <div class="item item-bottom"></div>
-          <div class="item item-middle"></div>
-        </div>
+  <div class="warp-loading">
+    <div class="g-container">
+      <div class="g-group">
+        <div class="item item-right"></div>
+        <div class="item item-left"></div>
+        <div class="item item-top"></div>
+        <div class="item item-bottom"></div>
+        <div class="item item-middle"></div>
+      </div>
+      <div class="g-group">
+        <div class="item item-right"></div>
+        <div class="item item-left"></div>
+        <div class="item item-top"></div>
+        <div class="item item-bottom"></div>
+        <div class="item item-middle"></div>
       </div>
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
-const isVisible = ref(false)
-
-function showLoading() {
-  isVisible.value = true
-}
-
-function hideLoading() {
-  isVisible.value = false
-}
-
-provide('showLoading', showLoading)
-provide('hideLoading', hideLoading)
+// 纯展示组件，状态由父组件 app.vue 控制
 </script>
 <style lang="scss" scoped>
-.center {
-  height: 100vh;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+.warp-loading {
+  position: fixed;
+  inset: 0;
   overflow: hidden;
   background: #000;
-  text-align: center;
-  z-index: 999;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.center:before {
-  content: '';
-  display: inline-block;
-  height: 100%;
-  vertical-align: middle;
-}
 .g-container {
   display: inline-block;
   /* vertical-align: middle; */

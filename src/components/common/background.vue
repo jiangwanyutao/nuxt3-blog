@@ -151,35 +151,206 @@ const changeBg = async () => {
   opacity.value = 1
 }
 
-// 初始化
+// 初始化 - 优化版本
 async function init() {
   // 只在客户端导入 vanta
   if (process.client) {
-    const BIRDS = (await import('vanta/dist/vanta.birds.min')).default
-    vantaEffect = BIRDS({
-      el: vantaRef.value,
-      THREE: THREE, // 也可以换成 p5，但我没试过
-      mouseControls: true, // 是否允许动画和鼠标手势交互，想启用的话改成true
-      touchControls: false, // 触摸屏交互
-      gyroControls: false, // 加速度交互，应该是晃动手机的效果
-      minHeight: 200.0,
-      minWidth: 200.0,
-      scale: 2.0,
-      scaleMobile: 1.0,
-      backgroundAlpha: 0.0,
-      birdSize: 1.5, // 鸟的大小
-      wingSpan: 20.0, // 翅膀展开的角度
-      quantity: 3.0, // 鸟的数量
-      speedLimit: 4.0 // 速度限制
-    })
+    try {
+      // 性能监控开始
+      const startTime = performance.now()
+      
+      // 显示加载状态
+      const loadingElement = document.createElement('div')
+      loadingElement.className = 'vanta-loading'
+      loadingElement.textContent = '加载动画中...'
+      vantaRef.value?.appendChild(loadingElement)
+      
+      // 动态导入 + 超时控制
+      const vantaPromise = import('vanta/dist/vanta.birds.min')
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Vanta加载超时')), 5000)
+      )
+      
+      const { default: BIRDS } = await Promise.race([vantaPromise, timeoutPromise])
+      
+      // 检查设备性能
+      const isLowEndDevice = navigator.hardwareConcurrency <= 4 || 
+                           /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      
+      // 根据设备性能调整参数
+      const config = isLowEndDevice ? {
+        el: vantaRef.value,
+        THREE: THREE,
+        mouseControls: false,
+        touchControls: false,
+        gyroControls: false,
+        minHeight: 200.0,
+        minWidth: 200.0,
+        scale: 1.0,
+        scaleMobile: 0.5,
+        backgroundAlpha: 0.0,
+        birdSize: 1.0,
+        wingSpan: 15.0,
+        quantity: 2.0,
+        speedLimit: 2.0
+      } : {
+        el: vantaRef.value,
+        THREE: THREE,
+        mouseControls: true,
+        touchControls: false,
+        gyroControls: false,
+        minHeight: 200.0,
+        minWidth: 200.0,
+        scale: 2.0,
+        scaleMobile: 1.0,
+        backgroundAlpha: 0.0,
+        birdSize: 1.5,
+        wingSpan: 20.0,
+        quantity: 3.0,
+        speedLimit: 4.0
+      }
+      
+      vantaEffect = BIRDS(config)
+      
+      // 移除加载提示
+      loadingElement.remove()
+      
+      // 性能监控结束
+      const loadTime = performance.now() - startTime
+      console.log(`Vanta.js 加载耗时: ${loadTime.toFixed(2)}ms`)
+      
+      // 如果加载时间过长，记录警告
+      if (loadTime > 3000) {
+        console.warn('Vanta.js 加载时间过长，建议使用降级方案')
+      }
+      
+    } catch (error) {
+      console.error('Vanta.js 加载失败:', error)
+      // 降级方案：显示静态背景
+      initFallbackBackground()
+    }
   }
+}
+
+// 降级方案：静态背景动画
+function initFallbackBackground() {
+  if (!vantaRef.value) return
+  
+  // 创建CSS动画背景作为降级方案
+  vantaRef.value.innerHTML = `
+    <div class="fallback-background">
+      <div class="floating-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+      </div>
+    </div>
+  `
+  
+  // 添加降级样式
+  const style = document.createElement('style')
+  style.textContent = `
+    .fallback-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      overflow: hidden;
+    }
+    
+    .floating-particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .particle {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .particle:nth-child(1) {
+      width: 80px;
+      height: 80px;
+      left: 10%;
+      animation-delay: 0s;
+    }
+    
+    .particle:nth-child(2) {
+      width: 60px;
+      height: 60px;
+      left: 70%;
+      animation-delay: 2s;
+    }
+    
+    .particle:nth-child(3) {
+      width: 40px;
+      height: 40px;
+      left: 40%;
+      animation-delay: 4s;
+    }
+    
+    .particle:nth-child(4) {
+      width: 100px;
+      height: 100px;
+      left: 80%;
+      animation-delay: 1s;
+    }
+    
+    .particle:nth-child(5) {
+      width: 50px;
+      height: 50px;
+      left: 20%;
+      animation-delay: 3s;
+    }
+    
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.7;
+      }
+      50% {
+        transform: translateY(-100px) rotate(180deg);
+        opacity: 0.3;
+      }
+    }
+  `
+  document.head.appendChild(style)
 }
 
 onMounted(() => {
   nextTick(() => {
-    init()
+    // 延迟初始化，优先保证页面主要内容加载
+    setTimeout(() => {
+      init()
+    }, 100)
+    
     initTyped()
     preloadImages() // 预加载其他背景图片
+    
+    // 添加用户交互检测
+    let userInteracted = false
+    const handleInteraction = () => {
+      if (!userInteracted) {
+        userInteracted = true
+        // 用户交互后，如果Vanta还未加载，优先加载
+        if (!vantaEffect) {
+          init()
+        }
+      }
+    }
+    
+    // 监听用户交互事件
+    document.addEventListener('click', handleInteraction, { once: true })
+    document.addEventListener('scroll', handleInteraction, { once: true })
+    document.addEventListener('mousemove', handleInteraction, { once: true })
+    
     // 每5秒切换一次背景
     // bgInterval = setInterval(changeBg, 5000)
   })

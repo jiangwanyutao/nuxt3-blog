@@ -85,5 +85,5 @@ export const apiGetUserInfo = (): Promise<UserInfo> => {
 
 //获取网站默认配置
 export const apiGetConfig = (): Promise<ConfigResponse> => {
-  return requestUtil.get('/website-config', {}, {isToken:true}) as Promise<ConfigResponse>
+  return requestUtil.get('/website-config', {}, {isToken: false}) as Promise<ConfigResponse>
 }

@@ -8,11 +8,11 @@ const blogStore = useBlogStore()
       <span class="logolink logo">
         <a href="/">
           <ruby>
-            <span class="sakuraso">{{ blogStore.blogConfig?.title + 'Blog' || '江晚正愁余Blog' }}</span>
+            <span class="sakuraso">{{ (blogStore.blogConfig?.title ?? '江晚正愁余') + 'Blog' }}</span>
             <span class="no"></span>
             <span class="shironeko"></span>
             <rp></rp>
-            <rt class="logo">{{ blogStore.blogConfig?.hoverTitle + 'Blog' || 'jiang wan zheng chou yu' }}</rt>
+            <rt class="logo">{{ (blogStore.blogConfig?.hoverTitle ?? 'jiangwanzhengchouyu') + 'Blog' }}</rt>
             <rp></rp>
           </ruby>
         </a>

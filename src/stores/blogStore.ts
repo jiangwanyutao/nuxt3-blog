@@ -123,15 +123,11 @@ export const useBlogStore = defineStore('blog', () => {
   // 查看博客信息
   async function blogInfoData() {
     try {
-      const { data } = await api.auth.apiGetConfig();
-      // console.log(data, '博客配置列表')
-      
-      // 存储博客配置信息
-      if (data) {
-        blogConfig.value = data
-        
-        // 同时更新访问数
-        viewsCount.value = parseInt(data.visitCount) || 0
+      const res = await api.auth.apiGetConfig()
+      // 防御 null（网络失败 / SSR 预渲染时后端未启动）
+      if (res?.data) {
+        blogConfig.value = res.data
+        viewsCount.value = parseInt(res.data.visitCount) || 0
       }
     } catch (error) {
       console.error('获取博客配置失败:', error)
@@ -167,5 +163,5 @@ export const useBlogStore = defineStore('blog', () => {
   } as any
 })
 
-console.log(import.meta.hot,'import.meta.hot')
+// console.log(import.meta.hot,'import.meta.hot')
 if (import.meta.hot) import.meta.hot.accept(acceptHMRUpdate(useBlogStore, import.meta.hot))

@@ -19,7 +19,7 @@
           mousewheel
           style="width: 100%; height: 50px"
           autoplay
-          centered-slides="true"
+          :centered-slides="true"
         >
           <n-carousel-item
             v-for="item in syMomentsData"
@@ -63,12 +63,14 @@
         <div class="articleClassification">
           <div style="width: 95%;">
             <span
-              class="articleClassification_dvi liBgc"
+              class="articleClassification_dvi"
+              :class="{ liBgc: selectedCategoryIndex === 0 }"
               @click="liClick(0, '')"
               >全部</span
             >
             <span
               class="articleClassification_dvi"
+              :class="{ liBgc: selectedCategoryIndex === index + 1 }"
               v-for="(item, index) in ArticleTypes"
               @click="liClick(index + 1, item)"
               :key="index"
@@ -84,7 +86,7 @@
 
         <!-- 文章列表 -->
         <div class="articles-grid">
-          <ArticleList v-for="item in articleList" :key="item.id" :item="item" />
+          <ArticleCard v-for="item in articleList" :key="item.id" :item="item" />
         </div>
       </div>
 
@@ -98,188 +100,109 @@
 <script setup lang="ts">
 import { ApertureOutline, ArrowForwardCircle } from '@vicons/ionicons5'
 import { useBlogStore } from '@/stores/blogStore'
+import { getArticleList, getCategories } from '~/api/article'
+import { getMomentsList } from '~/api/moments'
 import type { Article } from '@/types/article'
 
 const blogStore = useBlogStore()
-//查询所有说说
+
+// SEO 元数据
+useSeoMeta({
+  title: '江晚正愁余 Blog - 首页',
+  description: '江晚正愁余的个人博客，分享前端技术、Vue3、Nuxt3 开发经验与生活感悟',
+  ogTitle: '江晚正愁余 Blog',
+  ogDescription: '前端开发者的个人博客，记录技术成长与生活的点滴',
+  ogImage: '/images/banner/3.jpg',
+})
+
+// 说说显示类型
 interface MomentDisplayItem {
   id: number
   content: string
   icon: string
   path: string
-  createTime?: string
-  user?: {
-    userId: number
-    userName: string
-    nickName: string
-    avatar?: string
-  }
 }
 
-const syMomentsData = ref<MomentDisplayItem[]>([])
+// 默认数据
+const defaultMoments: MomentDisplayItem[] = [
+  { id: 1, content: '欢迎来到江晚正愁余Blog！', icon: 'material-symbols:chat-bubble-outline', path: '/moments' },
+  { id: 2, content: '分享生活中的美好时刻', icon: 'material-symbols:favorite-outline', path: '/moments' },
+  { id: 3, content: '记录每一个精彩瞬间', icon: 'material-symbols:photo-camera-outline', path: '/moments' },
+]
 
-// 获取说说数据
-const fetchMomentsData = async () => {
-  try {
-    const { getMomentsList } = await import('~/api/moments')
-    const response = await getMomentsList({ 
-      page: 1, 
-      size: 5,
-      isPublic: true 
-    })
-    
-    if (response && response.code === 200) {
-      // 为轮播图添加必要的字段
-      syMomentsData.value = response.data.list.map(item => ({
-        id: item.id,
-        content: item.content || '暂无内容',
-        icon: 'material-symbols:chat-bubble-outline', // 默认图标
-        path: '/moments', // 跳转到说说页面
-        createTime: item.createTime,
-        user: item.user
-      }))
-    } else {
-      // 使用默认数据作为fallback
-      syMomentsData.value = getDefaultMomentsData()
-    }
-  } catch (error) {
-    console.error('获取说说数据失败:', error)
-    // 使用默认数据作为fallback
-    syMomentsData.value = getDefaultMomentsData()
-  }
-}
+const defaultArticles: Article[] = [
+  {
+    id: 1,
+    articleTitle: '欢迎来到江晚正愁余Blog',
+    articleCover: 'https://cdn.qiniu.jwyt.cloud/common/298f491fc98a464b9b434564c42bf4aa.jpg',
+    articleContent: '这是一个基于Nuxt3和NestJS构建的现代化博客系统。',
+    category: { id: 1, categoryName: 'Vue' },
+    tagVOList: [{ id: 1, tagName: 'Vue' }, { id: 2, tagName: 'Nuxt3' }],
+    isTop: 1,
+    createTime: new Date().toISOString(),
+  },
+]
 
-// 默认说说数据（作为fallback）
-const getDefaultMomentsData = () => {
-  return [
-    {
-      id: 1,
-      content: '欢迎来到江晚正愁余Blog！',
+// =============================================
+//  SSR 数据预取 —— 服务端 + 客户端都会执行
+// =============================================
+
+// 1. 博客配置
+await blogStore.blogInfoData()
+
+// 2. 说说数据
+const { data: momentsRaw } = await useAsyncData('home-moments', () =>
+  getMomentsList({ page: 1, size: 5, isPublic: true })
+)
+const syMomentsData = computed<MomentDisplayItem[]>(() => {
+  const res = momentsRaw.value
+  if (res && res.code === 200 && res.data?.list?.length) {
+    return res.data.list.map((item: any) => ({
+      id: item.id,
+      content: item.content || '暂无内容',
       icon: 'material-symbols:chat-bubble-outline',
-      path: '/moments'
-    },
-    {
-      id: 2,
-      content: '分享生活中的美好时刻',
-      icon: 'material-symbols:favorite-outline',
-      path: '/moments'
-    },
-    {
-      id: 3,
-      content: '记录每一个精彩瞬间',
-      icon: 'material-symbols:photo-camera-outline',
-      path: '/moments'
-    }
-  ]
-}
-
-// 文章分类列表
-const ArticleTypes = ref<string[]>([])
-// 当前选中的分类
-const selectedCategory = ref<string>('')
-// 当前选中的分类索引
-const selectedCategoryIndex = ref<number>(0)
-
-const articleList = ref<Article[]>([])
-
-// 获取文章分类列表
-const fetchCategories = async () => {
-  try {
-    const { getCategories } = await import('~/api/article')
-    const response = await getCategories() as any
-    
-    if (response && response.data) {
-      // 提取分类名称
-      ArticleTypes.value = response.data.map((cat: any) => cat.categoryName || cat.name)
-    }
-  } catch (error) {
-    console.error('获取分类列表失败:', error)
-    // 使用默认分类
-    ArticleTypes.value = ['算法', '数据结构', '网络', '操作系统', '前端', '后端', '数据库', '中间件']
+      path: '/moments',
+    }))
   }
-}
+  return defaultMoments
+})
 
-// 获取文章列表
-const fetchArticleList = async (category: string = '') => {
-  try {
-    const { getArticleList } = await import('~/api/article')
-    const params: any = {
-      page: 1,
-      limit: 4,
-      ...(category && { category }) // 如果有分类，添加分类参数
-    }
-    const response = await getArticleList(params) as any
-    
-    if (response) {
-      articleList.value = response.data.items
-    } else {
-      // 使用默认数据作为fallback
-      articleList.value = getDefaultArticleData()
-    }
-  } catch (error) {
-    console.error('获取文章列表失败:', error)
-    // 使用默认数据作为fallback
-    articleList.value = getDefaultArticleData()
+// 3. 文章分类
+const { data: categoriesRaw } = await useAsyncData('home-categories', () =>
+  getCategories()
+)
+const ArticleTypes = computed<string[]>(() => {
+  const res = categoriesRaw.value as any
+  if (res?.data?.length) {
+    return res.data.map((cat: any) => cat.categoryName || cat.name)
   }
-}
+  return []
+})
 
-// 分类点击事件
-const liClick = (index: number, category: string) => {
+// 4. 文章列表
+const selectedCategoryIndex = ref(0)
+const selectedCategory = ref('')
+
+const { data: articlesRaw, refresh: refreshArticles } = await useAsyncData(
+  'home-articles',
+  () => getArticleList({ page: 1, limit: 4, ...(selectedCategory.value ? { category: selectedCategory.value } : {}) }),
+  { watch: false } // 不自动监听，手动刷新
+)
+const articleList = computed<Article[]>(() => {
+  const res = articlesRaw.value as any
+  return res?.data?.items || defaultArticles
+})
+
+// =============================================
+//  客户端交互
+// =============================================
+
+// 分类点击事件（纯响应式，不操作 DOM）
+const liClick = async (index: number, category: string) => {
   selectedCategoryIndex.value = index
   selectedCategory.value = category
-  
-  // 更新样式
-  const items = document.querySelectorAll('.articleClassification_dvi')
-  items.forEach((item, i) => {
-    if (i === index) {
-      item.classList.add('liBgc')
-    } else {
-      item.classList.remove('liBgc')
-    }
-  })
-  
-  // 根据分类筛选文章
-  fetchArticleList(category)
+  await refreshArticles()
 }
-
-// 默认文章数据（作为fallback）
-const getDefaultArticleData = (): Article[] => {
-  return [
-    {
-      id: 1,
-      articleTitle: '欢迎来到江晚正愁余Blog',
-      articleCover: 'https://cdn.qiniu.jwyt.cloud/common/298f491fc98a464b9b434564c42bf4aa.jpg',
-      articleContent: '这是一个基于Nuxt3和NestJS构建的现代化博客系统，具有优雅的设计和丰富的功能。',
-      category: {
-        id: 1,
-        categoryName: 'Vue'
-      },
-      tagVOList: [
-        {
-          id: 1,
-          tagName: 'Vue'
-        },
-        {
-          id: 2,
-          tagName: 'Nuxt3'
-        }
-      ],
-      isTop: 1,
-      createTime: new Date().toISOString()
-    }
-  ]
-}
-
-onMounted(() => {
-  // utilMsg.$message.success('欢迎来到江晚正愁余的Blog')
-  blogStore.blogInfoData()
-  // 获取说说数据
-  fetchMomentsData()
-  // 获取文章分类列表
-  fetchCategories()
-  // 获取文章列表
-  fetchArticleList()
-})
 </script>
 <style scoped lang="scss">
 /* 分类头部 */

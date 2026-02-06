@@ -19,9 +19,11 @@ onBeforeUnmount(() => {
         <span class="pl-3"> ©2021 - {{ year }} by江晚正愁余 </span>
       </div>
       <div class="pr-28">
-        <a href="https://beian.miit.gov.cn" target="_blank" rel="noopener noreferrer" v-if="blogStore.blogConfig?.icpNumber">
-          {{ blogStore.blogConfig.icpNumber }}
-        </a>
+        <ClientOnly>
+          <a href="https://beian.miit.gov.cn" target="_blank" rel="noopener noreferrer" v-if="blogStore.blogConfig?.icpNumber">
+            {{ blogStore.blogConfig.icpNumber }}
+          </a>
+        </ClientOnly>
       </div>
     </div>
   </footer>

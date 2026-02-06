@@ -341,7 +341,7 @@ chore: 构建/工具链相关
 如有问题或建议，欢迎通过以下方式联系：
 
 - 提交 [Issue](https://github.com/your-repo/issues)
-- 发送邮件至：your-email@example.com
+- 发送邮件至：1015134040@qq.com
 - 访问博客留言：https://jwyt.xyz
 
 ---

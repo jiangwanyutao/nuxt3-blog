@@ -98,6 +98,18 @@ const getDefaultMenuData = (): MenuTreeItem[] => {
               enabled: '0'
             },
             {
+              menuId: 10,
+              icon: '',
+              text: '摄影展示',
+              path: '/photography',
+              class: undefined,
+              sort: 1.5,
+              parentId: 2,
+              isExternal: '0',
+              visible: '0',
+              enabled: '0'
+            },
+            {
               menuId: 4,
               icon: '',
               text: '云盘主页',
@@ -262,10 +274,18 @@ onUnmounted(() => {
             {{ menu.text }}
           </CommonPreloadLink>
           <!-- 其他普通链接 -->
+          <a
+            v-else-if="isExternalLink(menu.path)"
+            :href="menu.path"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="nav-link"
+          >
+            {{ menu.text }}
+          </a>
           <NuxtLink 
             v-else
             :to="menu.path || '#'"
-            :target="isExternalLink(menu.path || undefined) ? '_blank' : '_self'"
             class="nav-link"
           >
             {{ menu.text }}
@@ -300,9 +320,19 @@ onUnmounted(() => {
             class="submenu-items two-column"
           >
             <template v-for="(child, childIndex) in section.children" :key="child.menuId">
+              <a
+                v-if="isExternalLink(child.path)"
+                :href="child.path"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="submenu-item"
+                :style="{ animationDelay: `${sectionIndex * 0.1 + childIndex * 0.05 + 0.3}s` }"
+              >
+                {{ child.text }}
+              </a>
               <NuxtLink 
+                v-else
                 :to="child.path || '#'"
-                :target="isExternalLink(child.path || undefined) ? '_blank' : '_self'"
                 class="submenu-item"
                 :style="{ animationDelay: `${sectionIndex * 0.1 + childIndex * 0.05 + 0.3}s` }"
               >

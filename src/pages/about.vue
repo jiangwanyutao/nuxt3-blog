@@ -230,7 +230,7 @@
               </a>
             </div>
             <div class="personality-image">
-              <img src="~/assets/common/ISFJ_male.png" alt="ESFJ性格" />
+<img src="~/assets/img/ISFJ_male.png" alt="ESFJ性格" />
             </div>
           </div>
         </div>
@@ -312,6 +312,14 @@
 </template>
 <script setup>
 import { EarthSharp, AccessibilitySharp } from '@vicons/ionicons5'
+
+// SEO 元数据
+useSeoMeta({
+  title: '关于我 - 江晚正愁余 Blog',
+  description: '了解江晚正愁余，一名前端开发者，这里是我的个人介绍与访问统计',
+  ogTitle: '关于我 - 江晚正愁余 Blog',
+  ogDescription: '前端开发者的个人介绍',
+})
 
 // 星轨背景
 const canvas = ref(null)
@@ -631,7 +639,7 @@ onMounted(() => {
   height: 300px;
   color: #fff;
   position: relative;
-  background-image: url('~/assets/common/code.png');
+  background-image: url('~/assets/img/code.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

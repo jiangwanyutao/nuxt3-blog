@@ -1,0 +1,184 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 单行省略号 */
+.single-line-ellipsis {
+    word-break: break-all;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  /* 超二行省略号 */
+  .multiline-two-ellipsis {
+    word-break: break-all;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  /* 超三行省略号 */
+  .multiline-ellipsis {
+    word-break: break-all;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
+  /* 滚动条样式 */
+::-webkit-scrollbar {
+  @apply h-[6px] w-[6px] bg-gray-200 dark:bg-[#202124];
+}
+::-webkit-scrollbar-track {
+  @apply bg-gray-200 dark:bg-[#202124];
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-orange-400 dark:bg-indigo-500;
+}
+
+/* ===========================================
+   字体配置 - 优先使用CDN，本地作为备份
+   =========================================== */
+
+/* 本地备份字体 - 仅在CDN失败时使用 */
+@font-face {
+  font-family: 'MiSans Local';
+  src: url('~/assets/fonts/miSans-Normal.woff2') format('woff2');
+  font-display: swap; /* 快速显示备用字体，然后替换 */
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MiSans Local';
+  src: url('~/assets/fonts/MiSans-Bold.woff2') format('woff2');
+  font-display: swap;
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Kitty 装饰字体（保留，但不预加载） */
+@font-face {
+  font-family: 'Kitty';
+  src: url('~/assets/fonts/kitty.ttf');
+  font-weight: bold;
+  font-display: swap;
+}
+
+/* 字体加载策略 - 渐进增强 */
+body {
+  /* 第一阶段：系统字体（立即可用） */
+  font-family: 
+    -apple-system, 
+    BlinkMacSystemFont, 
+    'Segoe UI', 
+    'Helvetica Neue', 
+    Helvetica, 
+    Arial, 
+    'PingFang SC',      /* macOS/iOS 中文 */
+    'Hiragino Sans GB', /* 老版 macOS */
+    'Heiti SC',         /* 黑体 */
+    'Microsoft YaHei',  /* Windows 中文 */
+    'WenQuanYi Micro Hei', /* Linux 中文 */
+    sans-serif;
+}
+
+/* 第二阶段：CDN字体加载完成（优先级最高） */
+.fonts-loaded body,
+body.fonts-loaded {
+  font-family: 
+    'Noto Sans SC',    /* Google Fonts CDN - 优先使用 */
+    'MiSans Local',    /* 本地备份 */
+    -apple-system, 
+    BlinkMacSystemFont,
+    'PingFang SC',
+    'Microsoft YaHei',
+    sans-serif;
+  /* 渐变过渡，避免闪烁 */
+  transition: font-family 0.3s ease;
+}
+
+/* 字体加载动画 - 平滑过渡 */
+@keyframes fontFadeIn {
+  from { 
+    opacity: 0.95;
+    letter-spacing: 0.02em;
+  }
+  to { 
+    opacity: 1;
+    letter-spacing: 0;
+  }
+}
+
+.fonts-loaded {
+  animation: fontFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 字体加载失败时的降级策略 */
+.fonts-failed body {
+  font-family: 
+    'MiSans Local',    /* 尝试本地字体 */
+    -apple-system,
+    'PingFang SC',
+    'Microsoft YaHei',
+    sans-serif;
+}
+
+body,
+html {
+  cursor: url('~/assets/img/x1.cur'), auto;
+}
+
+/* Header */
+.header-nav.active {
+  @apply bg-transparent hover:bg-[rgba(255,255,255,0.7)] dark:hover:bg-[rgba(38,38,38,0.7)];
+}
+
+
+html.light {
+  @apply text-v-fontcolor bg-v-background;
+}
+
+html.dark {
+  @apply text-v-fontcolor-dark bg-v-background-dark;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: hiden 3s forwards;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #333;
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes hiden {
+  to {
+    display: none;
+  }
+}
+
+
+

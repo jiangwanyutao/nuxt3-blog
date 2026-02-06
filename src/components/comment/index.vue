@@ -504,7 +504,7 @@ const submitComment = async () => {
         await refreshCaptcha()
       }
     } else {
-      const errorMsg = response?.message || '评论提交失败，请稍后重试'
+      const errorMsg = response?.msg || '评论提交失败，请稍后重试'
       utilMsg.$message.error(errorMsg)
       console.error('评论提交失败:', errorMsg)
     }
@@ -558,7 +558,7 @@ const submitReply = async () => {
         await refreshCaptcha()
       }
     } else {
-      const errorMsg = response?.message || '回复提交失败，请稍后重试'
+      const errorMsg = response?.msg || '回复提交失败，请稍后重试'
       utilMsg.$message.error(errorMsg)
       console.error('回复提交失败:', errorMsg)
     }

@@ -197,81 +197,69 @@ interface ExtendedMomentItem extends MomentItem {
   }
 }
 
-// 页面元数据
-definePageMeta({
-  title: '即刻短文 - 江晚正愁余Blog'
+// SEO 元数据（替代 definePageMeta 的 title）
+useSeoMeta({
+  title: '即刻短文 - 江晚正愁余 Blog',
+  description: '随想随感，分享生活的点点滴滴',
+  ogTitle: '即刻短文 - 江晚正愁余 Blog',
+  ogDescription: '瞬时随想，记录生活与技术的点滴瞬间',
 })
 
 // 响应式数据
-const momentsData = ref<ExtendedMomentItem[]>([])
 const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(12)
-const totalCount = ref(0)
-const totalPages = ref(1)
 const selectedType = ref('all')
-const textCount = ref(0)
-const musicCount = ref(0)
 
-// 获取说说数据
-const fetchMomentsData = async (page: number = 1) => {
-  try {
-    loading.value = true
-    const response = await getMomentsList({ 
-      page, 
-      size: pageSize.value,
-      isPublic: true 
-    })
-    
-    if (response && response.code === 200) {
-      const newMoments = response.data.list.map(item => ({
-        ...item,
-        type: detectMomentType(item), // 检测说说类型
-        musicInfo: extractMusicInfo(item) // 提取音乐信息
-      }))
-      
-      // 根据类型筛选
-      if (selectedType.value === 'all') {
-        momentsData.value = newMoments
-      } else {
-        momentsData.value = newMoments.filter(m => m.type === selectedType.value)
-      }
-      
-      // 更新统计数据
-      totalCount.value = response.data.total || newMoments.length
-      totalPages.value = response.data.totalPages || Math.ceil(totalCount.value / pageSize.value)
-      currentPage.value = page
-      
-      // 统计各类型数量
-      textCount.value = newMoments.filter(m => m.type === 'text').length
-      musicCount.value = newMoments.filter(m => m.type === 'music').length
-    } else {
-      console.warn('说说数据格式异常:', response)
-      momentsData.value = getDefaultMomentsData()
-    }
-  } catch (error) {
-    console.error('获取说说数据失败:', error)
-    momentsData.value = getDefaultMomentsData()
-  } finally {
-    loading.value = false
+// =============================================
+//  SSR 数据预取
+// =============================================
+const { data: momentsRaw, refresh: refreshMoments } = await useAsyncData(
+  'moments-list',
+  () => getMomentsList({ page: currentPage.value, size: pageSize.value, isPublic: true }),
+  { watch: false }
+)
+
+// 解析原始数据
+const allMoments = computed<ExtendedMomentItem[]>(() => {
+  const res = momentsRaw.value
+  if (res?.code === 200 && res.data?.list?.length) {
+    return res.data.list.map((item: MomentItem) => ({
+      ...item,
+      type: detectMomentType(item),
+      musicInfo: extractMusicInfo(item)
+    }))
   }
-}
+  return getDefaultMomentsData()
+})
+
+const momentsData = computed(() => {
+  if (selectedType.value === 'all') return allMoments.value
+  return allMoments.value.filter(m => m.type === selectedType.value)
+})
+
+const totalCount = computed(() => (momentsRaw.value as any)?.data?.total || allMoments.value.length)
+const totalPages = computed(() =>
+  (momentsRaw.value as any)?.data?.totalPages || Math.ceil(totalCount.value / pageSize.value)
+)
+const textCount = computed(() => allMoments.value.filter(m => m.type === 'text').length)
+const musicCount = computed(() => allMoments.value.filter(m => m.type === 'music').length)
 
 // 选择类型
-const selectType = (type: string) => {
+const selectType = async (type: string) => {
   selectedType.value = type
   currentPage.value = 1
-  fetchMomentsData(1)
+  await refreshMoments()
 }
 
 // 切换页码
-const changePage = (page: number) => {
+const changePage = async (page: number) => {
   if (page < 1 || page > totalPages.value) return
   currentPage.value = page
-  fetchMomentsData(page)
-  
-  // 滚动到顶部
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  await refreshMoments()
+  if (process.client) {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 }
 
 // 显示的页码
@@ -447,10 +435,6 @@ const getDefaultMomentsData = (): ExtendedMomentItem[] => {
   ]
 }
 
-// 组件挂载时获取数据
-onMounted(() => {
-  fetchMomentsData()
-})
 </script>
 
 <style scoped>

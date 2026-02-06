@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { getApprovedFriendLinks, applyFriendLink, type FriendLink } from '~/api/friendLink'
+
+// SEO 元数据
+useSeoMeta({
+  title: '友情链接 - 江晚正愁余 Blog',
+  description: '互联网朋友们的友情链接，欢迎交换友链',
+  ogTitle: '友情链接 - 江晚正愁余 Blog',
+  ogDescription: '互联网朋友们的友情链接',
+})
 
 // Modal state
 const showApplicationModal = ref(false)
@@ -28,26 +36,14 @@ const siteInfo = {
   cover: 'https://lk.jwyt.cloud/sijing/2025/10/23/68fa1813bddc2.jpg'
 }
 
-// Friend links data
-const friendLinks = ref<FriendLink[]>([])
-
-/**
- * 获取友链列表
- */
-const fetchFriendLinks = async () => {
-  loading.value = true
-  try {
-    const response: any = await getApprovedFriendLinks()
-    if (response?.code === 200) {
-      friendLinks.value = response.data || []
-      // console.log('友链列表获取成功:', friendLinks.value)
-    }
-  } catch (error) {
-    console.error('获取友链列表失败:', error)
-  } finally {
-    loading.value = false
-  }
-}
+// =============================================
+//  SSR 数据预取
+// =============================================
+const { data: friendLinksRaw } = await useAsyncData('friend-links', () => getApprovedFriendLinks())
+const friendLinks = computed<FriendLink[]>(() => {
+  const res = friendLinksRaw.value as any
+  return (res?.code === 200) ? (res.data || []) : []
+})
 
 const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text)
@@ -91,7 +87,7 @@ const submitApplication = async () => {
         cover: ''
       }
     } else {
-      utilMsg.$message.error(response?.message || '提交失败，请稍后重试')
+      utilMsg.$message.error(response?.msg || '提交失败，请稍后重试')
     }
   } catch (error: any) {
     console.error('提交友链申请失败:', error)
@@ -101,10 +97,6 @@ const submitApplication = async () => {
   }
 }
 
-// 页面加载时获取友链列表
-onMounted(() => {
-  fetchFriendLinks()
-})
 </script>
 
 <template>

@@ -106,7 +106,7 @@
           </div>
           <div class="qr-code">
             <img
-              src="~/assets/common/wechat_gongzhonghao.png"
+              src="~/assets/img/wechat_gongzhonghao.png"
               alt="二维码"
             />
           </div>

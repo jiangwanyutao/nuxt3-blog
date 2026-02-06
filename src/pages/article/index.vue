@@ -161,71 +161,82 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import type { Article } from '@/types/article'
+import { getArticleList, getCategories } from '~/api/article'
+
+// SEO 元数据
+useSeoMeta({
+  title: '文章列表 - 江晚正愁余 Blog',
+  description: '浏览所有技术文章，涵盖前端开发、Vue3、Nuxt3、NestJS 等技术栈',
+  ogTitle: '文章列表 - 江晚正愁余 Blog',
+  ogDescription: '探索前端技术文章，分享开发经验与实践心得',
+})
 
 // 分类列表
-const categories = ref<any[]>([])
 const selectedCategory = ref<string>('')
 const categoryPage = ref(1)
-const categoryPageSize = 5 // 每页显示5个分类
-
-// 文章列表
-const articleList = ref<Article[]>([])
+const categoryPageSize = 5
 const currentPage = ref(1)
 const pageSize = ref(12)
-const totalCount = ref(0)
-const totalPages = ref(1) // 直接使用后端返回的总页数
+
+// =============================================
+//  SSR 数据预取
+// =============================================
+const { data: categoriesRaw } = await useAsyncData('article-categories', () => getCategories())
+const categories = computed<any[]>(() => {
+  const res = categoriesRaw.value as any
+  return res?.data || []
+})
+
+const { data: articlesRaw, refresh: refreshArticles } = await useAsyncData(
+  'article-list',
+  () => getArticleList({
+    page: currentPage.value,
+    limit: pageSize.value,
+    ...(selectedCategory.value ? { category: selectedCategory.value } : {})
+  }),
+  { watch: false }
+)
+
+const articleList = computed<Article[]>(() => {
+  const res = articlesRaw.value as any
+  return res?.data?.items || []
+})
+const totalCount = computed(() => (articlesRaw.value as any)?.data?.total || 0)
+const totalPages = computed(() => (articlesRaw.value as any)?.data?.totalPages || 1)
 
 // 分类分页计算
 const categoryTotalPages = computed(() => Math.ceil(categories.value.length / categoryPageSize))
 
-
-// 显示的页码（简化版本）
+// 显示的页码
 const displayPages = computed(() => {
   const pages: number[] = []
   const total = totalPages.value
   
-  // 如果总页数小于等于5，显示所有页码
   if (total <= 5) {
-    for (let i = 1; i <= total; i++) {
-      pages.push(i)
-    }
+    for (let i = 1; i <= total; i++) pages.push(i)
     return pages
   }
   
-  // 否则显示当前页附近的页码
   const current = currentPage.value
   let start = Math.max(1, current - 2)
   let end = Math.min(total, current + 2)
   
-  // 调整范围确保始终显示5个页码
   if (end - start < 4) {
-    if (start === 1) {
-      end = Math.min(total, 5)
-    } else {
-      start = Math.max(1, total - 4)
-    }
+    if (start === 1) end = Math.min(total, 5)
+    else start = Math.max(1, total - 4)
   }
   
-  for (let i = start; i <= end; i++) {
-    pages.push(i)
-  }
-  
+  for (let i = start; i <= end; i++) pages.push(i)
   return pages
 })
 
 // 获取分类图标
 const getCategoryIcon = (categoryName: string) => {
   const iconMap: Record<string, string> = {
-    '前端': '💻',
-    '后端': '⚙️',
-    '数据库': '🗄️',
-    '算法': '🧮',
-    '网络': '🌐',
-    '操作系统': '🖥️',
-    '中间件': '🔧',
-    '数据结构': '📊'
+    '前端': '💻', '后端': '⚙️', '数据库': '🗄️', '算法': '🧮',
+    '网络': '🌐', '操作系统': '🖥️', '中间件': '🔧', '数据结构': '📊'
   }
   return iconMap[categoryName] || '📝'
 }
@@ -236,65 +247,22 @@ const formatDate = (dateString: string) => {
   return useDateFormat(dateString, 'YYYY-MM-DD').value
 }
 
-// 获取分类列表
-const fetchCategories = async () => {
-  try {
-    const { getCategories } = await import('~/api/article')
-    const response = await getCategories() as any
-    
-    if (response && response.data) {
-      categories.value = response.data
-    }
-  } catch (error) {
-    console.error('获取分类列表失败:', error)
-  }
-}
-
-// 获取文章列表
-const fetchArticleList = async () => {
-  try {
-    const { getArticleList } = await import('~/api/article')
-    const params: any = {
-      page: currentPage.value,
-      limit: pageSize.value,
-      ...(selectedCategory.value && { category: selectedCategory.value })
-    }
-    
-    const response = await getArticleList(params) as any
-    
-    if (response && response.data) {
-      articleList.value = response.data.items || []
-      totalCount.value = response.data.total || 0
-      totalPages.value = response.data.totalPages || 1  // 使用后端返回的总页数
-      currentPage.value = response.data.page || 1        // 使用后端返回的当前页
-    }
-  } catch (error) {
-    console.error('获取文章列表失败:', error)
-  }
-}
-
 // 选择分类
-const selectCategory = (category: string) => {
+const selectCategory = async (category: string) => {
   selectedCategory.value = category
   currentPage.value = 1
-  fetchArticleList()
+  await refreshArticles()
 }
 
 // 切换页码
-const changePage = (page: number) => {
+const changePage = async (page: number) => {
   if (page < 1 || page > totalPages.value) return
   currentPage.value = page
-  fetchArticleList()
-  
-  // 滚动到顶部
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  await refreshArticles()
+  if (process.client) {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 }
-
-// 页面加载
-onMounted(() => {
-  fetchCategories()
-  fetchArticleList()
-})
 </script>
 
 <style scoped>

@@ -159,7 +159,7 @@ import 'highlight.js/styles/github.css'
 import { useBlogStore } from '~/stores/blogStore'
 import 'github-markdown-css/github-markdown.css'
 import type { Article } from '@/types/article'
-import { useRoute } from 'vue-router'
+import { getArticleById, getArticleList } from '~/api/article'
 import { useDateFormat } from '@vueuse/core'
 
 // 配置 marked
@@ -172,13 +172,61 @@ const route = useRoute()
 const articleId = parseInt(route.params.id as string)
 const blogStore = useBlogStore()
 
-// 响应式数据
-const article = ref<Article | null>(null)
-const loading = ref(true)
-const error = ref('')
+// =============================================
+//  SSR 数据预取
+// =============================================
+const { data: articleRaw, error: fetchError } = await useAsyncData(
+  `article-detail-${articleId}`,
+  () => getArticleById(articleId)
+)
+
+const article = computed<Article | null>(() => {
+  const res = articleRaw.value as any
+  return (res?.code === 200) ? res.data : null
+})
+
+const error = computed(() => {
+  if (fetchError.value) return fetchError.value.message
+  const res = articleRaw.value as any
+  if (res && res.code !== 200) return res?.msg || '获取文章详情失败'
+  return ''
+})
+
+const loading = ref(false)
+
+// 上一篇/下一篇
+const { data: adjacentRaw } = await useAsyncData(
+  `article-adjacent-${articleId}`,
+  () => getArticleList({ page: 1, limit: 100 })
+)
+
+const prevArticle = computed<{ id: number; title: string } | null>(() => {
+  const articles = (adjacentRaw.value as any)?.data?.items
+  if (!articles) return null
+  const idx = articles.findIndex((a: any) => a.id === articleId)
+  return idx > 0 ? { id: articles[idx - 1].id, title: articles[idx - 1].title } : null
+})
+
+const nextArticle = computed<{ id: number; title: string } | null>(() => {
+  const articles = (adjacentRaw.value as any)?.data?.items
+  if (!articles) return null
+  const idx = articles.findIndex((a: any) => a.id === articleId)
+  return (idx >= 0 && idx < articles.length - 1)
+    ? { id: articles[idx + 1].id, title: articles[idx + 1].title }
+    : null
+})
+
+// 博客配置
+if (!blogStore.blogConfig) {
+  await blogStore.blogInfoData()
+}
+
+// 设置导航栏文章标题
+if (article.value?.title) {
+  blogStore.setCurrentArticleTitle(article.value.title)
+}
+
 const scrollY = ref(0)
-const prevArticle = ref<{ id: number; title: string } | null>(null)
-const nextArticle = ref<{ id: number; title: string } | null>(null)
 
 // 渲染 Markdown 内容
 const renderedContent = computed(() => {
@@ -253,62 +301,56 @@ const contentWidth = computed(() => {
   return scrollY.value > 200 ? '100%' : '1200px'
 })
 
-// 解析Markdown生成目录
+// 解析Markdown生成目录（SSR 安全 —— 使用正则而非 DOM）
 const chapters = computed(() => {
   if (!renderedContent.value) return []
 
-  const tempDiv = document.createElement('div')
-  tempDiv.innerHTML = renderedContent.value
-  
-  // 优先解析 h1, h2, h3 标题
-  const headings = tempDiv.querySelectorAll('h1, h2, h3')
-  
-  if (headings.length > 0) {
-    // 有标题，使用标题作为目录
-    return Array.from(headings).map((heading, index) => ({
-      id: index + 1,
-      title: heading.textContent || '',
-      level: parseInt(heading.tagName.substring(1)),
+  // 用正则解析 h1/h2/h3 标题（服务端 + 客户端都可用）
+  const headingRegex = /<h([1-3])[^>]*>([\s\S]*?)<\/h\1>/gi
+  const headings: Array<{ id: number; title: string; level: number; type: string }> = []
+  let match: RegExpExecArray | null
+  let index = 1
+
+  while ((match = headingRegex.exec(renderedContent.value)) !== null) {
+    headings.push({
+      id: index++,
+      title: match[2].replace(/<[^>]*>/g, '').trim(),
+      level: parseInt(match[1]),
       type: 'heading'
-    }))
-  }
-  
-  // 没有标题，尝试解析数字列表（1. 2. 3.）
-  const listItems = tempDiv.querySelectorAll('ol > li')
-  
-  if (listItems.length > 0) {
-    return Array.from(listItems).map((item, index) => {
-      // 获取列表项的文本内容（去除子元素）
-      const text = item.textContent?.trim() || ''
-      // 只取第一行或前50个字符作为标题
-      const title = text.split('\n')[0].substring(0, 50)
-      
-      return {
-        id: index + 1,
-        title: title,
-        level: 1,
-        type: 'list'
-      }
     })
   }
-  
-  // 如果都没有，尝试解析段落（p标签）作为章节
+
+  if (headings.length > 0) return headings
+
+  // 回退方案：列表 / 段落（仅客户端，scrollToChapter 依赖 DOM）
+  if (!process.client) return []
+
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = renderedContent.value
+
+  const listItems = tempDiv.querySelectorAll('ol > li')
+  if (listItems.length > 0) {
+    return Array.from(listItems).map((item, idx) => ({
+      id: idx + 1,
+      title: (item.textContent?.trim() || '').split('\n')[0].substring(0, 50),
+      level: 1,
+      type: 'list'
+    }))
+  }
+
   const paragraphs = tempDiv.querySelectorAll('p')
   if (paragraphs.length > 3) {
-    // 只有段落数量足够多时才使用段落作为目录
-    return Array.from(paragraphs).slice(0, 10).map((p, index) => {
+    return Array.from(paragraphs).slice(0, 10).map((p, idx) => {
       const text = p.textContent?.trim() || ''
-      const title = text.substring(0, 30) + (text.length > 30 ? '...' : '')
-      
       return {
-        id: index + 1,
-        title: title,
+        id: idx + 1,
+        title: text.substring(0, 30) + (text.length > 30 ? '...' : ''),
         level: 1,
         type: 'paragraph'
       }
     })
   }
-  
+
   return []
 })
 
@@ -371,87 +413,6 @@ const handleScroll = () => {
   }
 }
 
-// 获取文章详情
-const fetchArticle = async () => {
-  if (!articleId || isNaN(articleId)) {
-    error.value = '无效的文章ID'
-    loading.value = false
-    return
-  }
-
-  loading.value = true
-  error.value = ''
-
-  try {
-    const { getArticleById } = await import('~/api/article')
-    const response = await getArticleById(articleId) as any
-
-    // console.log('文章详情响应:', response)
-
-    if (response && response.code === 200) {
-      article.value = response.data
-      // console.log('文章详情获取成功:', article.value)
-      
-      // 设置导航栏文章标题到 store
-      if (article.value?.title) {
-        blogStore.setCurrentArticleTitle(article.value.title)
-      }
-      
-      // 获取上一篇和下一篇文章
-      await fetchAdjacentArticles()
-    } else {
-      error.value = response?.message || '获取文章详情失败'
-    }
-  } catch (err: any) {
-    // console.error('获取文章详情失败:', err)
-    error.value = err.message || '获取文章详情失败'
-  } finally {
-    loading.value = false
-  }
-}
-
-// 获取上一篇和下一篇文章
-const fetchAdjacentArticles = async () => {
-  try {
-    const { getArticleList } = await import('~/api/article')
-    const response = await getArticleList({ 
-      page: 1, 
-      limit: 100
-    }) as any
-    
-    // console.log('文章列表响应:', response)
-    
-    if (response) {
-      const articles = response.data.items
-      // console.log('文章列表:', articles)
-      // console.log('当前文章ID:', articleId)
-      
-      const currentIndex = articles.findIndex((a: any) => a.id === articleId)
-      // console.log('当前文章索引:', currentIndex)
-      
-      if (currentIndex > 0) {
-        // 有上一篇
-        prevArticle.value = {
-          id: articles[currentIndex - 1].id,
-          title: articles[currentIndex - 1].title
-        }
-        // console.log('上一篇文章:', prevArticle.value)
-      }
-      
-      if (currentIndex >= 0 && currentIndex < articles.length - 1) {
-        // 有下一篇
-        nextArticle.value = {
-          id: articles[currentIndex + 1].id,
-          title: articles[currentIndex + 1].title
-        }
-        // console.log('下一篇文章:', nextArticle.value)
-      }
-    }
-  } catch (err) {
-    console.error('获取相邻文章失败:', err)
-  }
-}
-
 // 获取分类名称
 const getCategoryName = (category: string | { id: number; categoryName: string } | undefined) => {
   if (!category) return '未分类'
@@ -465,31 +426,24 @@ const formatDate = (dateString: string | undefined) => {
   return useDateFormat(dateString, 'YYYY年MM月DD日 HH:mm').value
 }
 
-// 页面加载时获取文章
+// 客户端事件
 onMounted(() => {
-  fetchArticle()
-   // 如果 store 中没有博客配置，则加载（首次访问或缓存过期）
-  if (!blogStore.blogConfig) {
-    blogStore.blogInfoData()
-  }
   window.addEventListener('scroll', handleScroll)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
-  // 离开文章页时清空标题
   blogStore.clearCurrentArticleTitle()
 })
 
-// 页面标题
-useHead({
-  title: computed(() => article.value?.title || '文章详情'),
-  meta: [
-    {
-      name: 'description',
-      content: computed(() => article.value?.summary || '文章详情页面')
-    }
-  ]
+// SEO 元数据（动态，基于 SSR 预取的文章数据）
+useSeoMeta({
+  title: () => article.value?.title ? `${article.value.title} - 江晚正愁余 Blog` : '文章详情 - 江晚正愁余 Blog',
+  description: () => article.value?.summary || '文章详情页面',
+  ogTitle: () => article.value?.title || '文章详情',
+  ogDescription: () => article.value?.summary || '',
+  ogImage: () => article.value?.cover || '/images/banner/3.jpg',
+  ogType: 'article',
 })
 </script>
 

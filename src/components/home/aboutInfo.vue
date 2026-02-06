@@ -102,13 +102,13 @@ const resetWidth = (index) => {
 // 获取网站统计数据
 const fetchWebsiteStats = async () => {
   try {
-    const response = await apiGetWebsiteStats()
+    const response = await apiGetWebsiteStats() as any
     
-    if (response) {
+    if (response?.data) {
       syArticleData.value = [
-        response.articleCount || 0,
-        response.runningDays || 0,
-        response.visitCount || 0
+        response.data.articleCount || 0,
+        response.data.runningDays || 0,
+        response.data.visitCount || 0
       ]
     }
   } catch (error) {
