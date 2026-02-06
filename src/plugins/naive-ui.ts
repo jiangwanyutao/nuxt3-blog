@@ -1,5 +1,5 @@
-import {setup} from '@css-render/vue3-ssr'
-import {defineNuxtPlugin} from '#app'
+import { setup } from '@css-render/vue3-ssr'
+import { defineNuxtPlugin } from '#app'
 
 export default defineNuxtPlugin((nuxtApp) => {
   if (process.server) {
@@ -22,7 +22,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       ctx.tags.splice(lastMetaIndex + 1, 0, ...styleTags)
     })
 
-    const {collect} = setup(nuxtApp.vueApp)
+    const { collect } = setup(nuxtApp.vueApp)
     const originalRenderMeta = nuxtApp.ssrContext?.renderMeta
     nuxtApp.ssrContext = nuxtApp.ssrContext || {}
     nuxtApp.ssrContext.renderMeta = () => {

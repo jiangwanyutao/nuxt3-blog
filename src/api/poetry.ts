@@ -13,3 +13,9 @@ export function getYiYan() {
 export function getYiYan2() {
   return useLazyFetch<IHitokoto>('https://v1.hitokoto.cn/?encode=json&c=d&c=j&c=k&c=k&c=i&lang=cn')
 }
+
+//一言 单独api诗词
+export function getYiYan3() {
+  return requestUtil.get('https://api.vvhan.com/api/ian/shici')
+}
+

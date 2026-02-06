@@ -5,7 +5,11 @@ module.exports = {
         port: '3001', // 监听端口
         exec_mode: 'cluster',
         instances: 'max',
-        script: './.output/server/index.mjs'
+        script: './.output/server/index.mjs',
+        env: {
+          NODE_ENV: 'production',
+          NUXT_PUBLIC_API_BASE: '/api'  // 使用相对路径，通过 Nginx 代理
+        }
       }
     ]
   }

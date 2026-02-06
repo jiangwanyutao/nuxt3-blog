@@ -1,30 +1,30 @@
 <script setup lang="ts">
-
+const blogStore = useBlogStore()
 </script>
 
 <template>
-  <div class="logos">
-    		<span class="site-title">
-            <span class="logolink logo">
-                <a href="/">
-                    <ruby>
-                    <span class="sakuraso">江晚</span>
-                    <span class="no"></span>
-                    <span class="shironeko">正愁余</span>
-                    <rp></rp>
-                    <rt class="logo">jiangwanzhengchouyu</rt>
-                    <rp></rp>
-                    </ruby>
-                  </a>
-            </span>
-          </span>
+  <div class="logos" style="width: 30%">
+    <span class="site-title">
+      <span class="logolink logo">
+        <a href="/">
+          <ruby>
+            <span class="sakuraso">{{ (blogStore.blogConfig?.title ?? '江晚正愁余') + 'Blog' }}</span>
+            <span class="no"></span>
+            <span class="shironeko"></span>
+            <rp></rp>
+            <rt class="logo">{{ (blogStore.blogConfig?.hoverTitle ?? 'jiangwanzhengchouyu') + 'Blog' }}</rt>
+            <rp></rp>
+          </ruby>
+        </a>
+      </span>
+    </span>
 
-<!--    <p>-->
-<!--    <span id="n" style="width: 100px;">江晚</span>-->
-<!--    <span id="e" style="width: 100px;">正</span>-->
-<!--    <span id="o" style="width: 100px;">愁</span>-->
-<!--    <span id="n2" style="width: 100px;">余</span>-->
-<!--  </p>-->
+       <!-- <p>
+       <span id="n" style="width: 100px;">江晚</span>
+       <span id="e" style="width: 100px;">正</span>
+       <span id="o" style="width: 100px;">愁</span>
+       <span id="n2" style="width: 100px;">余</span>
+    </p> -->
   </div>
 </template>
 
@@ -41,7 +41,7 @@
 
 p {
   background: none;
-  font-family: misans,serif;
+  font-family: misans, serif;
   font-size: 25px;
   cursor: pointer;
 }
@@ -51,42 +51,43 @@ p:hover span {
 }
 
 p:hover #e {
-  animation-delay: .2s;
+  animation-delay: 0.2s;
 }
 
 p:hover #o {
-  animation-delay: .5s;
+  animation-delay: 0.5s;
 }
 
 p:hover #n2 {
-  animation-delay: .6s;
+  animation-delay: 0.6s;
 }
 
 @keyframes flicker {
   0% {
     color: #333;
   }
-  5%, 15%, 25%, 30%, 100% {
+  5%,
+  15%,
+  25%,
+  30%,
+  100% {
     color: #fff;
-    text-shadow:
-        0px 0px 5px var(--color),
-        0px 0px 10px var(--color),
-        0px 0px 20px var(--color),
-        0px 0px 50px var(--color);
-
+    text-shadow: 0px 0px 5px var(--color), 0px 0px 10px var(--color), 0px 0px 20px var(--color),
+      0px 0px 50px var(--color);
   }
-  10%, 20% {
+  10%,
+  20% {
     color: #333;
     text-shadow: none;
   }
 }
 
 .logo {
-  font-family: kitty, Arial, 'PingFang SC', 'Microsoft Yahei',serif;
+  font-family: kitty, Arial, 'PingFang SC', 'Microsoft Yahei', serif;
 }
 
 .logolink .sakuraso {
-  background-color: rgba(255, 255, 255, .5);
+  // background-color: rgba(255, 255, 255, 0.5);
   border-radius: 5px;
   color: #464646;
   height: auto;
@@ -95,7 +96,7 @@ p:hover #n2 {
   padding-bottom: 0px;
   padding-top: 1px;
   text-size-adjust: 100%;
-  width: auto
+  width: auto;
 }
 
 .logolink a:hover .sakuraso {
@@ -120,7 +121,8 @@ p:hover #n2 {
   padding-top: 11px;
   text-decoration-line: none;
 }
-.logolink.logo .sakuraso,.logolink.logo .no {
+.logolink.logo .sakuraso,
+.logolink.logo .no {
   font-size: 25px;
   border-radius: 9px;
   padding-bottom: 2px;
@@ -143,17 +145,16 @@ p:hover #n2 {
 
 .logolink ruby rt {
   font-size: 12px;
-  transform: translateY(10px);
+  transform: translateY(0);
   opacity: 0;
-  transition-property: opacity;
+  transition-property: opacity, transform;
   transition-duration: 0.5s, 0.5s;
+  line-height: 1.2;
+  margin-top: 5px;
 }
 
 .logolink a:hover ruby rt {
-  opacity: 1
+  opacity: 1;
+  transform: translateY(35px);
 }
-
-
-
-
 </style>

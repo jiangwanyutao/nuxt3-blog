@@ -9,19 +9,22 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
+// 使用 public 目录的图片，SSR 友好
 const images = ref([
-  { src: `https://cdn.qiniu.jwyt.cloud/common/bilibili-autumn-1.png` },
-  { src: 'https://cdn.qiniu.jwyt.cloud/common/bilibili-autumn-2.png' },
-  { src: 'https://cdn.qiniu.jwyt.cloud/common/bilibili-autumn-3.png' },
-  { src: 'https://cdn.qiniu.jwyt.cloud/common/bilibili-autumn-4.png' },
-  { src: 'https://cdn.qiniu.jwyt.cloud/common/bilibili-autumn-5.png' },
-  { src: 'https://cdn.qiniu.jwyt.cloud/common/bilibili-autumn-6.png' }
+  { src: '/images/footer/bilibili-autumn-1.png' },
+  { src: '/images/footer/bilibili-autumn-2.png' },
+  { src: '/images/footer/bilibili-autumn-3.png' },
+  { src: '/images/footer/bilibili-autumn-4.png' },
+  { src: '/images/footer/bilibili-autumn-5.png' },
+  { src: '/images/footer/bilibili-autumn-6.png' }
 ])
 
 const imageRefs = ref([])
 
 onMounted(() => {
   imageRefs.value = document.querySelectorAll('.footer img')
+  //进入页面时触发一次
+  mouseMethod({ clientX: window.outerWidth / 3 })
 })
 
 const mouseMethod = (e) => {

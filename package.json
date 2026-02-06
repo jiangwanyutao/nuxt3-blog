@@ -1,19 +1,27 @@
 {
   "name": "nuxt-app",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "local": "node start.bat",
+    "build": "nuxt build --dotenv .env.production",
+    "dev": "nuxt dev --open --dotenv .env.development",
+    "generate": "nuxt generate --dotenv .env.production",
+    "preview": "nuxt preview --dotenv .env.production",
+    "prepare": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/image": "1.7.0",
     "@pinia/nuxt": "0.5.1",
+    "github-markdown-css": "^5.8.1",
+    "highlight.js": "^11.11.1",
+    "marked": "^16.4.1",
     "nuxt": "3.12.1",
     "pinia": "2.1.7",
+    "pinia-plugin-persistedstate": "^4.5.0",
     "three": "0.121.0",
+    "typed.js": "2.1.0",
     "vanta": "0.5.24",
     "vue": "3.4.27",
     "vue-router": "4.3.3"
@@ -22,15 +30,24 @@
     "@css-render/vue3-ssr": "0.15.14",
     "@nuxtjs/color-mode": "3.4.1",
     "@nuxtjs/tailwindcss": "6.12.0",
+    "@typescript-eslint/parser": "^8.0.1",
     "@vicons/ionicons5": "0.12.0",
     "@vueuse/core": "10.10.1",
     "@vueuse/nuxt": "10.10.1",
     "autoprefixer": "10.4.19",
+    "cross-env": "^10.1.0",
+    "eslint-plugin-nuxt": "^4.0.0",
     "naive-ui": "2.38.2",
     "nuxt-icon": "0.6.10",
     "postcss": "8.4.38",
+    "prettier": "2.8.0",
     "sass": "1.77.5",
     "tailwindcss": "3.4.4",
-    "unplugin-vue-components": "0.27.0"
+    "unplugin-vue-components": "^0.26.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@vue-macros/common": "^1.12.2"
+    }
   }
 }

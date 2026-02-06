@@ -1,9 +1,32 @@
 // import { getYiYan2 } from '@/apis/poetry'
 import type { SiteConfig } from '@/types/home'
 
+// 博客配置信息类型
+interface BlogConfig {
+  configId: string
+  title: string
+  hoverTitle: string
+  slogan: string
+  contactList: Array<{
+    icon: string
+    link: string
+    name: string
+  }>
+  startTime: string
+  visitCount: string
+  icpNumber: string
+  createTime: string
+  updateTime: string
+  runningDays: number
+}
+
 export const useBlogStore = defineStore('blog', () => {
   // 博客基本信息
-  const siteConfig = ref<SiteConfig | null>(100)
+  const siteConfig = ref<SiteConfig | null>(null)
+  
+  // 博客配置信息
+  const blogConfig = ref<BlogConfig | null>(null)
+  
   // 文章数
   const articleCount = ref(0)
   // 分类数
@@ -16,46 +39,49 @@ export const useBlogStore = defineStore('blog', () => {
   const menuList = ref([
     {
       icon: 'noto:house-with-garden',
-      text: '首页',
+      text: '开始浏览',
       path: '/',
-      class: 'menu-item-home'
+      class: 'menu-item-home',
+      children: [
+        {
+          icon: 'mynaui:sparkles',
+          text: '网站',
+          children: [
+            {
+              icon: '',
+              path: '/',
+              text: '个人主页'
+            },
+            {
+              icon: '',
+              path: 'https://jwyt.cloud',
+              text: '云盘主页'
+            }
+          ]
+        },
+        {
+          icon: 'mynaui:train',
+          text: '项目',
+          children: [
+            {
+              icon: '',
+              path: 'https://chat.jwyt.cloud',
+              text: 'ChatGpt'
+            },
+            {
+              icon: '',
+              text: '网站主题项目'
+            }
+          ]
+        }
+      ]
     },
     {
-      icon: 'flat-color-icons:calendar',
-      text: '归档',
-      path: '/archives',
-      class: 'menu-item-archives'
+      icon: '',
+      text: '关于',
+      path: '/about',
+      class: 'menu-item-archives',
     },
-    {
-      icon: 'icon-park:category-management',
-      text: '分类',
-      path: '/category',
-      class: 'menu-item-category'
-    },
-    {
-      icon: 'icon-park:comments',
-      text: '说说',
-      path: '/talk',
-      class: 'menu-item-talk'
-    },
-    {
-      icon: 'icon-park:message',
-      text: '留言',
-      path: '/message',
-      class: 'menu-item-message'
-    },
-    {
-      icon: 'icon-park:friends-circle',
-      text: '友链',
-      path: '/link',
-      class: 'menu-item-friends'
-    },
-    {
-      icon: 'flat-color-icons:gallery',
-      text: '图库',
-      path: '/album',
-      class: 'menu-item-album'
-    }
   ])
   // banner
   const bannerList = ref([
@@ -80,30 +106,44 @@ export const useBlogStore = defineStore('blog', () => {
   ])
   // 一言
   const yiYan = ref('梦想是一个天真的词，实现梦想是一个残酷的词')
+  
+  // 当前阅读的文章标题（用于导航栏滚动显示）
+  const currentArticleTitle = ref('')
+  
+  // 设置当前文章标题
+  function setCurrentArticleTitle(title: string) {
+    currentArticleTitle.value = title
+  }
+  
+  // 清空当前文章标题
+  function clearCurrentArticleTitle() {
+    currentArticleTitle.value = ''
+  }
 
   // 查看博客信息
   async function blogInfoData() {
-    const { home } = useApi()
-    const { data } = await home.getBlogInfo({ lazy: true })
-    if (data.value) {
-      viewsCount.value = data.value.data.viewCount
-      tagCount.value = data.value.data.tagCount
-      articleCount.value = data.value.data.articleCount
-      categoryCount.value = data.value.data.categoryCount
-      siteConfig.value = data.value.data.siteConfig ? '100':'0'
+    try {
+      const res = await api.auth.apiGetConfig()
+      // 防御 null（网络失败 / SSR 预渲染时后端未启动）
+      if (res?.data) {
+        blogConfig.value = res.data
+        viewsCount.value = parseInt(res.data.visitCount) || 0
+      }
+    } catch (error) {
+      console.error('获取博客配置失败:', error)
     }
   }
   async function setYiYan() {
     // 每日一言
     const { data } = await getYiYan2()
     if (data.value) {
-      // const yiyanObj = data.value as string
       yiYan.value = data.value.hitokoto
     }
   }
 
   return {
     siteConfig,
+    blogConfig,
     menuList,
     bannerList,
     articleCount,
@@ -111,10 +151,17 @@ export const useBlogStore = defineStore('blog', () => {
     tagCount,
     viewsCount,
     yiYan,
+    currentArticleTitle,
     blogInfoData,
-    setYiYan
+    setYiYan,
+    setCurrentArticleTitle,
+    clearCurrentArticleTitle
   }
+}, {
+  persist: {
+    storage: typeof window !== 'undefined' ? localStorage : undefined,
+  } as any
 })
 
-// console.log(import.meta.hot)
+// console.log(import.meta.hot,'import.meta.hot')
 if (import.meta.hot) import.meta.hot.accept(acceptHMRUpdate(useBlogStore, import.meta.hot))
