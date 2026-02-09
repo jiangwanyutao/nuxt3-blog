@@ -12,7 +12,7 @@
 <style scoped>
 .wave{
   width: 100%;
-  //overflow: hidden;
+  /* overflow: hidden; */
 }
 #banner_wave_1 {
   width: auto;

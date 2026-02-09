@@ -229,7 +229,7 @@ onMounted(() => {
 
 @keyframes wz_ico_Move {
   from {
-    //color: #55b2ff;
+    /* color: #55b2ff; */
     font-size: 120px;
   }
   to {
