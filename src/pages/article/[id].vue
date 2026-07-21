@@ -76,6 +76,8 @@
 
       <!-- Article Content -->
       <div class="article-content-wrapper" :style="{ maxWidth: contentWidth }">
+       <div class="article-layout">
+        <div class="article-main">
         <div class="article-content">
           <!-- 目录（桌面侧栏 + 移动端悬浮） -->
           <aside class="chapter-nav">
@@ -168,6 +170,17 @@
 
         <!-- Comments Section -->
         <Comment :articleId="articleId" />
+        </div>
+
+        <!-- 右侧边栏（移植自 ThriveX）：作者卡 / 热门文章 / 最新评论 -->
+        <aside class="article-side">
+          <Sidebar
+            :article-id="articleId"
+            :author-name="article.user?.nickName"
+            :author-avatar="article.user?.avatar"
+          />
+        </aside>
+       </div>
       </div>
     </template>
   </div>
@@ -607,6 +620,33 @@ useSeoMeta({
   margin: -40px auto 0;
   padding: 0 24px 80px;
   transition: max-width 0.3s ease;
+}
+
+/* 正文 + 右侧边栏两列。侧栏吸顶跟随滚动，窄屏直接隐藏避免挤压正文 */
+.article-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 26px;
+  align-items: start;
+}
+
+.article-main {
+  min-width: 0;
+}
+
+.article-side {
+  position: sticky;
+  top: 84px;
+}
+
+@media (max-width: 1200px) {
+  .article-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .article-side {
+    display: none;
+  }
 }
 
 .article-content {

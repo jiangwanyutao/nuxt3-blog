@@ -9,11 +9,23 @@ import requestUtil from '~/composables/requestUtil'
  * @param pageSize 每页数量
  */
 export const getCommentList = (articleId: number, pageNum: number = 1, pageSize: number = 10) => {
-  return requestUtil.get('/comment/page', {
-    articleId,
-    pageNum,
-    pageSize
-  }, { isToken: false })
+  return requestUtil.get(
+    '/comment/page',
+    {
+      articleId,
+      pageNum,
+      pageSize
+    },
+    { isToken: false }
+  )
+}
+
+/**
+ * 获取最新评论（公开，前台侧边栏用）
+ * @param limit 条数
+ */
+export const getRecentComments = (limit: number = 5) => {
+  return requestUtil.get('/comment/recent', { limit }, { isToken: false })
 }
 
 /**
@@ -23,11 +35,15 @@ export const getCommentList = (articleId: number, pageNum: number = 1, pageSize:
  * @param pageSize 每页数量
  */
 export const getReplyList = (parentId: number, pageNum: number = 1, pageSize: number = 10) => {
-  return requestUtil.get('/comment/replyPage', {
-    parentId,
-    pageNum,
-    pageSize
-  }, { isToken: false })
+  return requestUtil.get(
+    '/comment/replyPage',
+    {
+      parentId,
+      pageNum,
+      pageSize
+    },
+    { isToken: false }
+  )
 }
 
 /**
@@ -75,10 +91,14 @@ export const deleteComment = (commentId: number) => {
  * @param status 点赞状态 1-点赞 0-取消点赞
  */
 export const likeComment = (commentId: number, status: number) => {
-  return requestUtil.post('/comment/liked', {
-    commentId,
-    status
-  }, { isToken: true })
+  return requestUtil.post(
+    '/comment/liked',
+    {
+      commentId,
+      status
+    },
+    { isToken: true }
+  )
 }
 
 /**

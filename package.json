@@ -12,6 +12,7 @@
     "prepare": "nuxt prepare"
   },
   "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "@nuxt/image": "1.7.0",
     "@pinia/nuxt": "0.5.1",
     "echarts": "^6.1.0",
