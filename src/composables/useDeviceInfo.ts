@@ -37,16 +37,37 @@ export const useDeviceInfo = () => {
   }
 
   /**
-   * 获取操作系统信息
+   * Windows 11 的 UA 与 Windows 10 完全相同（均为 Windows NT 10.0），
+   * 只能通过 User-Agent Client Hints 的 platformVersion 区分：主版本 >= 13 即 Win11。
+   * 浏览器不支持 UA-CH 时返回空字符串，由调用方回退到 UA 判断。
    */
-  const getOSInfo = (): string => {
+  const detectWindowsVersionByHints = async (): Promise<string> => {
+    const uaData = (navigator as any).userAgentData
+    if (!uaData?.getHighEntropyValues) return ''
+
+    try {
+      const hints = await uaData.getHighEntropyValues(['platformVersion'])
+      const major = parseInt(String(hints?.platformVersion || '0').split('.')[0], 10)
+      if (!Number.isFinite(major) || major <= 0) return ''
+      return major >= 13 ? '11' : '10'
+    } catch {
+      return ''
+    }
+  }
+
+  /**
+   * 获取操作系统信息（Windows 走 UA-CH 精确识别 10/11）
+   */
+  const getOSInfo = async (): Promise<string> => {
     const ua = navigator.userAgent
     let os = 'Unknown'
     let version = ''
 
     if (ua.indexOf('Win') > -1) {
       os = 'Windows'
-      if (ua.indexOf('Windows NT 10.0') > -1) version = '10'
+      if (ua.indexOf('Windows NT 10.0') > -1) {
+        version = (await detectWindowsVersionByHints()) || '10'
+      }
       else if (ua.indexOf('Windows NT 6.3') > -1) version = '8.1'
       else if (ua.indexOf('Windows NT 6.2') > -1) version = '8'
       else if (ua.indexOf('Windows NT 6.1') > -1) version = '7'
@@ -91,9 +112,9 @@ export const useDeviceInfo = () => {
   /**
    * 获取完整的设备信息
    */
-  const getDeviceInfo = () => {
+  const getDeviceInfo = async () => {
     const browser = getBrowserInfo()
-    const os = getOSInfo()
+    const os = await getOSInfo()
     const deviceType = getDeviceType()
 
     return {

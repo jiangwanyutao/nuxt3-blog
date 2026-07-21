@@ -51,8 +51,28 @@
 
     <!-- Main Content -->
     <main class="main-content">
+      <!-- 布局切换（网格 / 瀑布流，移植自 ThriveX） -->
+      <div class="layout-toolbar">
+        <button
+          class="layout-btn"
+          :class="{ active: layoutMode === 'grid' }"
+          title="网格布局"
+          @click="setLayout('grid')"
+        >
+          <Icon name="material-symbols:grid-view" size="18" />
+        </button>
+        <button
+          class="layout-btn"
+          :class="{ active: layoutMode === 'waterfall' }"
+          title="瀑布流布局"
+          @click="setLayout('waterfall')"
+        >
+          <Icon name="material-symbols:view-quilt" size="18" />
+        </button>
+      </div>
+
       <!-- Featured Articles -->
-      <div class="featured-articles">
+      <div class="featured-articles" :class="{ waterfall: layoutMode === 'waterfall' }">
         <article 
           v-for="article in articleList" 
           :key="article.id"
@@ -247,6 +267,28 @@ const formatDate = (dateString: string) => {
   return useDateFormat(dateString, 'YYYY-MM-DD').value
 }
 
+// ---- 列表布局切换（网格 / 瀑布流），localStorage 记忆 ----
+const LAYOUT_MODE_KEY = 'article_layout_mode'
+const layoutMode = ref<'grid' | 'waterfall'>('grid')
+
+const setLayout = (mode: 'grid' | 'waterfall') => {
+  layoutMode.value = mode
+  try {
+    localStorage.setItem(LAYOUT_MODE_KEY, mode)
+  } catch {
+    // 写入失败可忽略
+  }
+}
+
+onMounted(() => {
+  try {
+    const saved = localStorage.getItem(LAYOUT_MODE_KEY)
+    if (saved === 'waterfall' || saved === 'grid') layoutMode.value = saved
+  } catch {
+    // 读取失败保持默认
+  }
+})
+
 // 选择分类
 const selectCategory = async (category: string) => {
   selectedCategory.value = category
@@ -440,6 +482,57 @@ const changePage = async (page: number) => {
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   gap: 32px;
   margin-bottom: 48px;
+}
+
+/* 瀑布流布局（CSS columns 实现） */
+.featured-articles.waterfall {
+  display: block;
+  columns: 2;
+  column-gap: 32px;
+}
+
+.featured-articles.waterfall .featured-card {
+  break-inside: avoid;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+  .featured-articles.waterfall {
+    columns: 1;
+  }
+}
+
+/* 布局切换工具条 */
+.layout-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.layout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e8e5e0;
+  border-radius: 8px;
+  background: #fff;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.layout-btn:hover {
+  color: #9c8878;
+  border-color: #9c8878;
+}
+
+.layout-btn.active {
+  background: #9c8878;
+  border-color: #9c8878;
+  color: #fff;
 }
 
 .featured-card {

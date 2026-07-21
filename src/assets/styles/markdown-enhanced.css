@@ -1,0 +1,163 @@
+/* ===== 移植自 ThriveX 的文章渲染增强样式（Mac 风格代码块 / callout / KaTeX） ===== */
+
+/* ---- Mac 风格代码块 ---- */
+.markdown-body .code-block {
+  margin: 20px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #282c34;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  font-size: 14px;
+}
+
+.markdown-body .code-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #21252b;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.markdown-body .code-dots {
+  display: flex;
+  gap: 7px;
+}
+
+.markdown-body .code-dots i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.markdown-body .code-dots i:nth-child(1) { background: #ff5f56; }
+.markdown-body .code-dots i:nth-child(2) { background: #ffbd2e; }
+.markdown-body .code-dots i:nth-child(3) { background: #27c93f; }
+
+.markdown-body .code-lang {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  color: #8b929e;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.markdown-body .code-copy,
+.markdown-body .code-expand {
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: #abb2bf;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.markdown-body .code-copy:hover,
+.markdown-body .code-expand:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.markdown-body .code-body {
+  display: flex;
+  overflow-x: auto;
+}
+
+.markdown-body .code-gutter {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 0;
+  background: rgba(255, 255, 255, 0.03);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  user-select: none;
+}
+
+.markdown-body .code-ln {
+  display: block;
+  padding: 0 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #4b5263;
+  text-align: right;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.markdown-body .code-block pre {
+  flex: 1;
+  margin: 0;
+  padding: 14px 16px;
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.markdown-body .code-block pre code {
+  display: block;
+  background: transparent;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #abb2bf;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  white-space: pre;
+}
+
+/* 长代码折叠 */
+.markdown-body .code-block.is-collapsed .code-body {
+  max-height: 400px;
+  overflow-y: hidden;
+  position: relative;
+}
+
+.markdown-body .code-block.is-collapsed .code-body::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, #282c34);
+  pointer-events: none;
+}
+
+.markdown-body .code-expand {
+  display: block;
+  width: 100%;
+  border-radius: 0;
+  padding: 10px;
+  background: #21252b;
+}
+
+/* ---- 行内代码在暗色模式下的适配 ---- */
+.dark .markdown-body :not(pre) > code {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e6a07c;
+}
+
+/* ---- 正文图片：可点击放大 ---- */
+.markdown-body img {
+  cursor: zoom-in;
+  transition: filter 0.25s ease;
+}
+
+.markdown-body img:hover {
+  filter: brightness(0.92);
+}
+
+/* ---- KaTeX 公式 ---- */
+.markdown-body .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 0;
+}
+
+/* ---- Callout（rehype-callouts）微调，融入站内风格 ---- */
+.markdown-body .callout {
+  margin: 20px 0;
+  border-radius: 10px;
+}

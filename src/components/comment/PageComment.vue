@@ -481,7 +481,7 @@ const submitComment = async () => {
     const clientIp = await getClientIp()
     // 获取设备和浏览器信息
     const browser = getBrowserInfo()
-    const os = getOSInfo()
+    const os = await getOSInfo()
     
     
     const commentData = {
@@ -536,7 +536,7 @@ const submitReply = async () => {
     const clientIp = await getClientIp()
     // 获取设备和浏览器信息
     const browser = getBrowserInfo()
-    const os = getOSInfo()
+    const os = await getOSInfo()
     
     const replyData = {
       content: replyText.value.trim(),

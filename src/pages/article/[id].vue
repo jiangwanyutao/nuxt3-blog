@@ -1,5 +1,15 @@
 <template>
   <div class="article-detail-page">
+    <!-- 阅读进度条 -->
+    <ArticleReadingProgress />
+
+    <!-- 正文图片灯箱（复用摄影页组件） -->
+    <PhotographyLightbox
+      :show="lightbox.show"
+      :image="lightbox.image"
+      @close="lightbox.show = false"
+    />
+
     <!-- Loading State -->
     <div v-if="loading" class="loading-container">
       <div class="loading-spinner"></div>
@@ -43,9 +53,22 @@
               <span class="read-time">阅读时长: {{ readTime }}分钟</span>
             </div>
             <div class="meta-right">
-              <button class="icon-btn" title="分享"><i class="share-icon">⇧</i></button>
-              <button class="icon-btn" title="收藏"><i class="bookmark-icon">⊕</i></button>
-              <button class="icon-btn" title="更多"><i class="more-icon">⋯</i></button>
+              <button class="icon-btn" title="生成分享海报" @click="sharePoster" :disabled="posterLoading">
+                <i class="share-icon">{{ posterLoading ? '…' : '⇧' }}</i>
+              </button>
+              <button
+                class="icon-btn like-btn"
+                :class="{ 'is-liked': liked }"
+                :title="liked ? '取消点赞' : '点赞'"
+                :disabled="likePending"
+                @click="onToggleLike"
+              >
+                <i class="like-icon">{{ liked ? '♥' : '♡' }}</i>
+                <span class="like-count">{{ likeCount }}</span>
+              </button>
+              <button class="icon-btn" title="跳到评论区" @click="scrollToComments">
+                <i class="more-icon">💬</i>
+              </button>
             </div>
           </div>
         </div>
@@ -54,21 +77,14 @@
       <!-- Article Content -->
       <div class="article-content-wrapper" :style="{ maxWidth: contentWidth }">
         <div class="article-content">
-          <!-- Chapter Navigation -->
+          <!-- 目录（桌面侧栏 + 移动端悬浮） -->
           <aside class="chapter-nav">
-            <h3 class="chapter-nav-title">目录</h3>
-            <ul class="chapter-list">
-              <li v-for="chapter in chapters" :key="chapter.id" :class="{ active: activeChapter === chapter.id }"
-                @click="scrollToChapter(chapter.id)">
-                <span class="chapter-number">{{ chapter.id }}</span>
-                <span class="chapter-title">{{ chapter.title }}</span>
-              </li>
-            </ul>
+            <ArticleToc :headings="headings" />
           </aside>
 
           <!-- Main Content with Markdown -->
           <article class="main-content">
-            <div class="markdown-body" v-html="renderedContent"></div>
+            <div ref="markdownRef" class="markdown-body" v-html="renderedContent"></div>
           </article>
         </div>
 
@@ -144,6 +160,12 @@
           </div>
         </div>
 
+        <!-- 相关文章推荐（移植自 ThriveX） -->
+        <ArticleRelated :article-id="articleId" />
+
+        <!-- 版权声明（移植自 ThriveX） -->
+        <ArticleCopyright :article-id="articleId" />
+
         <!-- Comments Section -->
         <Comment :articleId="articleId" />
       </div>
@@ -152,21 +174,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { marked } from 'marked'
-import hljs from 'highlight.js'
-import 'highlight.js/styles/github.css'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import 'highlight.js/styles/atom-one-dark.css'
+import 'katex/dist/katex.min.css'
+import 'rehype-callouts/theme/obsidian'
+import '~/assets/styles/markdown-enhanced.css'
 import { useBlogStore } from '~/stores/blogStore'
 import 'github-markdown-css/github-markdown.css'
 import type { Article } from '@/types/article'
 import { getArticleById, getArticleList } from '~/api/article'
+import { renderMarkdown, bindMarkdownInteractions } from '~/composables/useMarkdown'
+import { useArticleLike } from '~/composables/useArticleLike'
 import { useDateFormat } from '@vueuse/core'
-
-// 配置 marked
-marked.setOptions({
-  breaks: true,
-  gfm: true
-} as any)
 
 const route = useRoute()
 const articleId = parseInt(route.params.id as string)
@@ -193,6 +212,25 @@ const error = computed(() => {
 })
 
 const loading = ref(false)
+
+// =============================================
+//  点赞（服务端按访客 IP 去重）
+// =============================================
+const { liked, likeCount, pending: likePending, syncState: syncLikeState, toggle: toggleLike } =
+  useArticleLike(article.value?.likeCount || 0)
+
+const onToggleLike = () => toggleLike(articleId)
+
+/** 固定导航栏高度，滚动定位时预留出来，避免目标标题被盖住 */
+const HEADER_OFFSET = 90
+
+/** 平滑滚动到评论区 */
+const scrollToComments = () => {
+  const el = document.querySelector('.comments-container')
+  if (!el) return
+  const top = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET
+  window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
+}
 
 // 上一篇/下一篇
 const { data: adjacentRaw } = await useAsyncData(
@@ -228,35 +266,16 @@ if (article.value?.title) {
 
 const scrollY = ref(0)
 
-// 渲染 Markdown 内容
-const renderedContent = computed(() => {
-  if (!article.value?.content) return ''
+// 渲染 Markdown 内容（unified 管道：GFM/公式/callout/Mac 风格代码块，SSR 同构）
+const rendered = computed(() => renderMarkdown(article.value?.content || ''))
+const renderedContent = computed(() => rendered.value.html)
+const headings = computed(() => rendered.value.headings)
+const markdownRef = ref<HTMLElement | null>(null)
 
-  // 解析 Markdown
-  let html = marked.parse(article.value.content) as string
-
-  // 手动处理代码高亮
-  const codeBlockRegex = /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g
-  html = html.replace(codeBlockRegex, (match, lang, code) => {
-    try {
-      const decodedCode = code
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&amp;/g, '&')
-        .replace(/&quot;/g, '"')
-
-      if (lang && hljs.getLanguage(lang)) {
-        const highlighted = hljs.highlight(decodedCode, { language: lang }).value
-        return `<pre><code class="hljs language-${lang}">${highlighted}</code></pre>`
-      }
-      return `<pre><code class="hljs">${hljs.highlightAuto(decodedCode).value}</code></pre>`
-    } catch (err) {
-      console.error('代码高亮失败:', err)
-      return match
-    }
-  })
-
-  return html
+// 正文图片灯箱状态
+const lightbox = reactive<{ show: boolean; image: { url: string; title: string } | null }>({
+  show: false,
+  image: null
 })
 
 // 计算字数
@@ -301,115 +320,32 @@ const contentWidth = computed(() => {
   return scrollY.value > 200 ? '100%' : '1200px'
 })
 
-// 解析Markdown生成目录（SSR 安全 —— 使用正则而非 DOM）
-const chapters = computed(() => {
-  if (!renderedContent.value) return []
-
-  // 用正则解析 h1/h2/h3 标题（服务端 + 客户端都可用）
-  const headingRegex = /<h([1-3])[^>]*>([\s\S]*?)<\/h\1>/gi
-  const headings: Array<{ id: number; title: string; level: number; type: string }> = []
-  let match: RegExpExecArray | null
-  let index = 1
-
-  while ((match = headingRegex.exec(renderedContent.value)) !== null) {
-    headings.push({
-      id: index++,
-      title: match[2].replace(/<[^>]*>/g, '').trim(),
-      level: parseInt(match[1]),
-      type: 'heading'
-    })
-  }
-
-  if (headings.length > 0) return headings
-
-  // 回退方案：列表 / 段落（仅客户端，scrollToChapter 依赖 DOM）
-  if (!process.client) return []
-
-  const tempDiv = document.createElement('div')
-  tempDiv.innerHTML = renderedContent.value
-
-  const listItems = tempDiv.querySelectorAll('ol > li')
-  if (listItems.length > 0) {
-    return Array.from(listItems).map((item, idx) => ({
-      id: idx + 1,
-      title: (item.textContent?.trim() || '').split('\n')[0].substring(0, 50),
-      level: 1,
-      type: 'list'
-    }))
-  }
-
-  const paragraphs = tempDiv.querySelectorAll('p')
-  if (paragraphs.length > 3) {
-    return Array.from(paragraphs).slice(0, 10).map((p, idx) => {
-      const text = p.textContent?.trim() || ''
-      return {
-        id: idx + 1,
-        title: text.substring(0, 30) + (text.length > 30 ? '...' : ''),
-        level: 1,
-        type: 'paragraph'
-      }
-    })
-  }
-
-  return []
-})
-
-const activeChapter = ref(1)
-
-const scrollToChapter = (chapterId: number) => {
-  const chapter = chapters.value[chapterId - 1]
-  if (!chapter) return
-  
-  let targetElement = null
-  
-  // 根据目录类型查找对应的元素
-  if (chapter.type === 'heading') {
-    // 标题类型：查找 h1, h2, h3
-    const headings = document.querySelectorAll('.markdown-body h1, .markdown-body h2, .markdown-body h3')
-    targetElement = headings[chapterId - 1]
-  } else if (chapter.type === 'list') {
-    // 列表类型：查找 ol > li
-    const listItems = document.querySelectorAll('.markdown-body ol > li')
-    targetElement = listItems[chapterId - 1]
-  } else if (chapter.type === 'paragraph') {
-    // 段落类型：查找 p
-    const paragraphs = document.querySelectorAll('.markdown-body p')
-    targetElement = paragraphs[chapterId - 1]
-  }
-  
-  if (targetElement) {
-    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    activeChapter.value = chapterId
-  }
-}
-
-// 滚动处理
+// 滚动处理（目录高亮已由 ArticleToc 组件自理）
 const handleScroll = () => {
   scrollY.value = window.scrollY
+}
 
-  if (chapters.value.length === 0) return
-  
-  // 根据目录类型获取对应的元素
-  let elements: NodeListOf<Element> | null = null
-  const firstChapter = chapters.value[0]
-  
-  if (firstChapter.type === 'heading') {
-    elements = document.querySelectorAll('.markdown-body h1, .markdown-body h2, .markdown-body h3')
-  } else if (firstChapter.type === 'list') {
-    elements = document.querySelectorAll('.markdown-body ol > li')
-  } else if (firstChapter.type === 'paragraph') {
-    elements = document.querySelectorAll('.markdown-body p')
-  }
-  
-  if (!elements) return
-  
-  // 从后往前遍历，找到第一个在视口上方的元素
-  for (let i = elements.length - 1; i >= 0; i--) {
-    const element = elements[i] as HTMLElement
-    if (element && element.getBoundingClientRect().top <= 200) {
-      activeChapter.value = i + 1
-      break
-    }
+// 分享海报（移植自 ThriveX，canvas 生成并下载）
+const posterLoading = ref(false)
+
+const sharePoster = async () => {
+  if (!article.value || posterLoading.value) return
+  posterLoading.value = true
+  try {
+    const { generateArticlePoster } = await import('~/utils/generatePoster')
+    await generateArticlePoster({
+      title: article.value.title,
+      summary: article.value.summary,
+      author: article.value.user?.nickName || '匿名',
+      date: formatDate(article.value.createTime),
+      url: window.location.href,
+      cover: article.value.cover,
+      siteName: '江晚正愁余 Blog'
+    })
+  } catch (err) {
+    console.error('生成分享海报失败:', err)
+  } finally {
+    posterLoading.value = false
   }
 }
 
@@ -427,12 +363,24 @@ const formatDate = (dateString: string | undefined) => {
 }
 
 // 客户端事件
+let unbindMarkdown: (() => void) | null = null
+
 onMounted(() => {
+  syncLikeState(articleId)
   window.addEventListener('scroll', handleScroll)
+  if (markdownRef.value) {
+    unbindMarkdown = bindMarkdownInteractions(markdownRef.value, {
+      onImageClick: (url, alt) => {
+        lightbox.image = { url, title: alt || '图片预览' }
+        lightbox.show = true
+      }
+    })
+  }
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  unbindMarkdown?.()
   blogStore.clearCurrentArticleTitle()
 })
 
@@ -620,6 +568,38 @@ useSeoMeta({
 .icon-btn:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: scale(1.1);
+}
+
+/* 点赞按钮：带计数，所以比其余圆形图标按钮宽 */
+.like-btn {
+  width: auto;
+  gap: 5px;
+  padding: 0 12px;
+  border-radius: 16px;
+}
+
+.like-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.like-btn .like-icon {
+  font-size: 15px;
+  line-height: 1;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.like-btn.is-liked {
+  background: rgba(232, 139, 143, 0.9);
+}
+
+.like-btn.is-liked .like-icon {
+  transform: scale(1.25);
+}
+
+.like-btn .like-count {
+  font-size: 13px;
+  line-height: 1;
 }
 
 /* Article Content */

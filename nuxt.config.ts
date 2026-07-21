@@ -7,6 +7,8 @@ export default defineNuxtConfig({
   },
   //资源放入src目录
   srcDir: 'src/',
+  // 显式指定 Nitro 服务端目录，避免与 srcDir 的解析歧义（RSS 等 server routes 依赖它）
+  serverDir: 'src/server',
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {
@@ -14,13 +16,19 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'keywords', content: '江晚正愁余,blog,个人博客,博客,sakura,主题,前端,知识库,nuxt3' },
+        {
+          name: 'keywords',
+          content: '江晚正愁余,blog,个人博客,博客,sakura,主题,前端,知识库,nuxt3'
+        },
         { name: 'author', content: '江晚正愁余' },
-        { name: 'description', content: '江晚正愁余 - 前端开发者的个人博客，分享前端技术、Nuxt3、Vue3 开发经验与生活感悟' },
+        {
+          name: 'description',
+          content: '江晚正愁余 - 前端开发者的个人博客，分享前端技术、Nuxt3、Vue3 开发经验与生活感悟'
+        },
         // Open Graph 全局默认
         { property: 'og:site_name', content: '思境 Blog' },
         { property: 'og:type', content: 'website' },
-        { property: 'og:locale', content: 'zh_CN' },
+        { property: 'og:locale', content: 'zh_CN' }
       ],
       link: [
         { rel: 'icon', href: '/favicon.ico' },
@@ -45,8 +53,13 @@ export default defineNuxtConfig({
         // 注意：不再主动preload本地字体，减少首屏加载
 
         // ⚡ 优化Vanta.js加载 - 预加载Three.js和Vanta
-        { rel: 'preload', href: 'https://cdn.jsdelivr.net/npm/three@0.137.0/build/three.min.js', as: 'script', crossorigin: 'anonymous' },
-        { rel: 'preconnect', href: 'https://cdn.jsdelivr.net' },
+        {
+          rel: 'preload',
+          href: 'https://cdn.jsdelivr.net/npm/three@0.137.0/build/three.min.js',
+          as: 'script',
+          crossorigin: 'anonymous'
+        },
+        { rel: 'preconnect', href: 'https://cdn.jsdelivr.net' }
 
         // 💡 智能预加载策略：
         // - About 页面图片：鼠标悬停"关于"链接时预加载（使用 PreloadLink 组件）
@@ -58,7 +71,7 @@ export default defineNuxtConfig({
   routeRules: {
     // 首页预渲染 - 禁用以避免构建时 API 请求错误
     // 首页预渲染 - 启用，但需配合 nitro.ignore 忽略 API
-    '/': { prerender: true },
+    '/': { prerender: true }
   },
   runtimeConfig: {
     // apiSecret 只能在服务器端上访问
@@ -125,10 +138,7 @@ export default defineNuxtConfig({
       })
     ],
     optimizeDeps: {
-      include:
-        process.env.NODE_ENV === 'development'
-          ? ['naive-ui', 'vueuc']
-          : [],
+      include: process.env.NODE_ENV === 'development' ? ['naive-ui', 'vueuc'] : [],
       exclude: ['@juggle/resize-observer']
     },
     css: {

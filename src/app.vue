@@ -51,7 +51,8 @@ onMounted(() => {
         <NuxtLayout>
           <NuxtLoadingIndicator />
           <NuxtPage />
-          <CommonSideEdge />
+          <!-- 原 CommonSideEdge(n-back-top) 已移除：与右下角悬浮工具球位置重叠导致点不到，
+               回到顶部功能统一由 CommonFloatingTools 承担（滚动到一定距离才出现） -->
         </NuxtLayout>
 
         <!-- Loading 遮罩层 -->

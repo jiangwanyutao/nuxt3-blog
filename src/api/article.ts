@@ -1,5 +1,13 @@
 import requestUtil from '~/composables/requestUtil'
-import type { Article, ArticleInfo, ArticleQuery, ArticleRecommend, Archives, ArticleConditionList, SearchArticle } from '@/types/article'
+import type {
+  Article,
+  ArticleInfo,
+  ArticleQuery,
+  ArticleRecommend,
+  Archives,
+  ArticleConditionList,
+  SearchArticle
+} from '@/types/article'
 
 // 定义公开文章查询参数
 export interface PublicArticleQuery {
@@ -57,12 +65,34 @@ export const searchArticles = (keyword: string) => {
   return requestUtil.get('/public/article/list', { keyword }, { isToken: false })
 }
 
+/** 点赞状态：后端按访客 IP 去重，likeCount 为权威值 */
+export interface ArticleLikeState {
+  liked: boolean
+  likeCount: number
+}
+
+/**
+ * 查询当前访客对该文章的点赞状态
+ * @param articleId 文章ID
+ */
+export const getArticleLikeState = (articleId: number) => {
+  return requestUtil.get(`/public/article/${articleId}/like`, {}, { isToken: false })
+}
+
 /**
  * 文章点赞
  * @param articleId 文章ID
  */
 export const likeArticle = (articleId: number) => {
-  return requestUtil.post('/article/like', { articleId }, { isToken: false })
+  return requestUtil.post(`/public/article/${articleId}/like`, {}, { isToken: false })
+}
+
+/**
+ * 取消文章点赞
+ * @param articleId 文章ID
+ */
+export const unlikeArticle = (articleId: number) => {
+  return requestUtil.delete(`/public/article/${articleId}/like`, {}, { isToken: false })
 }
 
 /**

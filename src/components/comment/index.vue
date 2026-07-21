@@ -149,19 +149,11 @@
                       {{ item.comment.address }}
                     </span>
                     <span class="meta-item" v-if="item.comment.os">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                        <line x1="8" y1="21" x2="16" y2="21"></line>
-                        <line x1="12" y1="17" x2="12" y2="21"></line>
-                      </svg>
+                      <Icon :name="osIcon(item.comment.os)" class="device-icon" />
                       {{ item.comment.os }}
                     </span>
                     <span class="meta-item" v-if="item.comment.browser">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                      </svg>
+                      <Icon :name="browserIcon(item.comment.browser)" class="device-icon" />
                       {{ item.comment.browser }}
                     </span>
                   </div>
@@ -201,19 +193,11 @@
                         {{ reply.address }}
                       </span>
                       <span class="meta-item" v-if="reply.os">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                          <line x1="8" y1="21" x2="16" y2="21"></line>
-                          <line x1="12" y1="17" x2="12" y2="21"></line>
-                        </svg>
+                        <Icon :name="osIcon(reply.os)" class="device-icon" />
                         {{ reply.os }}
                       </span>
                       <span class="meta-item" v-if="reply.browser">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <line x1="2" y1="12" x2="22" y2="12"></line>
-                          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                        </svg>
+                        <Icon :name="browserIcon(reply.browser)" class="device-icon" />
                         {{ reply.browser }}
                       </span>
                     </div>
@@ -330,10 +314,13 @@ import { useClientIp } from '~/composables/useClientIp'
 import { useDeviceInfo } from '~/composables/useDeviceInfo'
 import { getCommentList, getReplyList, addComment } from '~/api/comment'
 import { getCaptcha, type CaptchaData } from '~/api/captcha'
+import { formatRelativeTime } from '~/composables/useRelativeTime'
 
 // 获取客户端IP和设备信息
 const { getClientIp } = useClientIp()
 const { getBrowserInfo, getOSInfo } = useDeviceInfo()
+// 评论区设备品牌图标
+const { browserIcon, osIcon } = useDeviceIcon()
 
 // Props
 interface Props {
@@ -473,7 +460,7 @@ const submitComment = async () => {
     const clientIp = await getClientIp()
     // 获取设备和浏览器信息
     const browser = getBrowserInfo()
-    const os = getOSInfo()
+    const os = await getOSInfo()
     
     
     const commentData = {
@@ -494,6 +481,7 @@ const submitComment = async () => {
     
     if (response) {
       utilMsg.$message.success('评论发表成功！')
+      saveGuestInfo(userName.value.trim(), userEmail.value.trim(), userWebsite.value.trim())
       // 重置表单
       commentText.value = ''
       captchaInput.value = ''
@@ -529,7 +517,7 @@ const submitReply = async () => {
     const clientIp = await getClientIp()
     // 获取设备和浏览器信息
     const browser = getBrowserInfo()
-    const os = getOSInfo()
+    const os = await getOSInfo()
     
     const replyData = {
       articleId: props.articleId,
@@ -549,6 +537,7 @@ const submitReply = async () => {
     
     if (response && response.code === 200) {
       utilMsg.$message.success('回复发表成功！')
+      saveGuestInfo(replyUserName.value.trim(), replyUserEmail.value.trim(), replyUserWebsite.value.trim())
       // 重置回复表单
       cancelReply()
       // 刷新评论列表
@@ -601,27 +590,8 @@ const handleAvatarError = (e: Event) => {
 }
 
 // 格式化日期
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  
-  const minute = 60 * 1000
-  const hour = 60 * minute
-  const day = 24 * hour
-  
-  if (diff < minute) {
-    return '刚刚'
-  } else if (diff < hour) {
-    return Math.floor(diff / minute) + ' 分钟前'
-  } else if (diff < day) {
-    return Math.floor(diff / hour) + ' 小时前'
-  } else if (diff < 7 * day) {
-    return Math.floor(diff / day) + ' 天前'
-  } else {
-    return date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
-  }
-}
+// 相对时间格式化已抽到 useRelativeTime，与留言墙共用同一份文案规则
+const formatDate = formatRelativeTime
 
 // 分页相关
 const handlePageChange = (page: number) => {
@@ -634,14 +604,42 @@ const handlePageChange = (page: number) => {
   }
 }
 
-// 生成头像URL
+// 生成头像URL（QQ 邮箱自动取 QQ 头像，其余走 Gravatar identicon）
 const getAvatarUrl = (email: string) => {
-  // 使用Gravatar或默认头像
+  const qqMatch = /^(\d{5,12})@qq\.com$/i.exec(email.trim())
+  if (qqMatch) {
+    return `https://q1.qlogo.cn/g?b=qq&nk=${qqMatch[1]}&s=100`
+  }
   return `https://www.gravatar.com/avatar/${btoa(email)}?d=identicon&s=40`
+}
+
+// ---- 记住访客信息（localStorage） ----
+const GUEST_INFO_KEY = 'comment_guest_info'
+
+const restoreGuestInfo = () => {
+  try {
+    const raw = localStorage.getItem(GUEST_INFO_KEY)
+    if (!raw) return
+    const info = JSON.parse(raw)
+    userName.value = info.name || ''
+    userEmail.value = info.email || ''
+    userWebsite.value = info.website || ''
+  } catch {
+    // 本地数据损坏时忽略
+  }
+}
+
+const saveGuestInfo = (name: string, email: string, website: string) => {
+  try {
+    localStorage.setItem(GUEST_INFO_KEY, JSON.stringify({ name, email, website }))
+  } catch {
+    // 隐私模式等场景下写入失败可忽略
+  }
 }
 
 // 组件挂载时初始化
 onMounted(async () => {
+  restoreGuestInfo()
   await fetchCaptcha()
   await fetchComments()
 })
@@ -1497,5 +1495,83 @@ onMounted(async () => {
   color: #b5a599;
 }
 
+/* ===== ThriveX 风格评论视觉对齐（居中 / 滑入回复按钮 / 品牌设备图标） ===== */
+
+/* 评论区整体居中，收窄阅读宽度 */
+.comments-container {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* 评论项 hover 高亮 + 圆角（ThriveX 标志性交互） */
+.comment-item {
+  position: relative;
+  padding: 16px 14px;
+  border-bottom: 1px dashed #eee;
+  border-radius: 8px;
+  transition: background 0.25s ease;
+}
+
+.comment-item:hover {
+  background: #f3f8fe;
+}
+
+.dark .comment-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.comment-main {
+  position: relative;
+}
+
+.reply-item {
+  position: relative;
+}
+
+/* 时间跟在名字后，让出右上角给滑入的回复按钮 */
+.comment-header .comment-date {
+  margin-left: 0;
+}
+
+/* 回复按钮：药丸样式，默认藏在右侧外，hover 评论项时滑入 */
+.comment-actions {
+  position: absolute;
+  top: 0;
+  right: -12%;
+  opacity: 0;
+  transition: right 0.3s ease, opacity 0.3s ease;
+  z-index: 2;
+}
+
+.comment-item:hover .comment-actions,
+.comment-actions:has(.comment-cancel-btn) {
+  right: 2%;
+  opacity: 1;
+}
+
+.comment-reply-btn,
+.comment-cancel-btn {
+  padding: 5px 12px !important;
+  border-radius: 30px !important;
+  background: #e88b8b !important;
+  color: #fff !important;
+  font-size: 13px !important;
+}
+
+.comment-reply-btn:hover,
+.comment-cancel-btn:hover {
+  background: #e07a7a !important;
+  color: #fff !important;
+}
+
+.comment-reply-btn svg {
+  stroke: #fff;
+}
+
+/* 品牌设备图标（浏览器 / 操作系统 logo） */
+.device-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+}
 
 </style>
