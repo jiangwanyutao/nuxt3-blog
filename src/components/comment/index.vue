@@ -1348,10 +1348,7 @@ onMounted(async () => {
   /* padding: 64px 24px; */
 }
 
-.comments-container {
-  max-width: 1900px;
-  margin: 0 auto;
-}
+/* .comments-container 的宽度统一在文件末尾定义，此处不再重复声明 */
 
 /* Comment Form */
 .comment-form-wrapper {
@@ -1497,10 +1494,16 @@ onMounted(async () => {
 
 /* ===== ThriveX 风格评论视觉对齐（居中 / 滑入回复按钮 / 品牌设备图标） ===== */
 
-/* 评论区整体居中，收窄阅读宽度 */
+/*
+ * 这里原先照搬 ThriveX 写了 max-width: 760px 收窄居中。
+ * 但 ThriveX 的评论区占满整幅宽度，收窄才有意义；
+ * 本站评论位于「正文列 + 右侧栏」的正文列内，本身已被约束过一次，
+ * 再收窄就比正文明显窄一截，看起来像缩在中间的一条。
+ * 交给外层列决定宽度，与正文对齐。
+ */
 .comments-container {
-  max-width: 760px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
 }
 
 /* 评论项 hover 高亮 + 圆角（ThriveX 标志性交互） */
