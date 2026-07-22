@@ -98,18 +98,6 @@ const getDefaultMenuData = (): MenuTreeItem[] => {
               enabled: '0'
             },
             {
-              menuId: 10,
-              icon: '',
-              text: '摄影展示',
-              path: '/photography',
-              class: undefined,
-              sort: 1.5,
-              parentId: 2,
-              isExternal: '0',
-              visible: '0',
-              enabled: '0'
-            },
-            {
               menuId: 4,
               icon: '',
               text: '云盘主页',
