@@ -24,8 +24,17 @@ const stripMarkdown = (text: string): string =>
  */
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  const apiBase = String(config.public.baseURL || '').replace(/\/+$/, '')
   const siteUrl = getRequestURL(event).origin
+
+  /*
+   * 生产环境 NUXT_PUBLIC_API_BASE 是相对路径 /api，由 vercel.json 的边缘重写
+   * 转发到 api.jwyt.xyz。但边缘重写只作用于进入 Vercel 的请求，
+   * 而本路由跑在 Nitro 服务端函数里：$fetch('/api/...') 会被当成内部路由解析，
+   * 而 /api 又在 nitro.ignore 里，结果 404 → 被 catch 吞掉 → 输出空 feed。
+   * 补上站点 origin 变成绝对地址，请求就会正常出网并命中那条重写。
+   */
+  const rawBase = String(config.public.baseURL || '').replace(/\/+$/, '')
+  const apiBase = /^https?:\/\//.test(rawBase) ? rawBase : `${siteUrl}${rawBase}`
 
   const feed = new Feed({
     title: SITE.title,
