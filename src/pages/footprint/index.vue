@@ -6,6 +6,8 @@
     -->
     <div ref="mapEl" class="fp-map" />
 
+    <AlbumSwitcher />
+
     <!-- 地图不可用时才盖上来，正常情况下不遮挡任何交互 -->
     <div v-if="overlayText" class="fp-overlay">
       <p class="fp-overlay-text">{{ overlayText }}</p>
