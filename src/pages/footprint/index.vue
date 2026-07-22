@@ -1,59 +1,47 @@
 <template>
   <div class="fp-page">
-    <header class="fp-hero">
-      <h1 class="fp-title">那年走过的路</h1>
-      <p class="fp-subtitle">把去过的地方钉在地图上</p>
-      <p v-if="items.length" class="fp-summary">共 {{ items.length }} 处足迹</p>
-    </header>
+    <!--
+      容器必须始终保持尺寸：若用 v-show 隐藏，高德初始化时拿到 0×0 会抛 Pixel(NaN, NaN)。
+      整屏铺开是刻意的 —— 页头是 fixed + 半透明，地图会透到它下面。
+    -->
+    <div ref="mapEl" class="fp-map" />
 
-    <!-- 地图容器：未配置 key 时不渲染，避免高德 SDK 报错 -->
-    <ClientOnly>
-      <section v-if="items.length" class="fp-map-wrap">
-        <!-- 容器必须始终保持尺寸：若用 v-show 隐藏，高德初始化时拿到 0×0 会抛 Pixel(NaN, NaN) -->
-        <div ref="mapEl" class="fp-map" />
+    <!-- 地图不可用时才盖上来，正常情况下不遮挡任何交互 -->
+    <div v-if="overlayText" class="fp-overlay">
+      <p class="fp-overlay-text">{{ overlayText }}</p>
+    </div>
 
-        <div v-if="!mapReady" class="fp-map-placeholder">
-          <p v-if="mapError">{{ mapError }}</p>
-          <p v-else>地图加载中…</p>
-        </div>
-      </section>
-    </ClientOnly>
+    <Teleport to="body">
+      <Transition name="fp-fade">
+        <div v-if="detail" class="fp-modal-mask" @click.self="closeDetail">
+          <div class="fp-modal">
+            <header class="fp-modal-head">
+              <h2 class="fp-modal-title">{{ detail.title }}</h2>
+              <button class="fp-modal-close" aria-label="关闭" @click="closeDetail">×</button>
+            </header>
 
-    <main v-if="items.length" class="fp-list">
-      <article
-        v-for="item in items"
-        :key="item.id"
-        class="fp-card"
-        :class="{ active: activeId === item.id }"
-        @click="focusOn(item)"
-      >
-        <div v-if="firstImage(item)" class="fp-cover">
-          <img :src="firstImage(item)" :alt="item.title" loading="lazy" @error="markBroken(item.id)" />
-        </div>
+            <p v-if="detail.content" class="fp-modal-content">{{ detail.content }}</p>
 
-        <div class="fp-body">
-          <div class="fp-meta">
-            <span class="fp-address">📍 {{ item.address }}</span>
-            <time class="fp-date">{{ formatDate(item.eventDate) }}</time>
-          </div>
-          <h3 class="fp-name">{{ item.title }}</h3>
-          <p v-if="item.content" class="fp-desc">{{ item.content }}</p>
+            <div class="fp-modal-meta">
+              <p>时间：{{ formatDate(detail.eventDate) }}</p>
+              <p>地址：{{ detail.address }}</p>
+            </div>
 
-          <div v-if="galleryOf(item).length > 1" class="fp-thumbs">
-            <img
-              v-for="(img, i) in galleryOf(item).slice(0, 4)"
-              :key="i"
-              :src="img"
-              :alt="`${item.title} ${i + 1}`"
-              loading="lazy"
-              @click.stop="openLightbox(img, item.title)"
-            />
+            <div v-if="galleryOf(detail).length" class="fp-gallery">
+              <button
+                v-for="(img, i) in galleryOf(detail)"
+                :key="i"
+                type="button"
+                class="fp-gallery-item"
+                @click="openLightbox(img, detail.title)"
+              >
+                <img :src="img" :alt="detail.title" loading="lazy" />
+              </button>
+            </div>
           </div>
         </div>
-      </article>
-    </main>
-
-    <p v-else class="fp-empty">还没有记录任何足迹</p>
+      </Transition>
+    </Teleport>
 
     <PhotographyLightbox :show="lightbox.show" :image="lightbox.image" @close="lightbox.show = false" />
   </div>
@@ -65,11 +53,11 @@ import { getFootprintList, getGaodeConfig, type FootprintItem } from '~/api/foot
 
 useHead({ title: '足迹' })
 
-/** 地图初始视野：大致居中于中国 */
+/** 初始视野：大致居中于中国，与 ThriveX 原版一致 */
 const MAP_CENTER: [number, number] = [105.625368, 37.746599]
-const MAP_ZOOM = 4.6
-/** 点击卡片聚焦时的放大层级 */
-const FOCUS_ZOOM = 10
+const MAP_ZOOM = 4.8
+/** 点选标记后拉近到街区级别 */
+const FOCUS_ZOOM = 15
 
 const { data: raw } = await useAsyncData('footprint-list', () => getFootprintList())
 
@@ -81,20 +69,23 @@ const items = computed<FootprintItem[]>(() => {
 const mapEl = ref<HTMLElement | null>(null)
 const mapReady = ref(false)
 const mapError = ref('')
-const activeId = ref<number | null>(null)
+const detail = ref<FootprintItem | null>(null)
 
 let mapInstance: any = null
 let infoWindow: any = null
-const markers = new Map<number, any>()
 
-const brokenImages = reactive(new Set<number>())
 const galleryOf = (item: FootprintItem) => item.images || []
-const firstImage = (item: FootprintItem) =>
-  brokenImages.has(item.id) ? '' : galleryOf(item)[0] || ''
-const markBroken = (id: number) => brokenImages.add(id)
+const firstImage = (item: FootprintItem) => galleryOf(item)[0] || ''
 
 const formatDate = (date: string) =>
   new Date(date).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
+
+/** 地图不可用时的兜底文案；地图正常则为空，不渲染遮罩 */
+const overlayText = computed(() => {
+  if (mapError.value) return mapError.value
+  if (!items.value.length) return '还没有记录任何足迹'
+  return mapReady.value ? '' : '地图加载中…'
+})
 
 /** "lng,lat" -> [lng, lat]，格式不对返回 null 由调用方跳过 */
 const parsePosition = (position: string): [number, number] | null => {
@@ -103,25 +94,50 @@ const parsePosition = (position: string): [number, number] | null => {
   return [parts[0], parts[1]]
 }
 
+/**
+ * 标记内容与浮层卡片都要拼 HTML 塞进高德的 DOM，Vue 的自动转义在这里不生效，
+ * 所以标题/地址等字段必须手动转义。
+ */
+const ESCAPE_MAP: Record<string, string> = { '&': 'amp', '<': 'lt', '>': 'gt', '"': 'quot', "'": '#39' }
+const escapeHtml = (str: string) => String(str ?? '').replace(/[&<>"']/g, (c) => `&${ESCAPE_MAP[c]};`)
+
+/** 圆形头像标记 + 呼吸光晕（无图时返回空串，退回高德默认水滴图标） */
+const markerHtml = (item: FootprintItem) => {
+  const img = firstImage(item)
+  if (!img) return ''
+  return `<div class="fp-marker"><img src="${escapeHtml(img)}" alt="" /></div>`
+}
+
 const infoHtml = (item: FootprintItem) => {
   const img = firstImage(item)
   return `
-    <div style="max-width:220px;padding:4px 2px">
-      ${img ? `<img src="${img}" style="width:100%;height:110px;object-fit:cover;border-radius:8px;margin-bottom:8px" />` : ''}
-      <div style="font-weight:600;font-size:14px;color:#3a3a3a">${item.title}</div>
-      <div style="font-size:12px;color:#9a9188;margin-top:4px">${item.address} · ${formatDate(item.eventDate)}</div>
+    <div class="fp-info">
+      <div class="fp-info-cover">
+        ${img ? `<img src="${escapeHtml(img)}" alt="" />` : ''}
+        <div class="fp-info-mask">
+          <h3>${escapeHtml(item.title)}</h3>
+          <p>🕘 ${escapeHtml(formatDate(item.eventDate))}</p>
+          <p>📍 ${escapeHtml(item.address)}</p>
+        </div>
+      </div>
+      <button type="button" class="fp-info-more" data-fp-id="${item.id}">查看更多 ›</button>
     </div>`
 }
 
-const focusOn = (item: FootprintItem) => {
-  activeId.value = item.id
-  const marker = markers.get(item.id)
-  const pos = parsePosition(item.position)
-  if (!mapInstance || !marker || !pos) return
+const closeDetail = () => {
+  detail.value = null
+}
 
-  mapInstance.setZoomAndCenter(FOCUS_ZOOM, pos)
-  infoWindow?.setContent(infoHtml(item))
-  infoWindow?.open(mapInstance, pos)
+/**
+ * 「查看更多」按钮在高德注入的 DOM 里，拿不到 Vue 的事件绑定。
+ * 用事件委托代替原版的内联 onclick + CustomEvent，既能拿到点击又不引入内联脚本。
+ */
+const onMapClick = (e: MouseEvent) => {
+  const btn = (e.target as HTMLElement)?.closest?.('[data-fp-id]')
+  if (!btn) return
+  const id = Number(btn.getAttribute('data-fp-id'))
+  const target = items.value.find((i) => i.id === id)
+  if (target) detail.value = target
 }
 
 const initMap = async () => {
@@ -155,26 +171,30 @@ const initMap = async () => {
       center: MAP_CENTER
     })
 
-    infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -30), anchor: 'bottom-center' })
+    // isCustom 关掉高德自带的白底气泡外壳，由我们自己出样式
+    infoWindow = new AMap.InfoWindow({
+      offset: new AMap.Pixel(0, -30),
+      anchor: 'bottom-center',
+      autoMove: true,
+      isCustom: true
+    })
     mapInstance.on('click', () => infoWindow?.close())
 
     items.value.forEach((item) => {
       const pos = parsePosition(item.position)
       if (!pos) return
 
-      const marker = new AMap.Marker({ position: pos, title: item.address })
+      const marker = new AMap.Marker({ position: pos, map: mapInstance, content: markerHtml(item) })
       marker.on('click', () => {
-        activeId.value = item.id
         infoWindow.setContent(infoHtml(item))
         infoWindow.open(mapInstance, pos)
+        mapInstance.setZoomAndCenter(FOCUS_ZOOM, pos)
       })
-      mapInstance.add(marker)
-      markers.set(item.id, marker)
     })
 
+    mapEl.value.addEventListener('click', onMapClick)
     mapReady.value = true
   } catch (error: any) {
-    // 地图挂了不影响下方卡片列表阅读
     mapError.value = `地图加载失败：${error?.message || '请检查高德 Key 与安全密钥是否正确'}`
   }
 }
@@ -194,193 +214,269 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  mapEl.value?.removeEventListener('click', onMapClick)
+  infoWindow?.close?.()
   mapInstance?.destroy?.()
   mapInstance = null
-  markers.clear()
 })
 </script>
 
 <style scoped>
 .fp-page {
-  min-height: 100vh;
-  padding: 0 clamp(16px, 4vw, 56px) 90px;
-}
-
-.fp-hero {
-  padding: 90px 0 32px;
-  text-align: center;
-}
-
-.fp-title {
-  margin: 0 0 14px;
-  font-size: clamp(36px, 6vw, 58px);
-  font-weight: 700;
-  letter-spacing: 3px;
-  background: linear-gradient(90deg, #4f9d8c, #6fb3a0, #9c8878);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.fp-subtitle {
-  margin: 0;
-  font-size: 15px;
-  letter-spacing: 4px;
-  color: #a49b8f;
-}
-
-.fp-summary {
-  margin: 12px 0 0;
-  font-size: 13px;
-  color: #bdb4a8;
-}
-
-.fp-map-wrap {
   position: relative;
-  max-width: 1100px;
-  height: 460px;
-  margin: 0 auto 40px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.09);
 }
 
 .fp-map {
   width: 100%;
-  height: 100%;
+  /* 整屏铺开；页头 fixed 且半透明，地图透过去正是原版的观感 */
+  height: 100vh;
 }
 
-/* 盖在地图之上，而不是替换它 —— 保证地图容器始终有宽高 */
-.fp-map-placeholder {
+.fp-overlay {
   position: absolute;
   inset: 0;
-  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  padding: 0 24px;
-  background: #f3f1ed;
+  padding: 24px;
+  background: rgba(244, 242, 238, 0.92);
+}
+
+.dark .fp-overlay {
+  background: rgba(28, 28, 30, 0.92);
+}
+
+.fp-overlay-text {
+  max-width: 460px;
   text-align: center;
   font-size: 14px;
-  line-height: 1.8;
-  color: #8a8175;
+  line-height: 1.9;
+  color: #8a8178;
 }
 
-.dark .fp-map-placeholder {
-  background: #26262a;
-  color: #9a9aa0;
-}
-
-.fp-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 22px;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.fp-card {
-  overflow: hidden;
-  border: 2px solid transparent;
-  border-radius: 14px;
-  background: #fff;
-  cursor: pointer;
-  box-shadow: 0 3px 16px rgba(0, 0, 0, 0.07);
-  transition: transform 0.32s ease, box-shadow 0.32s ease, border-color 0.32s ease;
-}
-
-.dark .fp-card {
-  background: #26262a;
-}
-
-.fp-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(79, 157, 140, 0.2);
-}
-
-.fp-card.active {
-  border-color: #6fb3a0;
-}
-
-.fp-cover img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-}
-
-.fp-body {
-  padding: 15px 17px 17px;
-}
-
-.fp-meta {
+/* ---------- 详情弹窗 ---------- */
+.fp-modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 12px;
-  color: #b0a698;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
 }
 
-.fp-address {
-  color: #6fb3a0;
-}
-
-.fp-name {
-  margin: 8px 0 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #3a3a3a;
-}
-
-.dark .fp-name {
+.fp-modal {
+  width: min(880px, 100%);
+  max-height: 86vh;
+  overflow-y: auto;
+  padding: 24px 26px 28px;
+  border: 1px solid rgba(120, 120, 120, 0.35);
+  border-radius: 16px;
+  background: rgba(36, 40, 45, 0.94);
   color: #e6e6e6;
 }
 
-.fp-desc {
-  margin: 8px 0 0;
-  font-size: 13.5px;
-  line-height: 1.75;
-  color: #6f6659;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
+.fp-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.fp-modal-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.fp-modal-close {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.fp-modal-close:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.fp-modal-content {
+  max-height: 210px;
+  overflow-y: auto;
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: #d6d6d6;
+  white-space: pre-wrap;
+}
+
+.fp-modal-meta {
+  margin-bottom: 18px;
+  text-align: right;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #a5a5a5;
+}
+
+.fp-modal-meta p {
+  margin: 0;
+}
+
+/* 瀑布流用 CSS 多列即可，无需额外依赖 */
+.fp-gallery {
+  column-count: 3;
+  column-gap: 12px;
+}
+
+.fp-gallery-item {
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  cursor: pointer;
+  break-inside: avoid;
+}
+
+.fp-gallery-item img {
+  width: 100%;
+  border-radius: 12px;
+  transition: transform 0.3s;
+}
+
+.fp-gallery-item:hover img {
+  transform: scale(1.03);
+}
+
+.fp-fade-enter-active,
+.fp-fade-leave-active {
+  transition: opacity 0.24s ease;
+}
+
+.fp-fade-enter-from,
+.fp-fade-leave-to {
+  opacity: 0;
+}
+
+@media (max-width: 700px) {
+  .fp-gallery {
+    column-count: 2;
+  }
+}
+</style>
+
+<!--
+  标记与浮层卡片是高德动态注入的 DOM，拿不到 scoped 编译出的 data 属性，
+  必须放在非 scoped 的样式块里，否则样式一律不生效。
+-->
+<style>
+.fp-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #fff;
+  animation: fp-pulse 2s infinite;
+}
+
+.fp-marker img {
+  width: 90%;
+  height: 90%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+@keyframes fp-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 5px 1px rgba(255, 255, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.75);
+  }
+}
+
+.fp-info {
+  width: 240px;
+  border-radius: 12px;
   overflow: hidden;
 }
 
-.dark .fp-desc {
-  color: #a9a9ad;
+.fp-info-cover {
+  position: relative;
+  width: 100%;
+  /* 正方形封面：padding-bottom 撑高，图片绝对定位铺满 */
+  padding-bottom: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #4a4a4a;
 }
 
-.fp-thumbs {
-  display: flex;
-  gap: 7px;
-  margin-top: 12px;
-}
-
-.fp-thumbs img {
-  width: 52px;
-  height: 52px;
-  border-radius: 8px;
+.fp-info-cover > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  cursor: zoom-in;
-  transition: transform 0.25s ease;
 }
 
-.fp-thumbs img:hover {
-  transform: scale(1.08);
+.fp-info-mask {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.42);
 }
 
-.fp-empty {
-  padding: 90px 0;
-  text-align: center;
-  color: #b0a698;
+.fp-info-mask h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
 }
 
-@media (max-width: 640px) {
-  .fp-map-wrap {
-    height: 320px;
-  }
+.fp-info-mask p {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.fp-info-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 5px;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.fp-info-more:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.04);
 }
 </style>
