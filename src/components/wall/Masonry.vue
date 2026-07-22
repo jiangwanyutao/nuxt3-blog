@@ -13,7 +13,7 @@
           {{ item.cate?.name || '留言' }}
         </span>
 
-        <p class="wall-content">{{ item.content }}</p>
+        <WallCardContent :content="item.content" />
 
         <footer class="wall-meta">
           <span class="wall-author">{{ item.name || '匿名' }}</span>
@@ -200,22 +200,6 @@ const cardStyle = (item: WallItem) => {
   font-size: 12px;
   font-weight: 500;
   color: #4b4237;
-}
-
-.wall-content {
-  position: relative;
-  margin: 0 0 16px;
-  max-height: 190px;
-  overflow-y: auto;
-  font-size: 14px;
-  line-height: 1.75;
-  color: #3b352d;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.wall-content::-webkit-scrollbar {
-  width: 0;
 }
 
 .wall-meta {
