@@ -84,6 +84,24 @@ export const toggleMomentLike = (id: number) => {
   return requestUtil.post(`/moments/${id}/like`) as Promise<ApiResponse<{ isLiked: boolean; likeCount: number }>>
 }
 
+/*
+ * 访客点赞：与上面按 userId 记表的登录点赞是两条独立路径，
+ * 访客这条在服务端按 IP 去重，无需登录。
+ */
+type GuestLike = ApiResponse<{ liked: boolean; likeCount: number }>
+
+export const getMomentGuestLike = (id: number) => {
+  return requestUtil.get(`/moments/${id}/guest-like`, {}, { isToken: false }) as Promise<GuestLike>
+}
+
+export const likeMomentAsGuest = (id: number) => {
+  return requestUtil.post(`/moments/${id}/guest-like`, {}, { isToken: false }) as Promise<GuestLike>
+}
+
+export const unlikeMomentAsGuest = (id: number) => {
+  return requestUtil.delete(`/moments/${id}/guest-like`, {}, { isToken: false }) as Promise<GuestLike>
+}
+
 /**
  * 获取说说评论
  */

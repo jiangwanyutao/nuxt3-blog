@@ -89,7 +89,14 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
-import { getMomentsList, getMomentComments, toggleMomentLike, type MomentItem } from '~/api/moments'
+import {
+  getMomentsList,
+  getMomentComments,
+  getMomentGuestLike,
+  likeMomentAsGuest,
+  unlikeMomentAsGuest,
+  type MomentItem
+} from '~/api/moments'
 import utilMsg from '~/composables/utilMsg'
 
 useSeoMeta({
@@ -126,8 +133,11 @@ const load = async (reset = false) => {
     moments.value = reset ? list : [...moments.value, ...list]
     total.value = res.data?.total || 0
     if (reset) page.value = 1
-    // 评论并行取，逐条串行会让整页明显变慢
-    await Promise.all(list.map((m: MomentItem) => loadComments(m.id)))
+    // 评论与点赞态并行取，逐条串行会让整页明显变慢
+    await Promise.all([
+      ...list.map((m: MomentItem) => loadComments(m.id)),
+      ...list.map((m: MomentItem) => loadLikeState(m))
+    ])
   } finally {
     loading.value = false
   }
@@ -140,6 +150,22 @@ const loadComments = async (id: number) => {
   } catch {
     // 评论拉不到不影响说说本身展示
     commentMap[id] = []
+  }
+}
+
+/**
+ * 回填当前访客的点赞态。列表接口返回的 isLiked 是按登录用户算的，
+ * 访客恒为 false，不回填的话刷新后已点的赞会显示成没点。
+ */
+const loadLikeState = async (m: any) => {
+  try {
+    const res: any = await getMomentGuestLike(m.id)
+    if (res?.code === 200 && res.data) {
+      m.isLiked = !!res.data.liked
+      if (typeof res.data.likeCount === 'number') m.likeCount = res.data.likeCount
+    }
+  } catch {
+    // 拿不到点赞态不影响说说展示，维持列表接口给的值
   }
 }
 
@@ -160,14 +186,15 @@ const onLike = async (m: any) => {
   m.isLiked = !prevLiked
   m.likeCount = prevCount + (prevLiked ? -1 : 1)
   try {
-    const res: any = await toggleMomentLike(m.id)
+    const res: any = prevLiked ? await unlikeMomentAsGuest(m.id) : await likeMomentAsGuest(m.id)
     if (res?.code !== 200) throw new Error(res?.msg || '点赞失败')
+    // 以服务端返回的计数为准：同 IP 重复点赞不累加，本地那次 +1 可能是多算的
+    if (typeof res.data?.likeCount === 'number') m.likeCount = res.data.likeCount
+    if (typeof res.data?.liked === 'boolean') m.isLiked = res.data.liked
   } catch (e: any) {
     m.isLiked = prevLiked
     m.likeCount = prevCount
-    // 后端的 /moments/:id/like 需要登录，未登录会 403。
-    // 只回滚不提示的话，用户点了没反应也不知道为什么。
-    utilMsg.$message.warning(e?.message?.includes('登录') ? '登录后才能点赞' : '点赞失败，请稍后再试')
+    utilMsg.$message.warning(e?.message || '点赞失败，请稍后再试')
   }
 }
 
