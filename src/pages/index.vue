@@ -54,7 +54,7 @@
     <!--      主体-->
     <div class="blog_main_one">
       <HomeAbout></HomeAbout>
-      <HomeFriendship></HomeFriendship>
+      <HomeGiteeWidget />
     </div>
     <HomeAboutInfo></HomeAboutInfo>
     <div class="wz_main">
