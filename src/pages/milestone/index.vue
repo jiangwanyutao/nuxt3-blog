@@ -287,16 +287,13 @@ const onResize = () => {
   viewportH.value = Math.max(window.innerHeight, 600)
 }
 
-let prevBodyOverflow = ''
-
 onMounted(() => {
   starsShadow.value = buildStarsShadow()
   starsNearShadow.value = buildStarsShadow(45, 0.45)
   onResize()
   window.addEventListener('resize', onResize)
 
-  // 本页是整屏接管，纵向滚动交给横向轨道，离开时必须还原
-  prevBodyOverflow = document.body.style.overflow
+  // 本页是整屏接管，纵向滚动交给横向轨道
   document.body.style.overflow = 'hidden'
 
   const sc = scrollEl.value
@@ -312,7 +309,10 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize)
-  document.body.style.overflow = prevBodyOverflow
+  // 直接清空而不是「还原进入前的值」：若进入时 body 恰好已是 hidden
+  // （搜索弹窗开着、或 HMR/过渡导致的重复挂载），还原旧值会把整站滚动永久锁死。
+  // 站点基线本就没有内联 overflow，清空是幂等且正确的。
+  document.body.style.overflow = ''
 
   const sc = scrollEl.value
   if (sc) {
