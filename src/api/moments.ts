@@ -52,14 +52,18 @@ export const getMomentsList = (query: MomentsQuery = {}) => {
     isPublic: true, // 前端只获取公开的说说
     ...query
   }
-  return requestUtil.get('/moments', params, { isToken: false }) as Promise<ApiResponse<MomentsPageData>>
+  return requestUtil.get('/moments', params, { isToken: false }) as Promise<
+    ApiResponse<MomentsPageData>
+  >
 }
 
 /**
  * 获取说说详情
  */
 export const getMomentDetail = (id: number) => {
-  return requestUtil.get(`/moments/${id}`, {}, { isToken: false }) as Promise<ApiResponse<MomentItem>>
+  return requestUtil.get(`/moments/${id}`, {}, { isToken: false }) as Promise<
+    ApiResponse<MomentItem>
+  >
 }
 
 /**
@@ -81,7 +85,9 @@ export const createMoment = (data: {
  * 点赞/取消点赞（需要登录）
  */
 export const toggleMomentLike = (id: number) => {
-  return requestUtil.post(`/moments/${id}/like`) as Promise<ApiResponse<{ isLiked: boolean; likeCount: number }>>
+  return requestUtil.post(`/moments/${id}/like`) as Promise<
+    ApiResponse<{ isLiked: boolean; likeCount: number }>
+  >
 }
 
 /*
@@ -99,23 +105,46 @@ export const likeMomentAsGuest = (id: number) => {
 }
 
 export const unlikeMomentAsGuest = (id: number) => {
-  return requestUtil.delete(`/moments/${id}/guest-like`, {}, { isToken: false }) as Promise<GuestLike>
+  return requestUtil.delete(
+    `/moments/${id}/guest-like`,
+    {},
+    { isToken: false }
+  ) as Promise<GuestLike>
+}
+
+/**
+ * 游客发表评论（无需登录）。
+ * 后端存为 status='0' 待审核，发完不会立刻出现在列表里，
+ * 前端必须明确提示，否则用户会以为没发成功。
+ */
+export const addMomentGuestComment = (
+  id: number,
+  data: { content: string; name: string; email: string; website?: string }
+) => {
+  return requestUtil.post(`/moments/${id}/comments/guest`, data, { isToken: false }) as Promise<
+    ApiResponse<any>
+  >
 }
 
 /**
  * 获取说说评论
  */
 export const getMomentComments = (id: number, page: number = 1, size: number = 10) => {
-  return requestUtil.get(`/moments/${id}/comments`, { page, size }, { isToken: false }) as Promise<ApiResponse<any>>
+  return requestUtil.get(`/moments/${id}/comments`, { page, size }, { isToken: false }) as Promise<
+    ApiResponse<any>
+  >
 }
 
 /**
  * 添加评论（需要登录）
  */
-export const addMomentComment = (id: number, data: {
-  content: string
-  parentId?: number
-}) => {
+export const addMomentComment = (
+  id: number,
+  data: {
+    content: string
+    parentId?: number
+  }
+) => {
   return requestUtil.post(`/moments/${id}/comments`, data) as Promise<ApiResponse<any>>
 }
 
@@ -123,10 +152,12 @@ export const addMomentComment = (id: number, data: {
  * 获取链接预览
  */
 export const getLinkPreview = (url: string) => {
-  return requestUtil.post('/moments/link-preview', { url }, { isToken: false }) as Promise<ApiResponse<{
-    title: string
-    description: string
-    image: string
-    url: string
-  }>>
+  return requestUtil.post('/moments/link-preview', { url }, { isToken: false }) as Promise<
+    ApiResponse<{
+      title: string
+      description: string
+      image: string
+      url: string
+    }>
+  >
 }

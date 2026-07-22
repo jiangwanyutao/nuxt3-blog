@@ -73,6 +73,31 @@
               </li>
             </ul>
           </div>
+
+          <!-- 评论输入：点「评论」后展开，游客填昵称与邮箱即可 -->
+          <div v-if="composerId === m.id" class="mm-composer">
+            <textarea
+              ref="composerInput"
+              v-model="draft.content"
+              class="mm-composer-text"
+              rows="2"
+              maxlength="500"
+              placeholder="说点什么…"
+            />
+            <div class="mm-composer-row">
+              <input v-model="draft.name" class="mm-composer-input" maxlength="20" placeholder="昵称" />
+              <input v-model="draft.email" class="mm-composer-input" maxlength="60" placeholder="邮箱（不公开）" />
+            </div>
+            <div class="mm-composer-foot">
+              <span class="mm-composer-tip">评论需管理员审核后才会显示</span>
+              <div class="mm-composer-btns">
+                <button class="mm-composer-cancel" @click="closeComposer">取消</button>
+                <button class="mm-composer-send" :disabled="!canSend || sending" @click="submitComment(m)">
+                  {{ sending ? '发送中…' : '发送' }}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </article>
 
@@ -92,6 +117,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import {
   getMomentsList,
   getMomentComments,
+  addMomentGuestComment,
   getMomentGuestLike,
   likeMomentAsGuest,
   unlikeMomentAsGuest,
@@ -198,10 +224,44 @@ const onLike = async (m: any) => {
   }
 }
 
+// ---------- 评论 ----------
+const composerId = ref<number | null>(null)
+const sending = ref(false)
+/** 昵称与邮箱记在本地，不用每条都重填 */
+const draft = reactive({ content: '', name: '', email: '' })
+
+const canSend = computed(() => draft.content.trim() && draft.name.trim() && draft.email.trim())
+
 const focusComment = (id: number) => {
   openPanelId.value = null
-  // 评论发布沿用文章评论的登录态，这里先引导到详情
-  navigateTo(`/moments#moment-${id}`)
+  composerId.value = id
+}
+
+const closeComposer = () => {
+  composerId.value = null
+  draft.content = ''
+}
+
+const submitComment = async (m: any) => {
+  if (!canSend.value || sending.value) return
+  sending.value = true
+  try {
+    const res: any = await addMomentGuestComment(m.id, {
+      content: draft.content.trim(),
+      name: draft.name.trim(),
+      email: draft.email.trim()
+    })
+    if (res?.code !== 200) throw new Error(res?.msg || '评论失败')
+
+    // 后端存为待审核，这里不能把评论插进列表 —— 那会造成「我看得见、别人看不见」的假象
+    utilMsg.$message.success(res?.msg || '评论已提交，等待审核后显示')
+    localStorage.setItem('mm_guest', JSON.stringify({ name: draft.name, email: draft.email }))
+    closeComposer()
+  } catch (e: any) {
+    utilMsg.$message.warning(e?.message || '评论失败，请稍后再试')
+  } finally {
+    sending.value = false
+  }
 }
 
 const nameOf = (c: any) => c.user?.nickName || c.guestName || '匿名'
@@ -240,7 +300,17 @@ const openImage = (url: string, title?: string) => {
   lightbox.show = true
 }
 
-onMounted(() => load(true))
+onMounted(() => {
+  // 恢复上次填过的昵称邮箱，省得每条评论都重填
+  try {
+    const saved = JSON.parse(localStorage.getItem('mm_guest') || '{}')
+    if (saved.name) draft.name = saved.name
+    if (saved.email) draft.email = saved.email
+  } catch {
+    // 本地存储损坏不影响页面
+  }
+  load(true)
+})
 </script>
 
 <style scoped>
@@ -543,6 +613,107 @@ onMounted(() => load(true))
 
 .mm-comment-name {
   color: #576b95;
+}
+
+/* ---------- 评论输入 ---------- */
+.mm-composer {
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 4px;
+  background: #f7f7f7;
+}
+
+.mm-composer-text {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  resize: vertical;
+  outline: none;
+}
+
+.mm-composer-text:focus {
+  border-color: #a9b7d0;
+}
+
+.mm-composer-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.mm-composer-input {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 10px;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 13px;
+  color: #1a1a1a;
+  outline: none;
+}
+
+.mm-composer-input:focus {
+  border-color: #a9b7d0;
+}
+
+.mm-composer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.mm-composer-tip {
+  font-size: 12px;
+  color: #b2b2b2;
+}
+
+.mm-composer-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.mm-composer-cancel,
+.mm-composer-send {
+  padding: 5px 16px;
+  border: 0;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.mm-composer-cancel {
+  background: #e9e9e9;
+  color: #576b95;
+}
+
+.mm-composer-send {
+  background: #07c160;
+  color: #fff;
+}
+
+.mm-composer-send:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .mm-composer-row {
+    flex-direction: column;
+  }
+
+  .mm-composer-foot {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .mm-empty {
