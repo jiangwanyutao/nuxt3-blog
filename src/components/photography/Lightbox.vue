@@ -36,12 +36,12 @@ onMounted(() => {
     >
       <div 
         v-if="show && image" 
-        class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/90 p-4 sm:p-8"
+        class="fixed inset-0 z-[2100] flex items-center justify-center bg-black/90 p-4 sm:p-8"
         @click="handleClose"
       >
         <!-- Close button -->
         <button 
-          class="absolute top-6 right-6 text-white/70 hover:text-white transition-colors z-[1001]"
+          class="absolute top-6 right-6 text-white/70 hover:text-white transition-colors z-[2101]"
           @click.stop="handleClose"
         >
           <Icon name="ph:x-bold" size="32" />

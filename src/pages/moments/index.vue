@@ -388,8 +388,13 @@ onMounted(() => {
 }
 
 /* ---------- 信息流 ---------- */
+/*
+ * 收窄到 520：原来 640 时正文列有 554px 宽，而图片最宽只有 220，
+ * 时间贴左、「···」贴右之后两者相距 330px，按钮看着像飞出去了。
+ * 收窄列宽 + 放大图片，让内容把这一行填满。
+ */
 .mm-feed {
-  max-width: 640px;
+  max-width: 520px;
   margin: 0 auto;
   padding: 56px 16px 80px;
 }
@@ -450,19 +455,21 @@ onMounted(() => {
   margin-bottom: 8px;
 }
 
+/* 单图放大到 300：太小时正文区显得空，和右侧的「···」拉开过大空档 */
 .mm-images.is-single {
   grid-template-columns: minmax(0, 1fr);
-  max-width: 220px;
+  max-width: 300px;
 }
 
 .mm-images.is-quad {
   grid-template-columns: repeat(2, 1fr);
-  max-width: 220px;
+  max-width: 292px;
 }
 
+/* 三列铺满正文区，与下方时间行等宽 */
 .mm-images.is-grid {
   grid-template-columns: repeat(3, 1fr);
-  max-width: 330px;
+  max-width: 100%;
 }
 
 .mm-image {
@@ -488,7 +495,7 @@ onMounted(() => {
 
 .mm-images.is-single .mm-image img {
   height: auto;
-  max-height: 290px;
+  max-height: 360px;
   object-fit: contain;
 }
 
@@ -499,9 +506,14 @@ onMounted(() => {
 }
 
 /* ---------- 时间与操作 ---------- */
+/*
+ * 时间贴左、「···」贴右，与微信一致。
+ * 两者挤在一起时，面板往左弹会正好压住时间；分开后弹进的是空白区。
+ */
 .mm-meta {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
 }
 
@@ -543,11 +555,7 @@ onMounted(() => {
   background: #576b95;
 }
 
-/*
- * 紧贴按钮左侧弹出，与微信一致；垂直居中对齐按钮。
- * 面板会盖住左侧的时间文本 —— 微信本身也是这个行为（浮层压在时间上），
- * 关掉面板时间就回来，不是被挤没了。
- */
+/* 紧贴按钮左侧弹出，与微信一致；垂直居中对齐按钮 */
 .mm-panel {
   position: absolute;
   right: calc(100% + 6px);
