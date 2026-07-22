@@ -81,7 +81,7 @@
           <NuxtLink :to="`/article/${article.id}`" class="featured-link">
             <div class="featured-image">
               <img 
-                :src="article.cover || article.articleCover || 'https://images.unsplash.com/photo-1557683316-973673baf926?w=1200&h=800&fit=crop'" 
+                :src="coverOf(article.cover || article.articleCover)"
                 :alt="article.title || article.articleTitle" 
               />
               <div class="image-overlay"></div>

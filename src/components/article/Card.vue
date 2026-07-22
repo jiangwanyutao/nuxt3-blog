@@ -17,7 +17,7 @@ const createTime = computed(() => (time: string) => useDateFormat(time, 'YYYY-MM
     <a :href="`/article/${item.id}`" class="article-link">
       <div class="article-image">
         <BaseImage 
-          :src="item.cover || item.articleCover || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'"
+          :src="coverOf(item.cover || item.articleCover)"
           :lazy="true"
           priority="low"
           placeholder-color="#f5f3f0"

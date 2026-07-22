@@ -27,7 +27,7 @@
     <template v-else-if="article">
       <!-- Hero Section with Cover Image -->
       <div class="hero-section" :style="{ opacity: heroOpacity }">
-        <img :src="article.cover || '/default-cover.jpg'" alt="文章封面" class="hero-image" />
+        <img :src="coverOf(article.cover)" alt="文章封面" class="hero-image" />
         <div class="hero-overlay"></div>
 
         <!-- Article Header -->

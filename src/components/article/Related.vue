@@ -33,7 +33,7 @@ const props = defineProps<{ articleId: number }>()
 
 /** 推荐位展示数量 */
 const RELATED_LIMIT = 4
-const DEFAULT_COVER = '/images/banner/3.jpg'
+// DEFAULT_COVER 已抽到 composables/useDefaultCover.ts，由 Nuxt 自动导入
 
 interface RelatedItem {
   id: number

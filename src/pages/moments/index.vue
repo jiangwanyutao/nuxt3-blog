@@ -62,11 +62,14 @@
             </div>
             
             <div class="music-player" v-if="moment.musicInfo">
-              <img 
-                :src="moment.musicInfo.cover || '/placeholder.svg?height=80&width=80'" 
-                :alt="moment.musicInfo.title" 
+              <!-- 无封面时不渲染 img：原先指向的 /placeholder.svg 并不存在，每次都 404 -->
+              <img
+                v-if="moment.musicInfo.cover"
+                :src="moment.musicInfo.cover"
+                :alt="moment.musicInfo.title"
                 class="album-cover"
               />
+              <div v-else class="album-cover album-cover-empty" aria-hidden="true">♫</div>
               <div class="music-info">
                 <h3 class="song-title">{{ moment.musicInfo.title }}</h3>
                 <p class="artist-name">{{ moment.musicInfo.artist }}</p>
@@ -655,6 +658,22 @@ const getDefaultMomentsData = (): ExtendedMomentItem[] => {
   object-fit: cover;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
+}
+
+/* 无封面时的占位块，尺寸与真实封面一致，避免布局跳动 */
+.album-cover-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f0e8, #e8ded0);
+  color: #b3a898;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.dark .album-cover-empty {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+  color: rgba(255, 255, 255, 0.35);
 }
 
 .music-info {
