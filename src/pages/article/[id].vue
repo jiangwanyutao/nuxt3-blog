@@ -86,7 +86,30 @@
 
           <!-- Main Content with Markdown -->
           <article class="main-content">
-            <div ref="markdownRef" class="markdown-body" v-html="renderedContent"></div>
+            <!-- 加密文章：未解锁时正文本就是空的，这里替换成密码输入面板 -->
+            <div v-if="isLocked" class="lock-panel">
+              <div class="lock-icon">🔒</div>
+              <h2 class="lock-title">这篇文章已加密</h2>
+              <p class="lock-desc">输入访问密码后即可阅读全文</p>
+
+              <form class="lock-form" @submit.prevent="submitUnlock">
+                <input
+                  v-model="unlockPassword"
+                  type="password"
+                  class="lock-input"
+                  placeholder="请输入访问密码"
+                  maxlength="64"
+                  autocomplete="off"
+                />
+                <button type="submit" class="lock-btn" :disabled="!unlockPassword || unlocking">
+                  {{ unlocking ? '验证中…' : '解锁' }}
+                </button>
+              </form>
+
+              <p v-if="unlockError" class="lock-error">{{ unlockError }}</p>
+            </div>
+
+            <div v-else ref="markdownRef" class="markdown-body" v-html="renderedContent"></div>
           </article>
         </div>
 
@@ -195,7 +218,7 @@ import '~/assets/styles/markdown-enhanced.css'
 import { useBlogStore } from '~/stores/blogStore'
 import 'github-markdown-css/github-markdown.css'
 import type { Article } from '@/types/article'
-import { getArticleById, getArticleList } from '~/api/article'
+import { getArticleById, getArticleList, unlockArticle } from '~/api/article'
 import { renderMarkdown, bindMarkdownInteractions } from '~/composables/useMarkdown'
 import { useArticleLike } from '~/composables/useArticleLike'
 import { useDateFormat } from '@vueuse/core'
@@ -279,8 +302,38 @@ if (article.value?.title) {
 
 const scrollY = ref(0)
 
+// ---------- 加密文章 ----------
+/** 解锁成功后拿到的正文。未解锁时接口下发的 content 恒为空串 */
+const unlockedContent = ref('')
+const unlockPassword = ref('')
+const unlocking = ref(false)
+const unlockError = ref('')
+
+const isLocked = computed(() => !!article.value?.isEncrypted && !unlockedContent.value)
+
+const submitUnlock = async () => {
+  if (!unlockPassword.value || unlocking.value) return
+  unlocking.value = true
+  unlockError.value = ''
+  try {
+    const res: any = await unlockArticle(articleId, unlockPassword.value)
+    if (res?.code === 200 && res.data?.content) {
+      unlockedContent.value = res.data.content
+      unlockPassword.value = ''
+    } else {
+      unlockError.value = res?.msg || '密码错误'
+    }
+  } catch (e: any) {
+    // 后端密码错误返回 401、超出尝试次数返回 403，msg 已是可直接展示的中文
+    unlockError.value = e?.data?.msg || e?.message || '解锁失败，请重试'
+  } finally {
+    unlocking.value = false
+  }
+}
+
 // 渲染 Markdown 内容（unified 管道：GFM/公式/callout/Mac 风格代码块，SSR 同构）
-const rendered = computed(() => renderMarkdown(article.value?.content || ''))
+// 解锁后的正文优先；未解锁时 article.content 本身就是空串
+const rendered = computed(() => renderMarkdown(unlockedContent.value || article.value?.content || ''))
 const renderedContent = computed(() => rendered.value.html)
 const headings = computed(() => rendered.value.headings)
 const markdownRef = ref<HTMLElement | null>(null)
@@ -728,6 +781,92 @@ useSeoMeta({
 /* Main Content */
 .main-content {
   min-height: 600px;
+}
+
+/* ---------- 加密文章的解锁面板 ---------- */
+.lock-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 420px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.lock-icon {
+  font-size: 44px;
+  line-height: 1;
+  opacity: 0.85;
+}
+
+.lock-title {
+  margin: 18px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text, #3b352d);
+}
+
+.lock-desc {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: #9a9188;
+}
+
+.lock-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 26px;
+  width: min(360px, 100%);
+}
+
+.lock-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid rgba(154, 145, 136, 0.35);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  color: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.lock-input:focus {
+  border-color: var(--color-primary, #f97316);
+}
+
+.dark .lock-input {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.lock-btn {
+  flex: none;
+  padding: 10px 22px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--color-primary, #f97316);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.lock-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.lock-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lock-error {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: #e11d48;
 }
 
 /* Markdown 内容样式 */

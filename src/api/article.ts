@@ -96,6 +96,16 @@ export const unlikeArticle = (articleId: number) => {
 }
 
 /**
+ * 校验加密文章的访问密码，成功则返回正文。
+ * 用 POST + body：密码不该出现在 URL、访问日志和 Referer 里。
+ * @param articleId 文章ID
+ * @param password 访问密码
+ */
+export const unlockArticle = (articleId: number, password: string) => {
+  return requestUtil.post(`/public/article/${articleId}/unlock`, { password }, { isToken: false })
+}
+
+/**
  * 增加文章浏览量
  * @param articleId 文章ID
  */
