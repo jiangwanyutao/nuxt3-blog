@@ -52,7 +52,10 @@ export default defineEventHandler(async (event) => {
       query: { page: 1, limit: RSS_ITEM_LIMIT }
     })
 
-    const items = res?.code === 200 ? res.data?.items || [] : []
+    // 加密文章不进订阅：正文本就取不到，只推标题和摘要，订阅者点开只会撞上密码框。
+    // 主列表仍然保留它们，所以这里得自己过滤，不能指望接口已经排除。
+    const all = res?.code === 200 ? res.data?.items || [] : []
+    const items = all.filter((a: any) => !a.isEncrypted)
 
     for (const article of items) {
       const link = `${siteUrl}/article/${article.id}`
