@@ -19,7 +19,7 @@ const stripMarkdown = (text: string): string =>
     .trim()
 
 /**
- * RSS 2.0 订阅源（移植自 ThriveX 的 /api/rss）。
+ * RSS 2.0 订阅源。
  * 访问 /rss.xml 获取，数据来自后端公开文章接口。
  */
 export default defineEventHandler(async (event) => {

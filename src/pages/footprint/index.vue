@@ -48,12 +48,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { getFootprintList, getGaodeConfig, type FootprintItem } from '~/api/footprint'
 
 useHead({ title: '足迹' })
 
-/** 初始视野：大致居中于中国，与 ThriveX 原版一致 */
+/** 初始视野：大致居中于中国 */
 const MAP_CENTER: [number, number] = [105.625368, 37.746599]
 const MAP_ZOOM = 4.8
 /** 点选标记后拉近到街区级别 */
@@ -130,7 +130,7 @@ const closeDetail = () => {
 
 /**
  * 「查看更多」按钮在高德注入的 DOM 里，拿不到 Vue 的事件绑定。
- * 用事件委托代替原版的内联 onclick + CustomEvent，既能拿到点击又不引入内联脚本。
+ * 用事件委托而非内联 onclick，既能拿到点击又不引入内联脚本。
  */
 const onMapClick = (e: MouseEvent) => {
   const btn = (e.target as HTMLElement)?.closest?.('[data-fp-id]')
@@ -209,8 +209,22 @@ const openLightbox = (url: string, title: string) => {
   lightbox.show = true
 }
 
+/** 防止数据多次变化时重复初始化地图 */
+let mapInitStarted = false
+
 onMounted(() => {
-  if (items.value.length) initMap()
+  // 不能只在挂载这一刻判断一次：线上 useAsyncData 可能在客户端才取回数据，
+  // 那时 items 还是空的，initMap 永远不会被调用，遮罩就一直停在「地图加载中…」。
+  // 本地有 SSR 数据水合，挂载时就有值，所以这个时序问题只在线上暴露。
+  watch(
+    () => items.value.length,
+    (len) => {
+      if (!len || mapInitStarted) return
+      mapInitStarted = true
+      initMap()
+    },
+    { immediate: true }
+  )
 })
 
 onBeforeUnmount(() => {
@@ -228,7 +242,7 @@ onBeforeUnmount(() => {
 
 .fp-map {
   width: 100%;
-  /* 整屏铺开；页头 fixed 且半透明，地图透过去正是原版的观感 */
+  /* 整屏铺开；页头 fixed 且半透明，地图透到它下面 */
   height: 100vh;
 }
 

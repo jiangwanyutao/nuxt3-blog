@@ -185,17 +185,17 @@
           </div>
         </div>
 
-        <!-- 相关文章推荐（移植自 ThriveX） -->
+        <!-- 相关文章推荐 -->
         <ArticleRelated :article-id="articleId" />
 
-        <!-- 版权声明（移植自 ThriveX） -->
+        <!-- 版权声明 -->
         <ArticleCopyright :article-id="articleId" />
 
         <!-- Comments Section -->
         <Comment :articleId="articleId" />
         </div>
 
-        <!-- 右侧边栏（移植自 ThriveX）：作者卡 / 热门文章 / 最新评论 -->
+        <!-- 右侧边栏：作者卡 / 热门文章 / 最新评论 -->
         <aside class="article-side">
           <Sidebar
             :article-id="articleId"
@@ -391,7 +391,7 @@ const handleScroll = () => {
   scrollY.value = window.scrollY
 }
 
-// 分享海报（移植自 ThriveX，canvas 生成并下载）
+// 分享海报（canvas 生成并下载）
 const posterLoading = ref(false)
 
 const sharePoster = async () => {

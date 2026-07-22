@@ -17,7 +17,7 @@ onBeforeUnmount(() => {
       <div class="flex items-center text-xm px-8" style="align-items: center">
         <img class="rotate360 h-6 h-6" src="~/assets/img/svg/sakura.svg" alt="" />
         <span class="pl-3"> ©2021 - {{ year }} by江晚正愁余 </span>
-        <!-- 站点运行时长（移植自 ThriveX 的 RunTime） -->
+        <!-- 站点运行时长 -->
         <ClientOnly>
           <CommonRunTime class="pl-4" />
         </ClientOnly>

@@ -50,7 +50,7 @@ const loadImage = (src: string): Promise<HTMLImageElement | null> =>
 
 /**
  * 生成文章分享海报（封面 + 标题摘要 + 二维码）并触发下载。
- * 移植自 ThriveX 的 generateArticlePoster，仅客户端可用。
+ * 生成文章分享海报，仅客户端可用。
  */
 export const generateArticlePoster = async (opts: PosterOptions): Promise<void> => {
   const canvas = document.createElement('canvas')

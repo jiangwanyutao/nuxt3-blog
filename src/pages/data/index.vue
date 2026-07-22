@@ -231,7 +231,7 @@ const archive = computed<YearGroup[]>(() => {
     if (Number.isNaN(d.getTime())) continue
     const year = d.getFullYear()
     const month = d.getMonth() + 1
-    // 字数按正文长度估算，与原版口径一致
+    // 字数按正文字符数估算
     const wordCount = (a.content || '').length
 
     let y = byYear.get(year)
@@ -301,7 +301,7 @@ onMounted(async () => {
       {
         name: '数量统计',
         type: 'pie',
-        // 环形而非实心饼，与原版一致
+        // 环形而非实心饼
         radius: ['40%', '75%'],
         center: ['50%', '50%'],
         avoidLabelOverlap: false,

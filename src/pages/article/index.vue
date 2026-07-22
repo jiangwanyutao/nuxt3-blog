@@ -51,7 +51,7 @@
 
     <!-- Main Content -->
     <main class="main-content">
-      <!-- 布局切换（网格 / 瀑布流，移植自 ThriveX） -->
+      <!-- 布局切换（网格 / 瀑布流） -->
       <div class="layout-toolbar">
         <button
           class="layout-btn"

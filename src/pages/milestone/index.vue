@@ -110,7 +110,7 @@
     </div>
 
     <!--
-      原版没有这个入口：整页接管会把站点导航全部盖住，只剩浏览器后退可用。
+      整页接管会把站点导航全部盖住，只剩浏览器后退可用，故补一个返回入口。
       做成与本页视觉一致的低调样式，不破坏沉浸感。
     -->
     <NuxtLink to="/" class="ms-back" aria-label="返回首页">← 返回</NuxtLink>
@@ -131,7 +131,7 @@ import { getMilestoneList, type MilestoneItem } from '~/api/milestone'
 
 useHead({ title: '里程碑' })
 
-/** 布局常量（与 ThriveX 原版一致，改动会直接影响曲线与卡片的对齐） */
+/** 布局常量：改动会直接影响曲线与卡片的对齐 */
 const SIDE_PAD = 400
 const CARD_SP = 560
 const CARD_W = 300
@@ -328,7 +328,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 /*
-  原版在此处 @import 了 Google Fonts（Playfair Display / DM Mono / Noto Serif SC）。
+  不引入 Google Fonts（Playfair Display / DM Mono / Noto Serif SC）：
   国内访问 fonts.googleapis.com 会挂起，拖慢甚至阻塞首屏，故改为系统字体栈兜底。
 */
 .ms-page {

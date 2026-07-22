@@ -67,8 +67,7 @@ export const useDeviceInfo = () => {
       os = 'Windows'
       if (ua.indexOf('Windows NT 10.0') > -1) {
         version = (await detectWindowsVersionByHints()) || '10'
-      }
-      else if (ua.indexOf('Windows NT 6.3') > -1) version = '8.1'
+      } else if (ua.indexOf('Windows NT 6.3') > -1) version = '8.1'
       else if (ua.indexOf('Windows NT 6.2') > -1) version = '8'
       else if (ua.indexOf('Windows NT 6.1') > -1) version = '7'
     } else if (ua.indexOf('Mac') > -1) {
@@ -99,11 +98,15 @@ export const useDeviceInfo = () => {
    */
   const getDeviceType = (): string => {
     const ua = navigator.userAgent
-    
+
     if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
       return 'Tablet'
     }
-    if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+    if (
+      /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(
+        ua
+      )
+    ) {
       return 'Mobile'
     }
     return 'Desktop'
