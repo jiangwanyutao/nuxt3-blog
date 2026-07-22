@@ -53,6 +53,13 @@ import { getFootprintList, getGaodeConfig, type FootprintItem } from '~/api/foot
 
 useHead({ title: '足迹' })
 
+/**
+ * 深色地图样式「极夜蓝」。深底 + 亮色地名让照片标记跳出来，
+ * 浅色底图会把标记的白色光晕吃掉。
+ * 换样式时记得同步下面 .fp-map 的底色，否则瓦片加载前会闪一下白。
+ */
+const MAP_STYLE = 'amap://styles/darkblue'
+
 /** 初始视野：大致居中于中国 */
 const MAP_CENTER: [number, number] = [105.625368, 37.746599]
 const MAP_ZOOM = 4.8
@@ -165,7 +172,7 @@ const initMap = async () => {
     if (!mapEl.value) return
 
     mapInstance = new AMap.Map(mapEl.value, {
-      mapStyle: 'amap://styles/grey',
+      mapStyle: MAP_STYLE,
       viewMode: '3D',
       zoom: MAP_ZOOM,
       center: MAP_CENTER
@@ -244,6 +251,8 @@ onBeforeUnmount(() => {
   width: 100%;
   /* 整屏铺开；页头 fixed 且半透明，地图透到它下面 */
   height: 100vh;
+  /* 与「极夜蓝」样式的底色一致，避免瓦片加载前闪一下白 */
+  background: #1a232c;
 }
 
 .fp-overlay {
@@ -253,11 +262,8 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(244, 242, 238, 0.92);
-}
-
-.dark .fp-overlay {
-  background: rgba(28, 28, 30, 0.92);
+  /* 跟随深色地图，不再区分明暗主题：浅色遮罩压在深色地图上会很突兀 */
+  background: rgba(26, 35, 44, 0.92);
 }
 
 .fp-overlay-text {
@@ -265,7 +271,7 @@ onBeforeUnmount(() => {
   text-align: center;
   font-size: 14px;
   line-height: 1.9;
-  color: #8a8178;
+  color: rgba(232, 228, 220, 0.72);
 }
 
 /* ---------- 详情弹窗 ---------- */
