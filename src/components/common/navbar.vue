@@ -250,15 +250,17 @@ onUnmounted(() => {
             :class="{ active: activeMenuId === menu.menuId }"
             @mouseenter="showMenu(menu.menuId)"
           >
+            <Icon v-if="menu.icon" :name="menu.icon" class="nav-icon" />
             {{ menu.text }}
           </a>
           <!-- 关于页面使用智能预加载 -->
-          <CommonPreloadLink 
+          <CommonPreloadLink
             v-else-if="menu.path === '/about'"
             :to="menu.path"
             preload-type="about"
             class="nav-link"
           >
+            <Icon v-if="menu.icon" :name="menu.icon" class="nav-icon" />
             {{ menu.text }}
           </CommonPreloadLink>
           <!-- 其他普通链接 -->
@@ -269,13 +271,15 @@ onUnmounted(() => {
             rel="noopener noreferrer"
             class="nav-link"
           >
+            <Icon v-if="menu.icon" :name="menu.icon" class="nav-icon" />
             {{ menu.text }}
           </a>
-          <NuxtLink 
+          <NuxtLink
             v-else
             :to="menu.path || '#'"
             class="nav-link"
           >
+            <Icon v-if="menu.icon" :name="menu.icon" class="nav-icon" />
             {{ menu.text }}
           </NuxtLink>
         </template>
@@ -316,14 +320,16 @@ onUnmounted(() => {
                 class="submenu-item"
                 :style="{ animationDelay: `${sectionIndex * 0.1 + childIndex * 0.05 + 0.3}s` }"
               >
+                <Icon v-if="child.icon" :name="child.icon" class="submenu-icon" />
                 {{ child.text }}
               </a>
-              <NuxtLink 
+              <NuxtLink
                 v-else
                 :to="child.path || '#'"
                 class="submenu-item"
                 :style="{ animationDelay: `${sectionIndex * 0.1 + childIndex * 0.05 + 0.3}s` }"
               >
+                <Icon v-if="child.icon" :name="child.icon" class="submenu-icon" />
                 {{ child.text }}
               </NuxtLink>
             </template>
@@ -479,6 +485,16 @@ onUnmounted(() => {
   cursor: pointer; /* 确保 hover 时也是手型 */
 }
 
+/*
+  line-md 系列自带描边绘制动画，首次渲染时会自己画出来。
+  flex-shrink: 0 防止窄屏下被文字挤扁。
+*/
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
 /* .nav-link.has-dropdown::after {
   content: '▼';
   font-size: 10px;
@@ -585,10 +601,23 @@ onUnmounted(() => {
   width: 100%;
 }
 
+/* 图标与文字之间留一点间距；父级本就是 flex 居中，加上 gap 即可 */
+.submenu-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+.submenu-item:hover .submenu-icon {
+  opacity: 1;
+}
+
 .submenu-item {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   padding: 8px 10px;
   color: #666;
   text-decoration: none;
