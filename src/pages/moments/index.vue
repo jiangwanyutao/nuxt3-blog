@@ -40,22 +40,25 @@
 
           <div class="mm-meta">
             <time class="mm-time">{{ formatTime(m.createTime) }}</time>
-            <button class="mm-action" :aria-label="`操作 ${m.id}`" @click="togglePanel(m.id)">
-              <span /><span />
-            </button>
 
-            <!-- 点「···」弹出的赞/评论小面板，与朋友圈一致 -->
-            <div v-if="openPanelId === m.id" class="mm-panel">
-              <button class="mm-panel-btn" @click="onLike(m)">
-                <span class="mm-panel-icon">{{ m.isLiked ? '♥' : '♡' }}</span>
-                {{ m.isLiked ? '取消' : '赞' }}
+            <!-- 面板要贴着按钮弹出，所以定位参照系放在这层，而不是整行 -->
+            <span class="mm-action-wrap">
+              <button class="mm-action" :aria-label="`操作 ${m.id}`" @click="togglePanel(m.id)">
+                <span /><span />
               </button>
-              <span class="mm-panel-sep" />
-              <button class="mm-panel-btn" @click="focusComment(m.id)">
-                <span class="mm-panel-icon">💬</span>
-                评论
-              </button>
-            </div>
+
+              <div v-if="openPanelId === m.id" class="mm-panel">
+                <button class="mm-panel-btn" @click="onLike(m)">
+                  <span class="mm-panel-icon">{{ m.isLiked ? '♥' : '♡' }}</span>
+                  {{ m.isLiked ? '取消' : '赞' }}
+                </button>
+                <span class="mm-panel-sep" />
+                <button class="mm-panel-btn" @click="focusComment(m.id)">
+                  <span class="mm-panel-icon">💬</span>
+                  评论
+                </button>
+              </div>
+            </span>
           </div>
 
           <!-- 赞与评论共用一块浅色底，朋友圈里它们是连在一起的 -->
@@ -497,10 +500,20 @@ onMounted(() => {
 
 /* ---------- 时间与操作 ---------- */
 .mm-meta {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+/*
+ * 面板的定位参照系必须是按钮这一层。
+ * 挂在 .mm-meta 上会以整行为准，right 值就变成「距整行右边缘」，
+ * 面板会甩到最右边、和按钮完全脱节。
+ */
+.mm-action-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
 }
 
 .mm-time {
@@ -530,10 +543,17 @@ onMounted(() => {
   background: #576b95;
 }
 
+/*
+ * 紧贴按钮左侧弹出，与微信一致；垂直居中对齐按钮。
+ * 面板会盖住左侧的时间文本 —— 微信本身也是这个行为（浮层压在时间上），
+ * 关掉面板时间就回来，不是被挤没了。
+ */
 .mm-panel {
   position: absolute;
-  right: 34px;
-  top: -6px;
+  right: calc(100% + 6px);
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
   display: flex;
   align-items: center;
   padding: 0 4px;
